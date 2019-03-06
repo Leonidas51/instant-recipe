@@ -15,7 +15,7 @@ class JSONEncoder(json.JSONEncoder):
 			return str(o)
 		return json.JSONEncoder.default(self, o)
 
-ogolodali = Flask(__name__)
+ogolodali = Flask(__name__, static_folder='frontend/dist', template_folder='frontend/public/templates')
 
 # add mongo url to flask config, so that flask_pymongo can use it to make connection
 ogolodali.config['MONGO_URI'] = os.environ.get('DB')

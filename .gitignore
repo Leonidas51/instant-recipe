@@ -1,4 +1,6 @@
 venv/
+node_modules/
+dist/
 *.pyc
 __pycache__/
 instance/
