@@ -1,4 +1,5 @@
 venv/
+tests/
 node_modules/
 dist/
 *.pyc

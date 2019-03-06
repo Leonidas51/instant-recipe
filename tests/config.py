@@ -1,27 +1,17 @@
-import os
-import tempfile
-import pytest
+import unittest
+import datetime
 from ogolodali import create_app
 
 
-@pytest.fixture
-def app():
-    db_fd, db_path = tempfile.mkstemp()
-    app = create_app({
-        'TESTING': True,
-        'DATABASE': db_path,
-    })
-    with app.app_context():
-        init_db()
-        get_db().executescript(_data_sql)
-    yield app
-    os.close(db_fd)
-    os.unlink(db_path)
+class MockupDBFlaskTest(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app('testing')
 
-@pytest.fixture
-def client(app):
-    return app.test_client()
+    def tearDown(self):
+        pass
 
-@pytest.fixture
-def runner(app):
-    return app.test_cli_runner()
+    def test_something(self):
+        self.assertTrue(True)
+
+if __name__ == '__main__':
+    unittest.main(warnings='ignore')

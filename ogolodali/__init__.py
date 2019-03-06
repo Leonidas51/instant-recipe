@@ -4,7 +4,9 @@ import datetime
 from bson.objectid import ObjectId
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
+
 import logger
+from .instance.config import app_config
 
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 os.environ.update({'ROOT_PATH': ROOT_PATH})
@@ -27,14 +29,12 @@ mongo = PyMongo()
 def create_app(test_config=None):
     LOG.info('running environment: %s', os.environ.get('ENV'))
 
-    app = Flask(__name__, static_folder='frontend/dist', template_folder='frontend/public/templates')
+    app = Flask(__name__, instance_relative_config=True, static_folder='frontend/dist', template_folder='frontend/public/templates')
 
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-    app.config['MONGO_URI'] = os.environ.get('DB')
-
-    if test_config:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
+    if test_config is None:
+        app.config.from_object(app_config[os.getenv('APP_SETTINGS')])
+    else:
+        app.config.from_object(app_config[test_config])
 
     mongo.init_app(app)
     app.json_encoder = JSONEncoder
