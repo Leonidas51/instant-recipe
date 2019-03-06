@@ -32,6 +32,10 @@ def create_app(test_config=None):
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
     app.config['MONGO_URI'] = os.environ.get('DB')
 
+    if test_config:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
+
     mongo.init_app(app)
     app.json_encoder = JSONEncoder
 
@@ -43,7 +47,6 @@ def create_app(test_config=None):
     from .controllers import tips, recipes
     app.register_blueprint(tips.tips_bp)
     app.add_url_rule('/tip', endpoint='tip')
-
     app.register_blueprint(recipes.recipes_bp)
     app.add_url_rule('/recipe', endpoint='recipe')
 
