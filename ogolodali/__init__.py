@@ -27,12 +27,11 @@ class JSONEncoder(json.JSONEncoder):
 mongo = PyMongo()
 
 def create_app(test_config=None):
-    LOG.info('running environment: %s', os.environ.get('ENV'))
-
     app = Flask(__name__, instance_relative_config=True, static_folder='frontend/dist', template_folder='frontend/public/templates')
 
     if test_config is None:
         app.config.from_object(app_config[os.getenv('APP_SETTINGS')])
+        LOG.info('running environment: %s', os.environ.get('APP_SETTINGS'))
     else:
         app.config.from_object(app_config[test_config])
 
@@ -44,10 +43,17 @@ def create_app(test_config=None):
     app.add_url_rule('/', endpoint='index')
     app.register_error_handler(404, errors.page_not_found)
 
-    from .controllers import tips, recipes
-    app.register_blueprint(tips.tips_bp)
-    app.add_url_rule('/tip', endpoint='tip')
+    from .controllers import ingredients, recipes, tags, tips
+    app.register_blueprint(ingredients.ingredients_bp)
+    app.add_url_rule('/ingredient', endpoint='ingredient')
+
     app.register_blueprint(recipes.recipes_bp)
     app.add_url_rule('/recipe', endpoint='recipe')
+
+    app.register_blueprint(tags.tags_bp)
+    app.add_url_rule('/tag', endpoint='tag')
+
+    app.register_blueprint(tips.tips_bp)
+    app.add_url_rule('/tip', endpoint='tip')
 
     return app
