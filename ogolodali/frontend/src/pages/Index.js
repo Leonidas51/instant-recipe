@@ -1,5 +1,8 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import SearchArea from "../components/SearchArea";
+import "./Common.css";
+import "./Index.css";
 
 class Index extends React.Component {
   constructor(props) {
@@ -7,7 +10,14 @@ class Index extends React.Component {
   }
 
   render() {
-    return <div>Index!</div>
+    return (
+      <div className="content-area_index">
+        <div className="content-area_index__logo">
+          Проголодались?
+        </div>
+        <SearchArea />
+      </div>
+    )
   }
 }
 
