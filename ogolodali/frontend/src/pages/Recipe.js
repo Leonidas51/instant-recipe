@@ -9,7 +9,7 @@ class Recipe extends React.Component {
     this.onChangeInput = this.onChangeInput.bind(this);
     this.onClickGo = this.onClickGo.bind(this);
   }
-  
+
   onChangeInput(e) {
     this.setState({recipe_id: e.target.value});
   }
@@ -20,11 +20,22 @@ class Recipe extends React.Component {
     fetch(`/api/recipe/${this.state.recipe_id}`)
     .then(function(response) {
       console.log(response);
-      return response.json();
-    })
-    .then(function(result) {
-      self.setState({recipe_text: result.instructions_source});
-    })
+      if(response.status === 204) {
+        self.setState({recipe_text: "Кажется, такого рецепта у нас нет!"});
+      } else
+        response.json()
+          .then(function(data) {
+            return { status: response.status, body: data };
+          })
+          .then(function(result) {
+            console.log(result);
+            self.setState({recipe_text: result.body.instructions_source});
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+    });
+
   }
 
   render() {

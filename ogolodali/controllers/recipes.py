@@ -11,4 +11,6 @@ recipes_bp = Blueprint('recipe', __name__)
 @recipes_bp.route('/api/recipe/<recipe_id>/', methods=['GET'])
 def recipe(recipe_id):
 	data = mongo.db.recipes.find_one({u'numeric_id': int(recipe_id)})
+	if data == None:
+		return jsonify(data = 'Nothing was found!'), 204
 	return jsonify(data), 200
