@@ -9,7 +9,7 @@ class Recipe extends React.Component {
     this.onChangeInput = this.onChangeInput.bind(this);
     this.onClickGo = this.onClickGo.bind(this);
   }
-
+  
   onChangeInput(e) {
     this.setState({recipe_id: e.target.value});
   }
