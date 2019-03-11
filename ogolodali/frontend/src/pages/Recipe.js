@@ -19,7 +19,6 @@ class Recipe extends React.Component {
 
     fetch(`/api/recipe/${this.state.recipe_id}`)
     .then(function(response) {
-      console.log(response);
       return response.json();
     })
     .then(function(result) {
