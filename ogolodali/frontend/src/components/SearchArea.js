@@ -7,14 +7,14 @@ class SearchArea extends React.Component {
   }
 
   render() {
-    return( 
+    return(
       <div className="search-area">
         <div className="input-container">
           <input className="input-container__input" type="text" placeholder="Начните вводить названия ингредиентов..." />
-          <div className="input-container__search-button input-container__search-button_inactive">найти рецепты</div>
+          <div className="input-container__search-button input-container__search-button_inactive">Найти рецепты</div>
         </div>
         <div className="search_area__sample">
-          например: <span className="search_area__sample_highlited">брокколи</span>
+          Например: <span className="search_area__sample_highlited">брокколи</span>
         </div>
       </div>
     )
