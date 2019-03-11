@@ -4,6 +4,7 @@ import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Recipe from "./pages/Recipe";
+import Ingredient from "./pages/Ingredient";
 
 class App extends React.Component {
   constructor(props) {
@@ -11,13 +12,14 @@ class App extends React.Component {
   }
 
   render() {
-    return (  
+    return (
       <Router>
         <div>
           <Switch>
             <Route exact path="/" component={Index} />
             <Route path="/about/" component={About} />
             <Route path="/recipes/" component={Recipe} />
+            <Route path="/ingredients/" component={Ingredient} />
             <Route component={NotFound} />
           </Switch>
 

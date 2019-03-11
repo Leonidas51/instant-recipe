@@ -1,4 +1,5 @@
 import os
+import re
 from flask import request, jsonify, Blueprint
 from ogolodali import mongo
 import logger
@@ -9,11 +10,11 @@ LOG = logger.get_root_logger(
 ingredients_bp = Blueprint('ingredients', __name__)
 
 
-@ingredients_bp.route('/ingredient', methods=['GET', 'POST', 'DELETE', 'PATCH'])
-def ingredient():
+@ingredients_bp.route('/ingredient/<string:name>/', methods=['GET'])
+def read_ingredient(name):
     if request.method == 'GET':
-        query = dict(request.args)
-        if 'numeric_id' in query:
-            query['numeric_id'] = int(query['numeric_id'])
-        data = mongo.db.ingredients.find_one(query)
+        data = mongo.db.ingredients.find({'name':{'$regex':u'^' + name}}).limit(10)
+        if data == None:
+            return jsonify(data = 'Nothing was found!'), 204
+        data = [ingredient for ingredient in data]
         return jsonify(data), 200

@@ -44,16 +44,10 @@ def create_app(test_config=None):
     app.register_error_handler(404, errors.page_not_found)
 
     from .controllers import ingredients, recipes, tags, tips
-    app.register_blueprint(ingredients.ingredients_bp)
-    app.add_url_rule('/ingredient', endpoint='ingredient')
-
-    app.register_blueprint(recipes.recipes_bp)
-    app.add_url_rule('/recipe', endpoint='recipe')
-
-    app.register_blueprint(tags.tags_bp)
-    app.add_url_rule('/tag', endpoint='tag')
-
-    app.register_blueprint(tips.tips_bp)
-    app.add_url_rule('/tip', endpoint='tip')
+    api_prefix = '/api'
+    app.register_blueprint(ingredients.ingredients_bp, url_prefix=api_prefix)
+    app.register_blueprint(recipes.recipes_bp, url_prefix=api_prefix)
+    app.register_blueprint(tags.tags_bp, url_prefix=api_prefix)
+    app.register_blueprint(tips.tips_bp, url_prefix=api_prefix)
 
     return app

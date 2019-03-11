@@ -19,11 +19,23 @@ class Recipe extends React.Component {
 
     fetch(`/api/recipe/${this.state.recipe_id}`)
     .then(function(response) {
-      return response.json();
-    })
-    .then(function(result) {
-      self.setState({recipe_text: result.instructions_source});
-    })
+      console.log(response);
+      if(response.status === 204) {
+        self.setState({recipe_text: "Кажется, такого рецепта у нас нет!"});
+      } else
+        response.json()
+          .then(function(data) {
+            return { status: response.status, body: data };
+          })
+          .then(function(result) {
+            console.log(result);
+            self.setState({recipe_text: result.body.instructions_source});
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+    });
+
   }
 
   render() {
