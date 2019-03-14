@@ -19,11 +19,13 @@ def read_recipe(recipe_id):
 
 @recipes_bp.route('/recipe_list/<string:ingredients_list>/', methods=['GET'])
 def read_recipe_list(ingredients_list):
-	# картофель, морковь, лук
+	""" картофель, морковь, лук
 	ingredients_list = ['ObjectId("4f6d5ab72c607d9762000002")',
 				'ObjectId("4f6d5ab72c607d9762000004")',
 				'ObjectId("4f6d5ab72c607d9762000019")']
-	ingredients_list = [ObjectId(ingredient[10:-2]) for ingredient in ingredients_list]
+	"""
+	ingredients_list = ingredients_list.split('&')
+	ingredients_list = [ObjectId(ingredient) for ingredient in ingredients_list]
 	data = mongo.db.recipes.aggregate([
 		{'$match': {'published': True}},
 		{'$project': {

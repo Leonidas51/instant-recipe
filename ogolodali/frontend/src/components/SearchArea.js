@@ -92,7 +92,7 @@ class SearchArea extends React.Component {
 
     this.setState({
       selected_ings: this.state.selected_ings.filter((ing) => {
-        return ing.id !== del_id; 
+        return ing.id !== del_id;
       })
     });
   }
@@ -103,7 +103,7 @@ class SearchArea extends React.Component {
     return(
       <div className="search-area">
         <div className="input-container">
-          <input 
+          <input
             className="input-container__input"
             type="text"
             placeholder="Начните вводить названия ингредиентов..."
@@ -111,15 +111,10 @@ class SearchArea extends React.Component {
             onChange={this.onChangeInput}
           />
 
-          <div 
-            className={`input-container__search-button
-            ${this.state.selected_ings.length ? 'input-container__search-button_active' : 'input-container__search-button_inactive'}`}
-          >
-            Найти рецепты
-          </div>
+          <SearchButton selected_ings={this.state.selected_ings} />
 
           <div
-            className={`input-container__suggestions 
+            className={`input-container__suggestions
             ${this.state.suggested_ings.length ? '' : 'input-container__suggestions_hidden'}`}
           >
 
@@ -152,6 +147,31 @@ class SearchArea extends React.Component {
       </div>
     )
   }
+}
+
+function SearchButton(props) {
+  if (props.selected_ings.length) {
+    let selected_ings = props.selected_ings.reduce((accumulated, addition) => {
+      return {id: accumulated.id + "&" + addition.id,
+              name: accumulated.name + "&" + addition.name};
+    });
+    return (
+      <div
+        className={"input-container__search-button input-container__search-button_active"}
+      >
+        <Link to={"/recipes/" + selected_ings.name + "_" + selected_ings.id}>
+          Найти рецепты
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <div
+      className={"input-container__search-button input-container__search-button_inactive"}
+    >
+      Найти рецепты
+    </div>
+  );
 }
 
 function SuggestedIng(props) {
