@@ -16,5 +16,5 @@ def read_ingredient(name):
         data = mongo.db.ingredients.find({'name':{'$regex':u'(^' + name + '| ' + name + ')'}}).limit(10)
         if data == None:
             return jsonify(data = 'Nothing was found!'), 204
-        data = [ingredient for ingredient in data]
+        data = sorted(list(data), key=lambda x: 'a' + x['name'] if x['name'].startswith(name) else 'b' + x['name'])
         return jsonify(data), 200
