@@ -6,15 +6,48 @@ class SearchArea extends React.Component {
     super(props);
 
     this.state = {
+      error: null,
+      is_loaded: false,
+      random_ing: "",
       input_value: [],
       suggested_ings: [],
-      selected_ings: []
+      selected_ings: [],
     }
 
     this.onChangeInput = this.onChangeInput.bind(this);
     this.onSuggestClick = this.onSuggestClick.bind(this);
     this.onClickSample = this.onClickSample.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
+  }
+
+  componentDidMount() {
+    fetch('/api/random_ingredient/')
+      .then((response) => {
+        if(response.status === 204) {
+          this.setState({error: {message: "Ингредиенты не найдены"}});
+        } else
+          response.json()
+            .then(
+              (result) => {
+                this.setState({
+                  is_loaded: true,
+                  random_ing: result
+                });
+              },
+              (error) => {
+                this.setState({
+                  is_loaded: true,
+                  error: error
+                });
+              }
+            )
+            .catch((err) => {
+              console.log('error while converting to json: ' + err);
+            });
+      })
+      .catch((err) => {
+        console.log('error while fetching: ' + err);
+      });
   }
 
   fetchSuggestions(query) {
@@ -130,11 +163,11 @@ class SearchArea extends React.Component {
           <span>Например: </span>
           <span
             className="search_area__sample_highlited"
-            data-id="4f6d5ab72c607d976200001e"
-            data-name="брокколи"
+            data-id={this.state.random_ing._id}
+            data-name={this.state.random_ing.name}
             onClick={this.onClickSample}
           >
-            брокколи
+            {this.state.random_ing.name}
           </span>
         </div>
         <div className="search_area__selected-ings">
@@ -180,7 +213,7 @@ function SuggestedIng(props) {
 
   return (
     <div
-      data-id={ing._id}
+      data-id={ing.id}
       data-name={ing.name}
       className="input-container__suggested-ingredient"
       onClick={onClick}
