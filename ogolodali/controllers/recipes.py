@@ -49,12 +49,27 @@ def read_recipe_list(ingredients_list):
 				'$size': {
 					'$setIntersection': ['$ingredient_ids', ingredients_list]
 				}
+			},
+			'ingredient_list_has_but_recipe_doesnt': {
+				'$size': {
+					'$setDifference': [ingredients_list, '$ingredient_ids']
+				}
+			},
+			'recipe_has_but_ingredient_list_doesnt': {
+				'$size': {
+					'$setDifference': ['$ingredient_ids', ingredients_list]
+				}
 			}
 		}},
 		# число совпадений с введенными ингредиентами
 		{'$match': {'matches_num': {'$gt': 0}}},
 		# выдача от наибольшего совпадения до наименьшего
-		{'$sort': {'matches_num': -1}}
+		# от наименьшего расхождения со списком ингредиентов до наибольшего
+		{'$sort': {
+			'matches_num': -1,
+			'recipe_has_but_ingredient_list_doesnt': 1,
+			'ingredient_list_has_but_recipe_doesnt': 1
+		}}
 	])
 	data = list(data)
 	if data == None:
