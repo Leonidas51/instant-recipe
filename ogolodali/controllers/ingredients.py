@@ -13,7 +13,7 @@ ingredients_bp = Blueprint('ingredients', __name__)
 @ingredients_bp.route('/ingredient/<string:name>/', methods=['GET'])
 def read_ingredient(name):
     if request.method == 'GET':
-        data = mongo.db.ingredients.find({'name':{'$regex':u'^' + name}}).limit(10)
+        data = mongo.db.ingredients.find({'name':{'$regex':u'(^' + name + '| ' + name + ')'}}).limit(10)
         if data == None:
             return jsonify(data = 'Nothing was found!'), 204
         data = [ingredient for ingredient in data]
