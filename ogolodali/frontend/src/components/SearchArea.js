@@ -16,7 +16,7 @@ class SearchArea extends React.Component {
 
     this.onChangeInput = this.onChangeInput.bind(this);
     this.onSuggestClick = this.onSuggestClick.bind(this);
-    this.onClickSample = this.onClickSample.bind(this);
+    this.onSampleClick = this.onSampleClick.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
   }
 
@@ -105,7 +105,7 @@ class SearchArea extends React.Component {
     }
   }
 
-  onClickSample(e) {
+  onSampleClick(e) {
     const sample_ing = {
       name: e.target.dataset.name,
       id: e.target.dataset.id
@@ -165,7 +165,7 @@ class SearchArea extends React.Component {
             className="search_area__sample_highlited"
             data-id={this.state.random_ing._id}
             data-name={this.state.random_ing.name}
-            onClick={this.onClickSample}
+            onClick={this.onSampleClick}
           >
             {this.state.random_ing.name}
           </span>
