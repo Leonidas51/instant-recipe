@@ -58,7 +58,6 @@ class SearchArea extends React.Component {
         return response.json();
       })
       .then(result => {
-        console.log(result);
         self.setState({suggested_ings: result});
       })
   }
