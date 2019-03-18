@@ -58,6 +58,7 @@ class SearchArea extends React.Component {
         return response.json();
       })
       .then(result => {
+        console.log(result);
         self.setState({suggested_ings: result});
       })
   }
@@ -213,7 +214,7 @@ function SuggestedIng(props) {
 
   return (
     <div
-      data-id={ing.id}
+      data-id={ing._id}
       data-name={ing.name}
       className="input-container__suggested-ingredient"
       onClick={onClick}
