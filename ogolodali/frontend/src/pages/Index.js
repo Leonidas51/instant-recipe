@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SearchArea from "../components/SearchArea";
 import "./Common.css";
 import "./Index.css";
+import FeaturedRecipes from "../components/FeaturedRecipes";
 
 class Index extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class Index extends React.Component {
           Проголодались?
         </div>
         <SearchArea />
+        <FeaturedRecipes />
       </div>
     )
   }

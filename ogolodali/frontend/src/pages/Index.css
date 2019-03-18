@@ -16,6 +16,8 @@
   -webkit-user-select: none;
 }
 
+/* search area */
+
 .input-container {
   position: relative;
 }
@@ -54,6 +56,11 @@
   -ms-user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
+}
+
+.input-container__search-link {
+  color: #1E2734;
+  text-decoration: none;
 }
 
 .input-container__search-button_inactive {
@@ -141,3 +148,44 @@
   margin-left: 16px;
   cursor: pointer;
 }
+
+/* end search area */
+
+/* feautured recipes */
+
+.featured-recipes {
+  margin: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.featured-recipes__container {
+  width: 400px;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #353D49;
+}
+
+.featured-recipes__image {
+  width: 100%;
+}
+
+.featured-recipes__name {
+  text-align: center;
+}
+
+.featured-recipes__link {
+  display: block;
+  height: 40px;
+  line-height: 30px;
+  font-size: 20px;
+  color: #F9F6F6;
+  text-decoration: none;
+  text-shadow:
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+/* end feautured recipes */
