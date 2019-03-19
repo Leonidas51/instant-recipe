@@ -11,7 +11,7 @@ class SearchArea extends React.Component {
       random_ing: "",
       input_value: [],
       suggested_ings: [],
-      selected_ings: [],
+      selected_ings: this.props.preselectedIngs || [],
     }
 
     this.onChangeInput = this.onChangeInput.bind(this);
@@ -53,12 +53,15 @@ class SearchArea extends React.Component {
   fetchSuggestions(query) {
     const self = this;
 
-    fetch(`api/ingredient/${query}`)
+    fetch(`/api/ingredient/${query}`)
       .then(response => {
         return response.json();
       })
       .then(result => {
         self.setState({suggested_ings: result});
+      })
+      .catch(err => {
+        console.log(err);
       })
   }
 
@@ -144,7 +147,10 @@ class SearchArea extends React.Component {
             onChange={this.onChangeInput}
           />
 
-          <SearchButton selected_ings={this.state.selected_ings} />
+          <SearchButton
+            selected_ings={this.state.selected_ings}
+            onClick={this.props.onGoClick || {}}
+          />
 
           <div
             className={`input-container__suggestions
@@ -159,17 +165,23 @@ class SearchArea extends React.Component {
 
           </div>
         </div>
-        <div className="search_area__sample">
-          <span>Например: </span>
-          <span
-            className="search_area__sample_highlited"
-            data-id={this.state.random_ing._id}
-            data-name={this.state.random_ing.name}
-            onClick={this.onSampleClick}
-          >
-            {this.state.random_ing.name}
-          </span>
-        </div>
+
+        {
+          this.props.showSample ? (
+            <div className="search_area__sample">
+              <span>Например: </span>
+              <span
+                className="search_area__sample_highlited"
+                data-id={this.state.random_ing._id}
+                data-name={this.state.random_ing.name}
+                onClick={this.onSampleClick}
+              >
+                {this.state.random_ing.name}
+              </span>
+            </div>
+            ) : null
+        }
+
         <div className="search_area__selected-ings">
           {
             this.state.selected_ings.map((ing, i) => {
@@ -192,7 +204,11 @@ function SearchButton(props) {
       <div
         className={"input-container__search-button input-container__search-button_active"}
       >
-        <Link className="input-container__search-link" to={"/recipes/" + selected_ings.name + "_" + selected_ings.id}>
+        <Link 
+          className="input-container__search-link"
+          to={"/recipes/" + selected_ings.name + "_" + selected_ings.id}
+          onClick={props.onClick}
+        >
           Найти рецепты
         </Link>
       </div>
