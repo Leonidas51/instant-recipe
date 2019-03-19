@@ -68,6 +68,21 @@ class SearchArea extends React.Component {
       })
   }
 
+  addIngredient(ing) {
+    if(this.checkDuplicate(ing)) {
+      this.setState({
+        input_value: '',
+        suggested_ings: []
+      });
+    } else {
+      this.setState({
+        input_value: '',
+        suggested_ings: [],
+        selected_ings: [...this.state.selected_ings, ing]
+      })
+    };
+  }
+
   checkDuplicate(ing) {
     if(this.state.selected_ings.find(element => {
       return element.id === ing.id;
@@ -96,19 +111,8 @@ class SearchArea extends React.Component {
       name: e.target.dataset.name,
       id: e.target.dataset.id
     };
-
-    if(this.checkDuplicate(new_ing)) {
-      this.setState({
-        input_value: '',
-        suggested_ings: []
-      });
-    } else {
-      this.setState({
-        input_value: '',
-        suggested_ings: [],
-        selected_ings: [...this.state.selected_ings, new_ing]
-      });
-    }
+    
+    this.addIngredient(new_ing);
   }
 
   onSuggestHover(e) {
@@ -144,30 +148,42 @@ class SearchArea extends React.Component {
 
   onInputKeyPress(e) {
     const key = e.key;
-    //console.log(this.state.suggested_ings);
-    console.log(this.state.focused_ing);
 
-    if(key === 'ArrowUp' || key === 'ArrowDown' || key === 'Enter') {
-      switch(key) {
-        case 'ArrowUp':
-          if(this.state.focused_ing > -1) {
-            this.setState((prevState) => {
-              return {focused_ing: Number(prevState.focused_ing) - 1};
-            })
+    let new_ing;
+
+    switch(key) {
+      case 'ArrowUp':
+        if(this.state.focused_ing > -1) {
+          this.setState((prevState) => {
+            return {focused_ing: Number(prevState.focused_ing) - 1};
+          })
+        }
+        break;
+
+      case 'ArrowDown':
+        if(this.state.focused_ing < this.state.suggested_ings.length - 1) {
+          this.setState((prevState) => {
+            return {focused_ing: Number(prevState.focused_ing) + 1};
+          })
+        }
+        break;
+
+      case 'Enter':
+        if(this.state.suggested_ings[this.state.focused_ing]) {
+          new_ing = {
+            name: this.state.suggested_ings[this.state.focused_ing].name,
+            id: this.state.suggested_ings[this.state.focused_ing]._id
           }
-          break;
 
-        case 'ArrowDown':
-          if(this.state.focused_ing < this.state.suggested_ings.length - 1) {
-            this.setState((prevState) => {
-              return {focused_ing: Number(prevState.focused_ing) + 1};
-            })
-          }
-          break;
+          this.addIngredient(new_ing);
+          this.setState({
+            focused_ing: -1
+          })
+        }
+        break;
 
-        case 'Enter':
-          console.log(this.state.suggested_ings[this.state.focused_ing]);
-      }
+      default:
+        return;
     }
   }
 
