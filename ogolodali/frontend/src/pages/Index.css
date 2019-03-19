@@ -120,7 +120,7 @@
   margin-top: 6px;
 }
 
-.input-container__suggested-ingredient:hover {
+.input-container__suggested-ingredient_active {
   background-color: rgba(86, 204, 242, 0.5);
 }
 
