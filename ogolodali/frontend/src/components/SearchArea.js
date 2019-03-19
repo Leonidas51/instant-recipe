@@ -207,7 +207,6 @@ function SearchButton(props) {
         <Link 
           className="input-container__search-link"
           to={"/recipes/" + selected_ings.name + "_" + selected_ings.id}
-          onClick={props.onClick}
         >
           Найти рецепты
         </Link>

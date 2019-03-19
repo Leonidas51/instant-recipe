@@ -18,7 +18,6 @@ class RecipeList extends React.Component {
                   selected_ings_ids: URL_data['selected_ings_ids']};
 
     this.onLoadMoreClick = this.onLoadMoreClick.bind(this);
-    this.onGoClick = this.onGoClick.bind(this);
   }
 
   getIngsFromURL(URL_string) {
@@ -35,8 +34,21 @@ class RecipeList extends React.Component {
     this.fetchRecipes();
   }
 
+  componentDidUpdate(prevProps) {
+    const URL_data = this.getIngsFromURL(this.props.match.params.search);
+    
+    if(prevProps.match.params.search !== this.props.match.params.search) {
+      this.setState({
+        is_loaded: false,
+        selected_ings: URL_data['selected_ings'],
+        selected_ings_ids: URL_data['selected_ings_ids']
+      }, () => {
+        this.fetchRecipes();
+      });
+    }
+  }
+
   fetchRecipes() {
-    console.log('fetchin');
     fetch(`/api/recipe_list/${this.state.selected_ings_ids}`)
     .then((response) => {
       if(response.status === 204) {
@@ -49,7 +61,6 @@ class RecipeList extends React.Component {
                 is_loaded: true,
                 recipe_list: result
               });
-              console.log(result);
             },
             (error) => {
               this.setState({
@@ -69,33 +80,6 @@ class RecipeList extends React.Component {
 
   /* dom events */
 
-  onGoClick(e) {
-    const self = this;
-
-    //this.getIngsFromURL();
-    this.fetchRecipes();
-
-    /*fetch(`/api/recipe_list/${test}`)
-      .then(function(response) {
-        if(response.status === 204) {
-          self.setState({recipe_list: "Кажется, таких рецептов у нас нет!"});
-        } else
-          response.json()
-            .then(function(data) {
-              return { status: response.status, body: data };
-            })
-            .then(function(result) {
-              self.setState({recipe_list: result.body});
-            })
-            .catch(function(err) {
-              console.log(err);
-            });
-      })
-      .catch(function(err) {
-        console.log('something wrong ' + err);
-      });*/
-  }
-
   onLoadMoreClick() {
     const ITEMS_TO_LOAD = 10;
 
@@ -113,7 +97,6 @@ class RecipeList extends React.Component {
         <SearchArea 
           showSample={false}
           preselectedIngs={this.state.selected_ings}
-          onGoClick={this.onGoClick}
         />
 
         {
