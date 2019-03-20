@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import "../pages/RecipeList.css";
+//import "../pages/RecipeList.css";
 
 
 function Recipe(props) {

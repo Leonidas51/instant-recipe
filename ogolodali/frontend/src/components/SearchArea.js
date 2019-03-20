@@ -1,5 +1,8 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import SearchButton from "./SearchButton";
+import SuggestedIng from "./SuggestedIng";
+import SelectedIng from "./SelectedIng";
 
 class SearchArea extends React.Component {
   constructor(props) {
@@ -111,7 +114,7 @@ class SearchArea extends React.Component {
       name: e.target.dataset.name,
       id: e.target.dataset.id
     };
-    
+
     this.addIngredient(new_ing);
   }
 
@@ -256,74 +259,6 @@ class SearchArea extends React.Component {
       </div>
     )
   }
-}
-
-function SearchButton(props) {
-  if (props.selected_ings.length) {
-    let selected_ings = props.selected_ings.reduce((accumulated, addition) => {
-      return {id: accumulated.id + "&" + addition.id,
-              name: accumulated.name + "&" + addition.name};
-    });
-    return (
-      <div
-        className={"input-container__search-button input-container__search-button_active"}
-      >
-        <Link 
-          className="input-container__search-link"
-          to={"/recipes/" + selected_ings.name + "_" + selected_ings.id}
-        >
-          Найти рецепты
-        </Link>
-      </div>
-    );
-  }
-  return (
-    <div
-      className={"input-container__search-button input-container__search-button_inactive"}
-    >
-      Найти рецепты
-    </div>
-  );
-}
-
-function SuggestedIng(props) {
-  const ing = props.ingredient,
-        onClick = props.onClick,
-        onMouseOver = props.onMouseOver;
-  
-  let className = 'input-container__suggested-ingredient';
-
-  className += (Number(props.count) === Number(props.focused))
-    ? ' input-container__suggested-ingredient_active'
-    : '';
-
-  return (
-    <div
-      data-id={ing._id}
-      data-name={ing.name}
-      data-count={props.count}
-      className={className}
-      onClick={onClick}
-      onMouseOver={onMouseOver}
-    >
-    {ing.name}
-    </div>
-  )
-}
-
-function SelectedIng(props) {
-  const ing = props.ingredient,
-        onDeleteClick = props.onDeleteClick;
-
-  return (
-    <div
-      data-id={ing.id}
-      className="selected-ingredient"
-    >
-      <span className="selected-ingredient__name" >{ing.name}</span>
-      <span className="selected-ingredient__delete" onClick={onDeleteClick}>✖</span>
-    </div>
-  )
 }
 
 export default SearchArea;
