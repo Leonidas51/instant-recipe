@@ -10,6 +10,7 @@ class SearchArea extends React.Component {
       is_loaded: false,
       random_ing: "",
       input_value: [],
+      focused_ing: -1,
       suggested_ings: [],
       selected_ings: this.props.preselectedIngs || [],
     }
@@ -18,6 +19,8 @@ class SearchArea extends React.Component {
     this.onSuggestClick = this.onSuggestClick.bind(this);
     this.onSampleClick = this.onSampleClick.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onInputKeyPress = this.onInputKeyPress.bind(this);
+    this.onSuggestHover = this.onSuggestHover.bind(this);
   }
 
   componentDidMount() {
@@ -65,6 +68,21 @@ class SearchArea extends React.Component {
       })
   }
 
+  addIngredient(ing) {
+    if(this.checkDuplicate(ing)) {
+      this.setState({
+        input_value: '',
+        suggested_ings: []
+      });
+    } else {
+      this.setState({
+        input_value: '',
+        suggested_ings: [],
+        selected_ings: [...this.state.selected_ings, ing]
+      })
+    };
+  }
+
   checkDuplicate(ing) {
     if(this.state.selected_ings.find(element => {
       return element.id === ing.id;
@@ -93,18 +111,13 @@ class SearchArea extends React.Component {
       name: e.target.dataset.name,
       id: e.target.dataset.id
     };
+    
+    this.addIngredient(new_ing);
+  }
 
-    if(this.checkDuplicate(new_ing)) {
-      this.setState({
-        input_value: '',
-        suggested_ings: []
-      });
-    } else {
-      this.setState({
-        input_value: '',
-        suggested_ings: [],
-        selected_ings: [...this.state.selected_ings, new_ing]
-      });
+  onSuggestHover(e) {
+    if(this.state.focused_ing !== e.target.dataset.count) {
+      this.setState({focused_ing: e.target.dataset.count});
     }
   }
 
@@ -133,6 +146,47 @@ class SearchArea extends React.Component {
     });
   }
 
+  onInputKeyPress(e) {
+    const key = e.key;
+
+    let new_ing;
+
+    switch(key) {
+      case 'ArrowUp':
+        if(this.state.focused_ing > -1) {
+          this.setState((prevState) => {
+            return {focused_ing: Number(prevState.focused_ing) - 1};
+          })
+        }
+        break;
+
+      case 'ArrowDown':
+        if(this.state.focused_ing < this.state.suggested_ings.length - 1) {
+          this.setState((prevState) => {
+            return {focused_ing: Number(prevState.focused_ing) + 1};
+          })
+        }
+        break;
+
+      case 'Enter':
+        if(this.state.suggested_ings[this.state.focused_ing]) {
+          new_ing = {
+            name: this.state.suggested_ings[this.state.focused_ing].name,
+            id: this.state.suggested_ings[this.state.focused_ing]._id
+          }
+
+          this.addIngredient(new_ing);
+          this.setState({
+            focused_ing: -1
+          })
+        }
+        break;
+
+      default:
+        return;
+    }
+  }
+
   /* end dom events */
 
   render() {
@@ -145,6 +199,7 @@ class SearchArea extends React.Component {
             placeholder="Начните вводить названия ингредиентов..."
             value={this.state.input_value}
             onChange={this.onChangeInput}
+            onKeyUp={this.onInputKeyPress}
           />
 
           <SearchButton
@@ -159,7 +214,16 @@ class SearchArea extends React.Component {
 
             {
               this.state.suggested_ings.map((ing, i) => {
-                return <SuggestedIng key={ing._id} ingredient={ing} onClick={this.onSuggestClick} />
+                return (
+                  <SuggestedIng
+                    key={ing._id}
+                    count={i}
+                    focused={this.state.focused_ing}
+                    ingredient={ing}
+                    onClick={this.onSuggestClick}
+                    onMouseOver={this.onSuggestHover} /
+                  >
+                )
               })
             }
 
@@ -224,14 +288,23 @@ function SearchButton(props) {
 
 function SuggestedIng(props) {
   const ing = props.ingredient,
-        onClick = props.onClick;
+        onClick = props.onClick,
+        onMouseOver = props.onMouseOver;
+  
+  let className = 'input-container__suggested-ingredient';
+
+  className += (Number(props.count) === Number(props.focused))
+    ? ' input-container__suggested-ingredient_active'
+    : '';
 
   return (
     <div
       data-id={ing._id}
       data-name={ing.name}
-      className="input-container__suggested-ingredient"
+      data-count={props.count}
+      className={className}
       onClick={onClick}
+      onMouseOver={onMouseOver}
     >
     {ing.name}
     </div>
