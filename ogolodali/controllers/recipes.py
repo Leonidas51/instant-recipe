@@ -49,6 +49,18 @@ def read_recipe_list(ingredients_list):
 				}},
 				# число совпадений с введенными ингредиентами
 				{'$match': {'matches_num': {'$gt': 0}}},
+				{'$addFields': {
+					'matches_percent': {
+						'$trunc': {
+							'$multiply': [
+								{'$divide': ['$matches_num', {'$size': {
+									'$setUnion': ['$ingredient_ids', ingredients_list]
+								}}]},
+								100
+							]
+						}
+					}
+				}},
 				# выдача от наибольшего совпадения до наименьшего
 				# от наименьшего расхождения со списком ингредиентов до наибольшего
 				{'$sort': {

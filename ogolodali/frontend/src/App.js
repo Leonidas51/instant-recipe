@@ -3,9 +3,8 @@ import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Recipe from "./pages/Recipe";
-import Ingredient from "./pages/Ingredient";
-
+//import Recipe from "./pages/Recipe";
+//import Ingredient from "./pages/Ingredient";
 import RecipeList from "./pages/RecipeList";
 
 class App extends React.Component {
