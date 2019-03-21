@@ -90,7 +90,7 @@ class SearchArea extends React.Component {
                 name: accumulated.name + "&" + addition.name};
       });
 
-      query = `/recipes/${query_obj.name}_${query_obj.id}`
+      query = encodeURI(`/recipes/${query_obj.name}_${query_obj.id}`)
     } else {
       query = null;
     }
