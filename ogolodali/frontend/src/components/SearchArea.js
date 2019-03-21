@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";
 import SelectedIng from "./SelectedIng";
@@ -207,10 +207,9 @@ class SearchArea extends React.Component {
           this.setState({
             focused_ing: -1
           })
+        } else if(this.state.input_value.length === 0 && this.state.search_query) {
+          this.props.history.push(this.state.search_query);
         }
-
-
-
         break;
 
       default:
@@ -288,4 +287,4 @@ class SearchArea extends React.Component {
   }
 }
 
-export default SearchArea;
+export default withRouter(SearchArea);
