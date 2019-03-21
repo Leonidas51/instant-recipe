@@ -4,8 +4,9 @@ import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 //import Recipe from "./pages/Recipe";
-//import Ingredient from "./pages/Ingredient";
 import RecipeList from "./pages/RecipeList";
+import "./reset.css";
+import "./common.css";
 
 class App extends React.Component {
   constructor(props) {
@@ -16,6 +17,10 @@ class App extends React.Component {
     return (
       <Router>
         <div>
+          {/*
+            header gang
+          */}
+
           <Switch>
             <Route exact path="/" component={Index} />
             <Route path="/about" component={About} />
@@ -24,9 +29,7 @@ class App extends React.Component {
           </Switch>
 
         {/*
-          <Link to="/">Index</Link><br />
-          <Link to="/about">About</Link><br />
-          <Link to="/recipes">Recipes</Link><br />
+          footer gang
         */}
         </div>
       </Router>

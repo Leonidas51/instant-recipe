@@ -1,0 +1,20 @@
+html {
+  font-size: 24px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #485362;
+}
+
+::-moz-selection {
+  background: #FCBC5D;
+  color: #1E2734;
+  text-shadow: none;
+}
+
+::selection {
+  background: #FCBC5D;
+  color: #1E2734;
+  text-shadow: none;
+}

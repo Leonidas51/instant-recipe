@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";
 import SelectedIng from "./SelectedIng";
+import "./SearchArea.css";
 
 class SearchArea extends React.Component {
   constructor(props) {

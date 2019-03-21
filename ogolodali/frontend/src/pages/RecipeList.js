@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SearchArea from "../components/SearchArea";
 import Recipe from "../components/Recipe";
-import "./Common.css";
 import "./RecipeList.css";
 
 class RecipeList extends React.Component {

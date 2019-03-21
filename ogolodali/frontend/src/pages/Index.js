@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SearchArea from "../components/SearchArea";
-import "./Common.css";
 import "./Index.css";
 import FeaturedRecipes from "../components/FeaturedRecipes";
 

@@ -37,8 +37,10 @@
 }
 
 .recipe__description {
+  margin-top: 5px;
   flex-grow: 1;
   font-size: 17px;
+  line-height: 22px;
 }
 
 .recipe__misc {

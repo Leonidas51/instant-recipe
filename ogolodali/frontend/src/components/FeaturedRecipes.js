@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import "./FeaturedRecipes.css";
 
 class FeaturedRecipes extends React.Component {
   constructor(props) {
