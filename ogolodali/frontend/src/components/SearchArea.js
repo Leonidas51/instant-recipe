@@ -20,6 +20,8 @@ class SearchArea extends React.Component {
       search_query: null
     }
 
+    this.input = React.createRef();
+
     this.onChangeInput = this.onChangeInput.bind(this);
     this.onSuggestClick = this.onSuggestClick.bind(this);
     this.onSampleClick = this.onSampleClick.bind(this);
@@ -142,6 +144,7 @@ class SearchArea extends React.Component {
     };
 
     this.addIngredient(new_ing);
+    this.input.current.focus();
   }
 
   onSuggestHover(e) {
@@ -172,6 +175,8 @@ class SearchArea extends React.Component {
       selected_ings: selected_ings,
       search_query: this.prepareQuery(selected_ings)
     });
+
+    this.input.current.focus();
   }
 
   onInputKeyPress(e) {
@@ -224,6 +229,7 @@ class SearchArea extends React.Component {
       <div className="search-area">
         <div className="input-container">
           <input
+            ref={this.input}
             className="input-container__input"
             type="text"
             placeholder="Начните вводить названия ингредиентов..."
