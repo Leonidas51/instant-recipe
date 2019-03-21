@@ -7,8 +7,6 @@ function Recipe(props) {
   const {rec} = props;
   const fill = rec.matches_percent;
 
-  console.log(rec);
-
   let meter_color;
 
   switch(true) {

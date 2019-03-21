@@ -17,6 +17,7 @@ class SearchArea extends React.Component {
       focused_ing: -1,
       suggested_ings: [],
       selected_ings: this.props.preselectedIngs || [],
+      search_query: null
     }
 
     this.onChangeInput = this.onChangeInput.bind(this);
@@ -28,6 +29,8 @@ class SearchArea extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({search_query: this.prepareQuery()});
+
     fetch('/api/random_ingredient/')
       .then((response) => {
         if(response.status === 204) {
@@ -72,6 +75,27 @@ class SearchArea extends React.Component {
       })
   }
 
+  prepareQuery(ings) {
+    let selected_ings,
+        query_obj = {},
+        query;
+
+    selected_ings = ings || this.state.selected_ings;
+
+    if (selected_ings.length) {
+      let query_obj = selected_ings.reduce((accumulated, addition) => {
+        return {id: accumulated.id + "&" + addition.id,
+                name: accumulated.name + "&" + addition.name};
+      });
+
+      query = `/recipes/${query_obj.name}_${query_obj.id}`
+    } else {
+      query = null;
+    }
+
+    return query;
+  }
+
   addIngredient(ing) {
     if(this.checkDuplicate(ing)) {
       this.setState({
@@ -82,7 +106,8 @@ class SearchArea extends React.Component {
       this.setState({
         input_value: '',
         suggested_ings: [],
-        selected_ings: [...this.state.selected_ings, ing]
+        selected_ings: [...this.state.selected_ings, ing],
+        search_query: this.prepareQuery([...this.state.selected_ings, ing])
       })
     };
   }
@@ -131,22 +156,21 @@ class SearchArea extends React.Component {
       id: e.target.dataset.id
     };
 
-    if(this.checkDuplicate(sample_ing)) {
-      return;
-    }
-
-    this.setState({
-      selected_ings: [...this.state.selected_ings, sample_ing]
-    });
+    this.addIngredient(sample_ing);
   }
 
   onDeleteClick(e) {
     const del_id = e.target.parentNode.dataset.id;
 
+    let selected_ings;
+
+    selected_ings = this.state.selected_ings.filter((ing) => {
+      return ing.id !== del_id;
+    })
+
     this.setState({
-      selected_ings: this.state.selected_ings.filter((ing) => {
-        return ing.id !== del_id;
-      })
+      selected_ings: selected_ings,
+      search_query: this.prepareQuery(selected_ings)
     });
   }
 
@@ -184,6 +208,9 @@ class SearchArea extends React.Component {
             focused_ing: -1
           })
         }
+
+
+
         break;
 
       default:
@@ -207,8 +234,7 @@ class SearchArea extends React.Component {
           />
 
           <SearchButton
-            selected_ings={this.state.selected_ings}
-            onClick={this.props.onGoClick || {}}
+            query={this.state.search_query}
           />
 
           <div
