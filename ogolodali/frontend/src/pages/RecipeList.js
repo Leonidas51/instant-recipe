@@ -128,14 +128,6 @@ class RecipeList extends React.Component {
               <div key={recipe._id}>
                 <Recipe rec={recipe} />
                 <hr />
-                {
-                  (i+1) % 10 === 0 ? (
-                  <div>
-                    <div>hi i'm an ad</div>
-                    <hr />
-                  </div>
-                  ) : null
-                }
               </div>
             )
           })
