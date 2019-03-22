@@ -37,7 +37,7 @@
 }
 
 .recipe__description {
-  margin-top: 5px;
+  margin-top: 10px;
   flex-grow: 1;
   font-size: 17px;
   line-height: 22px;
@@ -72,7 +72,6 @@
 .meter {
   width: 310px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
@@ -84,6 +83,7 @@
 .meter__container {
   width: 180px;
   height: 30px;
+  margin-left: 15px;
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 10px;
@@ -105,10 +105,10 @@
   transform: translateY(-50%);
 
   text-shadow:
-    -1px -1px 0 #000,  
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+    -1px -1px 0 rgba(0, 0, 0, 0.5),  
+    1px -1px 0 rgba(0, 0, 0, 0.5),
+    -1px 1px 0 rgba(0, 0, 0, 0.5),
+    1px 1px 0 rgba(0, 0, 0, 0.5);
   text-align: center;
   font-size: 18px;
   font-weight: 700;
