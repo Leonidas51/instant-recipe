@@ -85,7 +85,6 @@ class RecipeList extends React.Component {
   }
 
   loadMore() {
-    console.log('need more');
     let recipes = this.state.shown_recipes;
 
     this.state.recipe_list
@@ -94,7 +93,6 @@ class RecipeList extends React.Component {
         recipes.push(recipe);
     })
 
-    console.log(recipes.length, this.state.recipe_list.length);
     if(recipes.length >= this.state.recipe_list.length) {
       this.setState({has_more: false});
     }
@@ -109,13 +107,12 @@ class RecipeList extends React.Component {
   render() {
     const { error, is_loaded, recipe_list, selected_ings } = this.state;
 
-    return(
-      <div className="content-area_recipe-list">
-        <SearchArea
-          showSample={false}
-          preselectedIngs={selected_ings}
-        />
+    let search_result = <div className="loading">loading...</div>;
 
+    if(error) {
+      search_result = <div className="error-message">{error.message}</div>
+    } else if(is_loaded) {
+      search_result = (
         <InfiniteScroll
           pageStart={0}
           loadMore={this.loadMore}
@@ -134,6 +131,18 @@ class RecipeList extends React.Component {
         }
 
         </InfiniteScroll>
+      )
+    } 
+
+    return(
+      <div className="content-area_recipe-list">
+        <SearchArea
+          showSample={false}
+          preselectedIngs={selected_ings}
+        />
+
+        {search_result}
+
       </div>
     )
   }
