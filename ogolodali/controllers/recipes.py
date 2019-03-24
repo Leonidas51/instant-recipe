@@ -14,7 +14,7 @@ recipes_bp = Blueprint('recipe', __name__)
 def read_recipe(recipe_id):
 	if request.method == 'GET':
 		try:
-			data = mongo.db.recipes.find_one({u'numeric_id': int(recipe_id)})
+			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)})
 			if data == None:
 				return jsonify(data = 'Nothing was found!'), 204
 			return jsonify(data), 200
@@ -22,57 +22,72 @@ def read_recipe(recipe_id):
 			LOG.error('error while trying to read_recipe: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
 
-@recipes_bp.route('/recipe_list/<string:ingredients_list>/', methods=['GET'])
-def read_recipe_list(ingredients_list):
-	if request.method == 'GET':
-		try:
-			ingredients_list = ingredients_list.split('&')
-			ingredients_list = [ObjectId(ingredient) for ingredient in ingredients_list]
-			data = mongo.db.recipes.aggregate([
-				{'$match': {'published': True}},
-				{'$addFields': {
-					'matches_num': {
-						'$size': {
-							'$setIntersection': ['$ingredient_ids', ingredients_list]
-						}
-					},
-					'ingredient_list_has_but_recipe_doesnt': {
-						'$size': {
-							'$setDifference': [ingredients_list, '$ingredient_ids']
-						}
-					},
-					'recipe_has_but_ingredient_list_doesnt': {
-						'$size': {
-							'$setDifference': ['$ingredient_ids', ingredients_list]
-						}
-					}
-				}},
-				# число совпадений с введенными ингредиентами
-				{'$match': {'matches_num': {'$gt': 0}}},
-				{'$addFields': {
-					'matches_percent': {
-						'$trunc': {
-							'$multiply': [
-								{'$divide': ['$matches_num', {'$size': {
-									'$setUnion': ['$ingredient_ids', ingredients_list]
-								}}]},
-								100
-							]
-						}
-					}
-				}},
-				# выдача от наибольшего совпадения до наименьшего
-				# от наименьшего расхождения со списком ингредиентов до наибольшего
-				{'$sort': {
+# sort_type = ['difficulty, 'time', 'full-match']
+def get_pipeline(ingredients_list, sort_conditions=[]):
+	pipeline = [
+		{'$match': {'published': True}},
+		# находим количество совпадений ингредиентов
+		{'$addFields': {
+			'matches_num': {
+				'$size': {'$setIntersection': ['$ingredient_ids', ingredients_list]}
+			},
+		}},
+		# число совпадений с введенными ингредиентами
+		{'$match': {'matches_num': {'$gt': 0}}},
+		# выясняем дополнительные подробности
+		{'$addFields': {
+			'ingredient_list_has_but_recipe_doesnt': {
+				'$size': {'$setDifference': [ingredients_list, '$ingredient_ids']}
+			},
+			'recipe_has_but_ingredient_list_doesnt': {
+				'$size': {'$setDifference': ['$ingredient_ids', ingredients_list]}
+			},
+		}}
+	]
+	count_match_percent = count_match_percent = {'$addFields': {'matches_percent': {'$trunc': {
+								'$multiply': [{'$divide': [
+									'$matches_num', {'$size': '$ingredient_ids'}
+								]}, 100]
+							}}}}
+	# присутствие всех ингредиентов из поиска не обязательно
+	# от наименьшего расхождения со списком ингредиентов до наибольшего
+	sort = {'$sort': {
+				'recipe_has_but_ingredient_list_doesnt': 1,
+				'ingredient_list_has_but_recipe_doesnt': 1
+			}}
+	if 'full-match' in sort_conditions:
+		count_match_percent = {'$addFields': {'matches_percent': {'$trunc': {
+									'$multiply': [{'$divide': ['$matches_num', {'$size': {
+										'$setUnion': ['$ingredient_ids', ingredients_list]
+									}}]}, 100]
+								}}}}
+		# выдача от наибольшего совпадения до наименьшего
+		# от наименьшего расхождения со списком ингредиентов до наибольшего
+		sort = {'$sort': {
 					'matches_num': -1,
 					'recipe_has_but_ingredient_list_doesnt': 1,
 					'ingredient_list_has_but_recipe_doesnt': 1
 				}}
-			])
-			data = list(data)
-			if data == None:
-				return jsonify(data = 'Nothing was found!'), 204
-			return jsonify(data), 200
+
+	pipeline.extend([count_match_percent, sort])
+	return pipeline
+
+@recipes_bp.route('/recipe_list/<string:args>/', methods=['GET'])
+def read_recipe_list(args):
+	if request.method == 'GET':
+		try:
+			if args:
+				args = args.split('_')
+				ingredients_list = args[0].split('&')
+				ingredients_list = [ObjectId(ingredient) for ingredient in ingredients_list]
+				sort_conditions = []
+				if len(args) > 1:
+					sort_conditions = args[1].split('&')
+				data = mongo.db.recipes.aggregate(get_pipeline(ingredients_list, sort_conditions))
+				data = list(data)
+				if data == None:
+					return jsonify(data = 'Nothing was found!'), 204
+				return jsonify(data), 200
 		except Exception as e:
 			LOG.error('error while trying to read_recipe_list: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
