@@ -13,7 +13,7 @@ class Index extends React.Component {
     return (
       <div className="content-area_index">
         <div className="content-area_index__logo">
-          Проголодались?
+          Рецепт Быстрого Приготовления
         </div>
         <SearchArea showSample={true} />
         <FeaturedRecipes />
