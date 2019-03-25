@@ -8,29 +8,19 @@ import "./RecipeList.css";
 class RecipeList extends React.Component {
   constructor(props) {
     super(props);
-    const URL_data = this.getIngsFromURL(this.props.match.params.search),
-          ITEMS_ON_PAGE = 10;
 
-    this.state = {error: null,
-                  is_loaded: false,
-                  recipe_list: [],
-                  shown_recipes: [],
-                  recipes_on_page: ITEMS_ON_PAGE,
-                  has_more: false,
-                  selected_ings: URL_data['selected_ings'],
-                  selected_ings_ids: URL_data['selected_ings_ids']};
+    const ITEMS_ON_PAGE = 10;
+
+    this.state = {
+      error: null,
+      recipes_loaded: false,
+      recipe_list: [],
+      shown_recipes: [],
+      recipes_on_page: ITEMS_ON_PAGE,
+      has_more: false
+    };
 
     this.loadMore = this.loadMore.bind(this);
-  }
-
-  getIngsFromURL(URL_string) {
-    const selected_ings_arr = URL_string.split('_');
-    const selected_ings_names = selected_ings_arr[0].split('&');
-    const selected_ings_ids = selected_ings_arr[1].split('&');
-    const selected_ings = selected_ings_names.map((ing, index) => {
-      return {name: ing, id: selected_ings_ids[index]};
-    });
-    return {selected_ings: selected_ings, selected_ings_ids: selected_ings_arr[1]};
   }
 
   componentDidMount() {
@@ -38,15 +28,11 @@ class RecipeList extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const URL_data = this.getIngsFromURL(this.props.match.params.search);
-
     if(prevProps.match.params.search !== this.props.match.params.search) {
       this.setState({
-        is_loaded: false,
+        recipes_loaded: false,
         shown_recipes: [],
-        has_more: false,
-        selected_ings: URL_data['selected_ings'],
-        selected_ings_ids: URL_data['selected_ings_ids']
+        has_more: false
       }, () => {
         this.fetchRecipes();
       });
@@ -54,7 +40,7 @@ class RecipeList extends React.Component {
   }
 
   fetchRecipes() {
-    fetch(`/api/recipe_list/${this.state.selected_ings_ids}`)
+    fetch(`/api/recipe_list/${this.props.match.params.search}`)
     .then((response) => {
       if(response.status === 204) {
         this.setState({error: {message: "Кажется, таких рецептов у нас нет!"}});
@@ -63,14 +49,14 @@ class RecipeList extends React.Component {
           .then(
             (result) => {
               this.setState({
-                is_loaded: true,
+                recipes_loaded: true,
                 has_more: true,
                 recipe_list: result
               });
             },
             (error) => {
               this.setState({
-                is_loaded: true,
+                recipes_loaded: true,
                 error: error
               });
             }
@@ -105,13 +91,13 @@ class RecipeList extends React.Component {
   /* end dom events */
 
   render() {
-    const { error, is_loaded, recipe_list, selected_ings } = this.state;
+    const { error, recipes_loaded, recipe_list } = this.state;
 
     let search_result = <div className="loading">loading...</div>;
 
     if(error) {
       search_result = <div className="error-message">{error.message}</div>
-    } else if(is_loaded) {
+    } else if(recipes_loaded) {
       search_result = (
         <InfiniteScroll
           pageStart={0}
@@ -136,9 +122,11 @@ class RecipeList extends React.Component {
 
     return(
       <div className="content-area_recipe-list">
+
         <SearchArea
           showSample={false}
-          preselectedIngs={selected_ings}
+          preselectedIngs={this.props.match.params.search}
+          preselectNeeded={true}
         />
 
         {search_result}

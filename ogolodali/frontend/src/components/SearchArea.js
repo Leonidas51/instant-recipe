@@ -16,7 +16,9 @@ class SearchArea extends React.Component {
       input_value: [],
       focused_ing: -1,
       suggested_ings: [],
-      selected_ings: this.props.preselectedIngs || [],
+      selected_ings: [],
+      preselect_needed: this.props.preselectNeeded,
+      preselected_ings: this.props.preselectedIngs || null,
       search_query: null
     }
 
@@ -31,7 +33,9 @@ class SearchArea extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({search_query: this.prepareQuery()});
+    if(this.state.preselect_needed && this.state.preselected_ings) {
+      this.setIngsFromURL(this.state.preselected_ings);
+    }
 
     fetch('/api/random_ingredient/')
       .then((response) => {
@@ -62,6 +66,31 @@ class SearchArea extends React.Component {
       });
   }
 
+  componentDidUpdate() {
+    /* берем ингредиенты из урла только один раз */
+    /* и только если перешли на выдачу по прямой ссылке или через browser history */
+
+    if(this.state.preselect_needed && this.state.preselected_ings) {
+      this.setState({
+        preselected_ings: this.props.preselectedIngs,
+        preselect_needed: false,
+      }, () => {
+        this.setIngsFromURL(this.state.preselected_ings);
+      })
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps,prevState) {
+    if(nextProps.preselectedIngs !== prevState.preselected_ings) {
+      return {
+        preselected_ings: nextProps.preselectedIngs,
+        preselect_needed: true
+      }
+    }
+
+    return {};
+  }
+
   fetchSuggestions(query) {
     const self = this;
 
@@ -86,16 +115,39 @@ class SearchArea extends React.Component {
 
     if (selected_ings.length) {
       let query_obj = selected_ings.reduce((accumulated, addition) => {
-        return {id: accumulated.id + "&" + addition.id,
-                name: accumulated.name + "&" + addition.name};
+        return {id: accumulated.id + "&" + addition.id};
       });
 
-      query = encodeURI(`/recipes/${query_obj.name}_${query_obj.id}`)
+      query = encodeURI(`/recipes/${query_obj.id}`)
     } else {
       query = null;
     }
 
     return query;
+  }
+
+  setIngsFromURL(URL_string) {
+    let result_ings = [],
+        result_ings_ids = [];
+
+    fetch(`/api/ingredient_by_id/${URL_string}`)
+      .then(response => {
+        response.json()
+          .then(result => {
+            result_ings = result.map(ing => {
+              return {
+                id: ing._id,
+                name: ing.name
+              }
+            })
+
+            this.setState({
+                selected_ings: result_ings,
+                preselect_needed: false,
+                search_query: this.prepareQuery(result_ings)
+              })
+          })
+      })
   }
 
   addIngredient(ing) {
