@@ -1,6 +1,6 @@
 import os
 from flask import request, jsonify, Blueprint
-from ogolodali import mongo
+from instantrecipe import mongo
 import logger
 
 ROOT_PATH = os.environ.get('ROOT_PATH')

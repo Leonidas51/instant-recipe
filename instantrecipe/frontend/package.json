@@ -1,5 +1,5 @@
 {
-  "name": "ogolodali",
+  "name": "instantrecipe",
   "version": "1.0.0",
   "scripts": {
     "compile": "webpack-dev-server --mode development",
