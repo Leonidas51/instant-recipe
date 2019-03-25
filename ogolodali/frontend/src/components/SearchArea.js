@@ -37,33 +37,9 @@ class SearchArea extends React.Component {
       this.setIngsFromURL(this.state.preselected_ings);
     }
 
-    fetch('/api/random_ingredient/')
-      .then((response) => {
-        if(response.status === 204) {
-          this.setState({error: {message: "Ингредиенты не найдены"}});
-        } else
-          response.json()
-            .then(
-              (result) => {
-                this.setState({
-                  is_loaded: true,
-                  random_ing: result
-                });
-              },
-              (error) => {
-                this.setState({
-                  is_loaded: true,
-                  error: error
-                });
-              }
-            )
-            .catch((err) => {
-              console.log('error while converting to json: ' + err);
-            });
-      })
-      .catch((err) => {
-        console.log('error while fetching: ' + err);
-      });
+    if(this.props.showSample) {
+      this.fetchRandomIng();
+    }
   }
 
   componentDidUpdate() {
@@ -89,6 +65,34 @@ class SearchArea extends React.Component {
     }
 
     return {};
+  }
+
+  fetchRandomIng() {
+    fetch('/api/random_ingredient/')
+    .then((response) => {
+      if(response.status === 204) {
+        this.setState({error: {message: "Ингредиенты не найдены"}});
+      } else
+        response.json()
+          .then(
+            (result) => {
+              this.setState({
+                random_ing: result
+              });
+            },
+            (error) => {
+              this.setState({
+                error: error
+              });
+            }
+          )
+          .catch((err) => {
+            console.log('error while converting to json: ' + err);
+          });
+    })
+    .catch((err) => {
+      console.log('error while fetching: ' + err);
+    });
   }
 
   fetchSuggestions(query) {
