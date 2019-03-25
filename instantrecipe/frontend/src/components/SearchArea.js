@@ -158,14 +158,16 @@ class SearchArea extends React.Component {
     if(this.checkDuplicate(ing)) {
       this.setState({
         input_value: '',
-        suggested_ings: []
+        suggested_ings: [],
+        focused_ing: -1
       });
     } else {
       this.setState({
         input_value: '',
         suggested_ings: [],
         selected_ings: [...this.state.selected_ings, ing],
-        search_query: this.prepareQuery([...this.state.selected_ings, ing])
+        search_query: this.prepareQuery([...this.state.selected_ings, ing]),
+        focused_ing: -1
       })
     };
   }
@@ -265,9 +267,6 @@ class SearchArea extends React.Component {
           }
 
           this.addIngredient(new_ing);
-          this.setState({
-            focused_ing: -1
-          })
         } else if(this.state.input_value.length === 0 && this.state.search_query) {
           this.props.history.push(this.state.search_query);
         }
