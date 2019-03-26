@@ -5,6 +5,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 //import Recipe from "./pages/Recipe";
 import RecipeList from "./pages/RecipeList";
+import Header from "./components/Header";
 import "./reset.css";
 import "./common.css";
 
@@ -17,9 +18,7 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          {/*
-            header gang
-          */}
+          <Header />
 
           <Switch>
             <Route exact path="/" component={Index} />

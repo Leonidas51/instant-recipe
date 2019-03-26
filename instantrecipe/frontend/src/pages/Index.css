@@ -1,10 +1,10 @@
 .content-area_index {
   width: 850px;
-  margin: auto;
+  margin: 60px auto 20px auto;
 }
 
 .content-area_index__logo {
-  margin: 30px auto;
+  margin-bottom: 30px;
   font-size: 50px;
   font-weight: bold;
   color: #F9F6F6;
