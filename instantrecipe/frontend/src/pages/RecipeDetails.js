@@ -81,18 +81,15 @@ class RecipeDetails extends React.Component {
             <div className="recipe-information__title">{ this.state.recipe.name }</div>
             <div className="recipe-information__tags">
               {
-                console.log(this.state.recipe.tag_names)
-                /*this.state.recipe.tag_names.map((tag) => {
-                  console.log(tag);
-                })*/
-                /*
-                this.state.recipe.tag_names.map((tag, i) => {
-                  if(i < 4) {
-                    return (<p><span className="recipe-information__tags__name">{ tag }</span>,&nbsp;</p>);
-                  } else {
-                    return (<p className="recipe-information__tags__name">{ tag }</p>);
-                  }
-                })*/
+                this.state.recipe_loaded ?
+                  this.state.recipe.tag_names.map((tag, i) => {
+                    if(this.state.recipe.tag_names[i+1]) {
+                      return <span><span className="recipe-information__tags__name">{ tag }</span>,&nbsp;</span>
+                    } else {
+                      return <span className="recipe-information__tags__name">{ tag }</span>
+                    }
+                  })
+                  : null
               }
             </div>
             <div className="recipe-information__characteristics">
