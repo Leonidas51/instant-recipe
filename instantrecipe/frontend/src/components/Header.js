@@ -12,7 +12,7 @@ class Header extends React.Component {
       header_class: ''
     }
 
-    this.onScroll = throttle(this.onScroll.bind(this), 300);
+    this.onScroll = throttle(this.onScroll.bind(this), 100);
   }
 
   componentDidMount() {
