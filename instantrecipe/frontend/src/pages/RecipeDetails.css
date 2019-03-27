@@ -97,7 +97,7 @@
 
 .recipe-information__characteristics__difficulty-value {
   margin-left: 15px;
-  background-color: #ADC741;
+  /*background-color: #ADC741;*/
   text-shadow: -1px -1px 0 rgba(95,95,95, 0.5),
                 1px -1px 0 rgba(95,95,95, 0.5),
                 -1px 1px 0 rgba(95,95,95, 0.5),

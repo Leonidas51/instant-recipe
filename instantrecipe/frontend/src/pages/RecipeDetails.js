@@ -9,12 +9,12 @@ class RecipeDetails extends React.Component {
     super(props);
 
     this.difficulty = {
-      1: "элементарно",
-      2: "легко",
-      3: "не так уж и легко",
-      4: "придется попотеть",
-      5: "сложно",
-      6: "очень сложно"
+      1: ["элементарно", "#4EC44B"],
+      2: ["легко", "#ADC741"],
+      3: ["не так уж и легко", "#CEC830"],
+      4: ["придется попотеть", "#C4A24B"],
+      5: ["сложно", "#DC622D"],
+      6: ["очень сложно", "#951010"]
     }
 
     this.state = {
@@ -31,14 +31,13 @@ class RecipeDetails extends React.Component {
   fetchRecipe() {
     fetch(`/api/recipe/${this.props.match.params.details}/`)
     .then((response) => {
-      console.log(response);
       if(response.status === 204) {
-        this.setState({error: {message: "Кажется, таких рецептов у нас нет!"}});
+        this.setState({error: {message: "Кажется, такого рецепта у нас нет!"}});
       } else
         response.json()
           .then(
             (result) => {
-              console.log(result);
+              this.setIngredientEntries(result);
               this.setState({
                 recipe_loaded: true,
                 recipe: result
@@ -60,21 +59,34 @@ class RecipeDetails extends React.Component {
     });
   }
 
+  setIngredientEntries(recipe) {
+    recipe.ingredient_names.mandatory = Object.entries(recipe.ingredient_names.mandatory);
+    recipe.ingredient_names.optional = Object.entries(recipe.ingredient_names.optional);
+  }
+
   render() {
     const { error, recipe_loaded, recipe } = this.state;
 
     let search_result = <div className="loading">loading...</div>;
+    let difficulty_style = {};
 
     if(error) {
       search_result = <div className="error-message">{ error.message }</div>
     } else if(recipe_loaded) {
+      difficulty_style = {
+        backgroundColor: this.difficulty[this.state.recipe.difficulty][1]
+      }
     }
 
     return (
       <div className="content-area_recipe-details">
         <div className="recipe-top-container">
           <div className="recipe-pic-container">
+          {
+            this.state.recipe_loaded ?
             <img className="recipe-pic" src={require(`../images/kuritsa-s-ketchupom-full.jpg`)} />
+            : null
+          }
             <DownloadRecipePhotoButton/>
           </div>
           <div className="recipe-information-container">
@@ -98,15 +110,23 @@ class RecipeDetails extends React.Component {
                   Время:
                 </div>
                 <div className="recipe-information__characteristics__value recipe-information__characteristics__time-value">
-                  { this.state.recipe.cooking_time }
+                  {
+                    this.state.recipe_loaded ?
+                    this.state.recipe.cooking_time
+                    : null
+                  }
                 </div>
               </div>
               <div className="recipe-information__characteristics__item">
                 <div className="recipe-information__characteristics__text">
                   Сложность:
                 </div>
-                <div className="recipe-information__characteristics__value recipe-information__characteristics__difficulty-value">
-                  { this.difficulty[this.state.recipe.difficulty] }
+                <div style={difficulty_style} className="recipe-information__characteristics__value recipe-information__characteristics__difficulty-value">
+                  {
+                    this.state.recipe_loaded ?
+                    this.difficulty[this.state.recipe.difficulty][0]
+                    : null
+                  }
                 </div>
               </div>
               <div className="recipe-information__characteristics__item">
@@ -118,7 +138,11 @@ class RecipeDetails extends React.Component {
                     -
                   </div>
                   <div className="recipe-information__characteristics__rating-value">
-                    { this.state.recipe.rating }
+                    {
+                      this.state.recipe_loaded ?
+                      this.state.recipe.rating
+                      : null
+                    }
                   </div>
                   <div className="recipe-information__characteristics__rating-button recipe-information__characteristics__rating-plus">
                     +
@@ -130,12 +154,15 @@ class RecipeDetails extends React.Component {
         </div>
         <div className="ingredients-container">
           <div className="ingredients__mandatory">
-            <p className="ingredients__title">Ингредиенты на { this.state.recipe.serves } порции:</p>
+            <p className="ingredients__title">Ингредиенты на {
+              this.state.recipe_loaded ? this.state.recipe.serves : null } порции:</p>
             <div className="ingredients__list">
               {
-                /*this.state.recipe.ingredient_names.mandatory.map((val, i) => {
+                this.state.recipe_loaded ?
+                this.state.recipe.ingredient_names.mandatory.map((val, i) => {
                   return (<p>{i + 1}. {val[0]} {val[1]}</p>);
-                })*/
+                })
+                : null
               }
             </div>
           </div>
@@ -143,9 +170,11 @@ class RecipeDetails extends React.Component {
             <p className="ingredients__title">Можно добавить:</p>
             <div className="ingredients__list">
               {
-                /*this.state.recipe.ingredient_names.optional.map((val, i) => {
+                this.state.recipe_loaded ?
+                this.state.recipe.ingredient_names.optional.map((val, i) => {
                   return (<p>{i + 1}. {val[0]} {val[1]}</p>);
-                })*/
+                })
+                : null
               }
             </div>
           </div>
@@ -153,12 +182,20 @@ class RecipeDetails extends React.Component {
         <div className="recipe-instructions">
           <div className="section-title">Инструкции</div>
           <div className="recipe-instructions__list ">
-            { this.state.recipe.instructions_source }
+            {
+              this.state.recipe_loaded ?
+              this.state.recipe.instructions_source
+              : null
+            }
           </div>
         </div>
         <div className="recipe-source">
           <p>
-          { /*this.state.recipe.author.length ? "Источник: " + this.state.recipe.author : ""*/ }
+          {
+            this.state.recipe_loaded ?
+            this.state.recipe.author.length ? "Источник: " + this.state.recipe.author : ""
+            : null
+          }
           </p>
         </div>
         <div className="recipe-share">
