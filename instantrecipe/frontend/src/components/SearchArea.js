@@ -12,15 +12,12 @@ class SearchArea extends React.Component {
 
     this.state = {
       error: null,
-      is_loaded: false,
-      random_ing: "",
       input_value: [],
       focused_ing: -1,
       suggested_ings: [],
       selected_ings: [],
-      preselect_needed: this.props.preselectNeeded,
-      preselected_ings: this.props.preselectedIngs || null,
-      search_query: null
+      search_query: null,
+      random_ing: {},
     }
 
     this.input = React.createRef();
@@ -35,8 +32,8 @@ class SearchArea extends React.Component {
   }
 
   componentDidMount() {
-    if(this.state.preselect_needed && this.state.preselected_ings) {
-      this.setIngsFromURL(this.state.preselected_ings);
+    if(this.props.preselectedIngs) {
+      this.setIngsFromURL(this.props.preselectedIngs);
     }
 
     if(this.props.showSample) {
@@ -44,29 +41,13 @@ class SearchArea extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    /* берем ингредиенты из урла только один раз */
-    /* и только если перешли на выдачу по прямой ссылке или через browser history */
+  componentDidUpdate(prevProps) {
+    /* берем ингредиенты из урла только если перешли на выдачу */
+    /* по прямой ссылке или через browser history */
 
-    if(this.state.preselect_needed && this.state.preselected_ings) {
-      this.setState({
-        preselected_ings: this.props.preselectedIngs,
-        preselect_needed: false,
-      }, () => {
-        this.setIngsFromURL(this.state.preselected_ings);
-      })
+    if(this.props.preselectedIngs !== prevProps.preselectedIngs) {
+      this.setIngsFromURL(this.props.preselectedIngs);
     }
-  }
-
-  static getDerivedStateFromProps(nextProps,prevState) {
-    if(nextProps.preselectedIngs !== prevState.preselected_ings) {
-      return {
-        preselected_ings: nextProps.preselectedIngs,
-        preselect_needed: true
-      }
-    }
-
-    return {};
   }
 
   fetchRandomIng() {
@@ -149,7 +130,6 @@ class SearchArea extends React.Component {
 
             this.setState({
                 selected_ings: result_ings,
-                preselect_needed: false,
                 search_query: this.prepareQuery(result_ings)
               })
           })

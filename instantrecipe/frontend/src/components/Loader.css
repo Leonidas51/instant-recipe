@@ -1,0 +1,44 @@
+.loader {
+  margin: 20px auto;
+}
+
+.loader__text {
+  text-align: center;
+  color: #F9F6F6;
+}
+
+.loader__text_negative {
+  color: #1E2734;
+}
+
+.loader__spinner {
+  margin: 15px auto;
+  width: 64px;
+  height: 64px;
+}
+
+.loader__spinner:after {
+  content: " ";
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #F9F6F6;
+  border-color: #F9F6F6 transparent #F9F6F6 transparent;
+  animation: loader__spinner 1.2s linear infinite;
+}
+
+.loader__spinner_negative:after {
+  border: 5px solid #1E2734;
+  border-color: #1E2734 transparent #1E2734 transparent;
+}
+
+@keyframes loader__spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
