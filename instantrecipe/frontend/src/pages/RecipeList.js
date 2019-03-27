@@ -129,7 +129,6 @@ class RecipeList extends React.Component {
         <SearchArea
           showSample={false}
           preselectedIngs={this.props.match.params.search}
-          preselectNeeded={true}
         />
 
         {search_result}
