@@ -19,3 +19,20 @@ body {
   color: #1E2734;
   text-shadow: none;
 }
+
+.highlighted-text {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #FCBC5D;
+  color: #1E2734;
+}
+
+.highlighted-text__title {
+  margin-bottom: 10px;
+  font-size: 36px;
+  text-align: center;
+}
+
+.highlighted-text__body {
+
+}
