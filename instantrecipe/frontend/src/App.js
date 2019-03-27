@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-//import Recipe from "./pages/Recipe";
+import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
 import Header from "./components/Header";
 import "./reset.css";
@@ -24,6 +24,7 @@ class App extends React.Component {
             <Route exact path="/" component={Index} />
             <Route path="/about" component={About} />
             <Route path="/recipes/:search" component={RecipeList} />
+            <Route path="/recipe/details/:details" component={RecipeDetails} />
             <Route component={NotFound} />
           </Switch>
 

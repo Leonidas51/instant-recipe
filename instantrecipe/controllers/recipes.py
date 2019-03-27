@@ -69,7 +69,9 @@ def get_pipeline(ingredients_list, sort_conditions=[]):
 					'ingredient_list_has_but_recipe_doesnt': 1
 				}}
 
-	pipeline.extend([count_match_percent, sort])
+	limit = {'$limit' : 100}
+
+	pipeline.extend([count_match_percent, sort, limit])
 	return pipeline
 
 @recipes_bp.route('/recipe_list/<string:args>/', methods=['GET'])

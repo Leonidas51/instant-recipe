@@ -34,6 +34,7 @@ def create_app(test_config=None):
         LOG.info('running environment: %s', os.environ.get('APP_SETTINGS'))
     else:
         app.config.from_object(app_config[test_config])
+        # LOG.info('running environment: %s', test_config)
 
     mongo.init_app(app)
     app.json_encoder = JSONEncoder

@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-//import "../pages/RecipeList.css";
 
 
 function Recipe(props) {
@@ -31,7 +30,11 @@ function Recipe(props) {
         <img className="recipe__pic" src={require(`../images/kuritsa-s-ketchupom/1.png`)} />
       </div>
       <div className="recipe__information">
-        <div className="recipe__title">{rec.name}</div>
+        <Link
+          to={ encodeURI(`/recipe/details/${rec._id}`) }
+        >
+          <div className="recipe__title">{rec.name}</div>
+        </Link>
         <div className="recipe__description">
           {
             rec.instructions_source.length > 300 ?
