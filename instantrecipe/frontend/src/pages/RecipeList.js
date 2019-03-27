@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import InfiniteScroll from 'react-infinite-scroller';
 import SearchArea from "../components/SearchArea";
 import Recipe from "../components/Recipe";
+import Loader from "../components/Loader";
 import "./RecipeList.css";
 
 class RecipeList extends React.Component {
@@ -93,7 +94,9 @@ class RecipeList extends React.Component {
   render() {
     const { error, recipes_loaded, recipe_list } = this.state;
 
-    let search_result = <div className="loading">loading...</div>;
+    let search_result = (
+        <Loader text="Загружаем рецепты..." negative={false} />
+    );
 
     if(error) {
       search_result = <div className="error-message">{error.message}</div>
