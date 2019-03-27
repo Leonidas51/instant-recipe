@@ -3,19 +3,18 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import DownloadRecipePhotoButton from "../components/DownloadRecipePhotoButton"
 import "./RecipeDetails.css";
 
+const difficulty = [
+  {text:'элементарно',color:'#4EC44B'},
+  {text:'легко',color:'#ADC741'},
+  {text:'не так уж и легко',color:'#CEC830'},
+  {text:'придется попотеть',color:'#C4A24B'},
+  {text:'сложно',color:'#DC622D'},
+  {text:'очень сложно',color:'#951010'}
+]
 
 class RecipeDetails extends React.Component {
   constructor(props) {
     super(props);
-
-    this.difficulty = {
-      1: ["элементарно", "#4EC44B"],
-      2: ["легко", "#ADC741"],
-      3: ["не так уж и легко", "#CEC830"],
-      4: ["придется попотеть", "#C4A24B"],
-      5: ["сложно", "#DC622D"],
-      6: ["очень сложно", "#951010"]
-    }
 
     this.state = {
       error: null,
@@ -74,7 +73,7 @@ class RecipeDetails extends React.Component {
       search_result = <div className="error-message">{ error.message }</div>
     } else if(recipe_loaded) {
       difficulty_style = {
-        backgroundColor: this.difficulty[this.state.recipe.difficulty][1]
+        backgroundColor: difficulty[this.state.recipe.difficulty - 1].color
       }
     }
 
@@ -89,27 +88,35 @@ class RecipeDetails extends React.Component {
           }
             <DownloadRecipePhotoButton/>
           </div>
-          <div className="recipe-information-container">
+          <div className="recipe-information">
             <div className="recipe-information__title">{ this.state.recipe.name }</div>
             <div className="recipe-information__tags">
               {
                 this.state.recipe_loaded ?
                   this.state.recipe.tag_names.map((tag, i) => {
                     if(this.state.recipe.tag_names[i+1]) {
-                      return <span><span className="recipe-information__tags__name">{ tag }</span>,&nbsp;</span>
+                      return (
+                        <span key={this.state.recipe.tag_ids[i]}>
+                          <span className="recipe-information__tag-name">{ tag }</span>,&nbsp;
+                        </span>
+                      )
                     } else {
-                      return <span className="recipe-information__tags__name">{ tag }</span>
+                      return (
+                        <span key={this.state.recipe.tag_ids[i]} className="recipe-information__tag-name">
+                          { tag }
+                        </span>
+                      )
                     }
                   })
                   : null
               }
             </div>
-            <div className="recipe-information__characteristics">
-              <div className="recipe-information__characteristics__item">
-                <div className="recipe-information__characteristics__text">
+            <div className="recipe-characteristics">
+              <div className="recipe-characteristics__item">
+                <div className="recipe-characteristics__text">
                   Время:
                 </div>
-                <div className="recipe-information__characteristics__value recipe-information__characteristics__time-value">
+                <div className="recipe-characteristics__value recipe-characteristics__time-value">
                   {
                     this.state.recipe_loaded ?
                     this.state.recipe.cooking_time
@@ -117,38 +124,38 @@ class RecipeDetails extends React.Component {
                   }
                 </div>
               </div>
-              <div className="recipe-information__characteristics__item">
-                <div className="recipe-information__characteristics__text">
+              <div className="recipe-characteristics__item">
+                <div className="recipe-characteristics__text">
                   Сложность:
                 </div>
-                <div style={difficulty_style} className="recipe-information__characteristics__value recipe-information__characteristics__difficulty-value">
+                <div style={difficulty_style} className="recipe-characteristics__value recipe-characteristics__difficulty-value">
                   {
                     this.state.recipe_loaded ?
-                    this.difficulty[this.state.recipe.difficulty][0]
+                    difficulty[this.state.recipe.difficulty - 1].text
                     : null
                   }
                 </div>
               </div>
-              <div className="recipe-information__characteristics__item">
-                <div className="recipe-information__characteristics__text">
+              {/*<div className="recipe-characteristics__item">
+                <div className="recipe-characteristics__text">
                   Оценка:
                 </div>
-                <div className="recipe-information__characteristics__rating-container">
-                  <div className="recipe-information__characteristics__rating-button recipe-information__characteristics__rating-minus">
+                <div className="recipe-characteristics__rating-container">
+                  <div className="recipe-characteristics__rating-button recipe-characteristics__rating-minus">
                     -
                   </div>
-                  <div className="recipe-information__characteristics__rating-value">
+                  <div className="recipe-characteristics__rating-value">
                     {
                       this.state.recipe_loaded ?
                       this.state.recipe.rating
                       : null
                     }
                   </div>
-                  <div className="recipe-information__characteristics__rating-button recipe-information__characteristics__rating-plus">
+                  <div className="recipe-characteristics__rating-button recipe-characteristics__rating-plus">
                     +
                   </div>
                 </div>
-              </div>
+              </div>*/}
             </div>
           </div>
         </div>
@@ -160,24 +167,32 @@ class RecipeDetails extends React.Component {
               {
                 this.state.recipe_loaded ?
                 this.state.recipe.ingredient_names.mandatory.map((val, i) => {
-                  return (<p>{i + 1}. {val[0]} {val[1]}</p>);
+                  return (
+                    <p key={this.state.recipe.ingredient_ids[i]}>
+                      {i + 1}. {val[0]} {val[1]}
+                    </p>
+                  )
                 })
                 : null
               }
             </div>
           </div>
-          <div className="ingredients__additional">
-            <p className="ingredients__title">Можно добавить:</p>
-            <div className="ingredients__list">
-              {
-                this.state.recipe_loaded ?
-                this.state.recipe.ingredient_names.optional.map((val, i) => {
-                  return (<p>{i + 1}. {val[0]} {val[1]}</p>);
-                })
-                : null
-              }
-            </div>
-          </div>
+          {
+            this.state.recipe_loaded && this.state.recipe.ingredient_names.optional.length ?
+              <div className="ingredients__additional">
+                <p className="ingredients__title">Можно добавить:</p>
+                <div className="ingredients__list">
+                  {
+                    this.state.recipe.ingredient_names.optional.map((val, i) => {
+                      return (
+                        <p key={i}>{i + 1}. {val[0]} {val[1]}</p>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+              : null
+          }
         </div>
         <div className="recipe-instructions">
           <div className="section-title">Инструкции</div>
