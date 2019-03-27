@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-d
 import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";
 import SelectedIng from "./SelectedIng";
+import {debounce} from "../utils";
 import "./SearchArea.css";
 
 class SearchArea extends React.Component {
@@ -30,6 +31,7 @@ class SearchArea extends React.Component {
     this.onDeleteClick = this.onDeleteClick.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.onSuggestHover = this.onSuggestHover.bind(this);
+    this.fetchSuggestions = debounce(this.fetchSuggestions, 300);
   }
 
   componentDidMount() {
