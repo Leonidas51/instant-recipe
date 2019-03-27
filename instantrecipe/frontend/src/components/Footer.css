@@ -1,0 +1,30 @@
+.footer {
+  width: 850px;
+  margin: 0 auto 50px auto;
+}
+
+.footer__divider {
+  width: 100%;
+  color: #FFF;
+}
+
+.footer__body {
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer__section {
+  width: 50%;
+}
+
+.footer__title {
+  font-size: 30px;
+  color: #F9F6F6;
+  text-align: center;
+}
+
+.footer__link {
+  display: block;
+  color: #F9F6F6;
+  text-align: center;
+}
