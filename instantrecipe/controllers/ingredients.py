@@ -15,6 +15,7 @@ ingredients_bp = Blueprint('ingredients', __name__)
 def read_ingredient(name):
     if request.method == 'GET':
         try:
+            name = name.lower()
             data = mongo.db.ingredients.find({'name':{'$regex':u'(^' + name + '| ' + name + ')'}}).limit(10)
             if data == None:
                 return jsonify(data = 'Nothing was found!'), 204

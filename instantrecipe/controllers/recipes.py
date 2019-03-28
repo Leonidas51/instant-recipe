@@ -1,8 +1,10 @@
 import os
+import re
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint
 from instantrecipe import mongo
 import logger
+
 
 ROOT_PATH = os.environ.get('ROOT_PATH')
 LOG = logger.get_root_logger(
@@ -10,11 +12,29 @@ LOG = logger.get_root_logger(
 recipes_bp = Blueprint('recipe', __name__)
 
 
+@recipes_bp.route('/recipe/update/', methods=['GET'])
+def update_recipe(recipe_id):
+	if request.method == 'GET':
+		try:
+			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)})
+			if data == None:
+				return jsonify(data = 'Nothing was found!'), 204
+			return jsonify(data), 200
+		except Exception as e:
+			LOG.error('error while trying to read_recipe: ' + str(e))
+			return jsonify(data = 'Nothing was found!'), 204
+
+def filter_brackets(instructions):
+	match = re.search('\[[ЁёА-я]+\]', instructions, re.I)
+	if match:
+		LOG.info(match)
+
 @recipes_bp.route('/recipe/<recipe_id>/', methods=['GET'])
 def read_recipe(recipe_id):
 	if request.method == 'GET':
 		try:
 			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)})
+			filter_brackets(data['instructions_source'])
 			if data == None:
 				return jsonify(data = 'Nothing was found!'), 204
 			return jsonify(data), 200
