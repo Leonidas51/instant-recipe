@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-
 function Recipe(props) {
   const {rec} = props;
   const fill = rec.matches_percent;
@@ -30,7 +29,7 @@ function Recipe(props) {
         <Link
           to={ encodeURI(`/recipe/details/${rec._id}`) }
         >
-          <img className="recipe__pic" src={require(`../images/kuritsa-s-ketchupom/1.png`)} />
+          <img className="recipe__pic" src={require(`../../images/kuritsa-s-ketchupom/1.png`)} />
         </Link>
       </div>
       <div className="recipe__information">

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import DownloadRecipePhotoButton from "../components/DownloadRecipePhotoButton"
+import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton"
 import "./RecipeDetails.css";
 
 const difficulty = [
@@ -86,7 +86,7 @@ class RecipeDetails extends React.Component {
             <img className="recipe-pic" src={require(`../images/kuritsa-s-ketchupom-full.jpg`)} />
             : null
           }
-            <DownloadRecipePhotoButton/>
+            <UploadRecipePhotoButton/>
           </div>
           <div className="recipe-information">
             <div className="recipe-information__title">{ this.state.recipe.name }</div>

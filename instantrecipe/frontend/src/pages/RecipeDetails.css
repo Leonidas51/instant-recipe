@@ -25,7 +25,7 @@
   border-radius: 10px;
 }
 
-.recipe-pic-download-button {
+.recipe-pic-upload-button {
   position: absolute;
   bottom: 0%;
   background-color: rgba(78,196,75, 0.5);

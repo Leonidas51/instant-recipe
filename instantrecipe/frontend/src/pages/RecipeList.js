@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import InfiniteScroll from 'react-infinite-scroller';
-import SearchArea from "../components/SearchArea";
-import Recipe from "../components/Recipe";
-import Loader from "../components/Loader";
+import SearchArea from "../components/shared/SearchArea/SearchArea";
+import Loader from "../components/shared/Loader";
+import Recipe from "../components/RecipeList/Recipe";
 import "./RecipeList.css";
 
 class RecipeList extends React.Component {
