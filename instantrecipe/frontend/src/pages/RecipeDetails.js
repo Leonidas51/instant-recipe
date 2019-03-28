@@ -27,6 +27,20 @@ class RecipeDetails extends React.Component {
     this.fetchRecipe();
   }
 
+  parseServes(serves) {
+    let serves_word;
+
+    if(serves === 1) {
+      serves_word = 'порцию';
+    } else if(serves > 1 && serves < 5) {
+      serves_word = 'порции';
+    } else {
+      serves_word = 'порций';
+    }
+
+    return `${serves} ${serves_word}`;
+  }
+
   fetchRecipe() {
     fetch(`/api/recipe/${this.props.match.params.details}/`)
     .then((response) => {
@@ -161,8 +175,12 @@ class RecipeDetails extends React.Component {
         </div>
         <div className="ingredients-container">
           <div className="ingredients__mandatory">
-            <p className="ingredients__title">Ингредиенты на {
-              this.state.recipe_loaded ? this.state.recipe.serves : null } порции:</p>
+            {
+              this.state.recipe_loaded ?
+              <p className="ingredients__title">Ингредиенты на {this.parseServes(this.state.recipe.serves)}</p>
+              : null
+            }
+
             <div className="ingredients__list">
               {
                 this.state.recipe_loaded ?
