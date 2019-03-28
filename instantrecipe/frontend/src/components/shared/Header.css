@@ -29,6 +29,7 @@
 .header__link {
   display: inline-block;
   width: 140px;
+  outline-offset: 3px;
   font-size: 24px;
   color: #FCBC5D;
   text-align: center;

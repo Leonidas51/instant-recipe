@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {throttle} from "../utils/";
+import {throttle} from "../../utils/";
 import "./Header.css";
 
 class Header extends React.Component {

@@ -32,8 +32,10 @@
 }
 
 .recipe__title {
+  color: #E5E5E5;
   font-size: 26px;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .recipe__description {
@@ -41,6 +43,11 @@
   flex-grow: 1;
   font-size: 17px;
   line-height: 22px;
+}
+
+.recipe__show-more {
+  color: #FCBC5D;
+  font-size: 17px;
 }
 
 .recipe__misc {

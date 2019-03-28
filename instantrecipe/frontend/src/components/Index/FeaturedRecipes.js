@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import "./FeaturedRecipes.css";
 
 class FeaturedRecipes extends React.Component {
   constructor(props) {
@@ -29,7 +28,7 @@ class FeaturedRecipes extends React.Component {
         {this.state.featured.map((recipe) => {
           return (
             <div key={recipe.id} className="featured-recipes__container">
-              <img className="featured-recipes__image" src={require(`../images/${recipe.path}/1.png`)} />
+              <img className="featured-recipes__image" src={require(`../../images/${recipe.path}/1.png`)} />
               <div className="featured-recipes__name">
                 <Link className="featured-recipes__link" to={`/recipe/${recipe.id}/`}> {recipe.name} </Link>
               </div>

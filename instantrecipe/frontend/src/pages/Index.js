@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import SearchArea from "../components/SearchArea";
+import SearchArea from "../components/shared/SearchArea/SearchArea";
+import FeaturedRecipes from "../components/Index/FeaturedRecipes";
 import "./Index.css";
-import FeaturedRecipes from "../components/FeaturedRecipes";
 
 class Index extends React.Component {
   constructor(props) {

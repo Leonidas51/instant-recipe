@@ -5,8 +5,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/shared/Header";
+import Footer from "./components/shared/Footer";
 import "./reset.css";
 import "./common.css";
 
