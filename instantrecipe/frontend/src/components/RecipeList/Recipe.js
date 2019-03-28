@@ -41,8 +41,8 @@ function Recipe(props) {
         </Link>
         <div className="recipe__description">
           {
-            rec.instructions_source.length > 300 ?
-              rec.instructions_source.slice(0, 300) + '...' :
+            rec.instructions_source.length > 200 ?
+              rec.instructions_source.slice(0, 200) + '...' :
               rec.instructions_source
           }
           <div>
