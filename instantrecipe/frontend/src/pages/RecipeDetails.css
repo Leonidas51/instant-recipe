@@ -158,6 +158,7 @@
 
 .ingredients__list {
   font-size: 18px;
+  line-height: 20px;
 }
 
 .recipe-instructions {
@@ -174,6 +175,7 @@
 .recipe-instructions__list {
   margin-top: 15px;
   font-size: 18px;
+  line-height: 24px;
 }
 
 .recipe-source {

@@ -41,6 +41,12 @@ class RecipeDetails extends React.Component {
     return `${serves} ${serves_word}`;
   }
 
+  parseInstructions(text) {
+    return text.split('\n').map((step,i) => {
+      return <div className="recipe-instructions__step" key={i}>{step}</div>
+    })
+  }
+
   fetchRecipe() {
     fetch(`/api/recipe/${this.props.match.params.details}/`)
     .then((response) => {
@@ -55,6 +61,7 @@ class RecipeDetails extends React.Component {
                 recipe_loaded: true,
                 recipe: result
               });
+              this.parseInstructions(result.instructions_source);
             },
             (error) => {
               this.setState({
@@ -214,10 +221,10 @@ class RecipeDetails extends React.Component {
         </div>
         <div className="recipe-instructions">
           <div className="section-title">Инструкции</div>
-          <div className="recipe-instructions__list ">
+          <div className="recipe-instructions__list">
             {
               this.state.recipe_loaded ?
-              this.state.recipe.instructions_source
+              this.parseInstructions(this.state.recipe.instructions_source)
               : null
             }
           </div>
