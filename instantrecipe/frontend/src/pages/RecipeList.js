@@ -16,6 +16,8 @@ class RecipeList extends React.Component {
       error: null,
       recipes_loaded: false,
       recipe_list: [],
+      ingredient_list: null,
+      force_preselect: false,
       shown_recipes: [],
       recipes_on_page: ITEMS_ON_PAGE,
       has_more: false
@@ -26,18 +28,47 @@ class RecipeList extends React.Component {
 
   componentDidMount() {
     this.fetchRecipes();
+    this.setIngsFromURL(this.props.match.params.search);
   }
 
   componentDidUpdate(prevProps) {
+    if(this.state.force_preselect) {
+      this.setState({force_preselect: false});
+    }
+
     if(prevProps.match.params.search !== this.props.match.params.search) {
       this.setState({
         recipes_loaded: false,
         shown_recipes: [],
-        has_more: false
+        has_more: false,
       }, () => {
+        this.setIngsFromURL(this.props.match.params.search);
         this.fetchRecipes();
       });
     }
+  }
+
+  setIngsFromURL(URL_string) {
+    let result_ings = [],
+        result_ings_ids = [];
+
+    fetch(`/api/ingredient_by_id/${URL_string}`)
+      .then(response => {
+        response.json()
+          .then(result => {
+            result_ings = result.map(ing => {
+              return {
+                id: ing._id,
+                name: ing.name
+              }
+            })
+
+            this.setState({
+              ingredient_list: result_ings,
+              force_preselect: true
+            })
+          })
+      })
   }
 
   fetchRecipes() {
@@ -112,7 +143,7 @@ class RecipeList extends React.Component {
           this.state.shown_recipes.map((recipe, i) => {
             return (
               <div key={recipe._id}>
-                <Recipe rec={recipe} />
+                <Recipe rec={recipe} ings={this.state.ingredient_list} />
                 <hr />
               </div>
             )
@@ -128,7 +159,8 @@ class RecipeList extends React.Component {
 
         <SearchArea
           showSample={false}
-          preselectedIngs={this.props.match.params.search}
+          ingredientList={this.state.ingredient_list}
+          forcePreselect={this.state.force_preselect}
         />
 
         {search_result}

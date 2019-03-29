@@ -18,6 +18,7 @@ class SearchArea extends React.Component {
       selected_ings: [],
       search_query: null,
       random_ing: {},
+      preselect_required: true
     }
 
     this.input = React.createRef();
@@ -32,21 +33,23 @@ class SearchArea extends React.Component {
   }
 
   componentDidMount() {
-    if(this.props.preselectedIngs) {
-      this.setIngsFromURL(this.props.preselectedIngs);
-    }
-
     if(this.props.showSample) {
       this.fetchRandomIng();
     }
   }
 
   componentDidUpdate(prevProps) {
-    /* берем ингредиенты из урла только если перешли на выдачу */
-    /* по прямой ссылке или через browser history */
+    if(this.props.ingredientList && this.state.preselect_required) {
+      this.setState({
+        selected_ings: this.props.ingredientList,
+        preselect_required: false
+      })
+    }
+  }
 
-    if(this.props.preselectedIngs !== prevProps.preselectedIngs) {
-      this.setIngsFromURL(this.props.preselectedIngs);
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      preselect_required: nextProps.forcePreselect
     }
   }
 
@@ -111,29 +114,6 @@ class SearchArea extends React.Component {
     }
 
     return query;
-  }
-
-  setIngsFromURL(URL_string) {
-    let result_ings = [],
-        result_ings_ids = [];
-
-    fetch(`/api/ingredient_by_id/${URL_string}`)
-      .then(response => {
-        response.json()
-          .then(result => {
-            result_ings = result.map(ing => {
-              return {
-                id: ing._id,
-                name: ing.name
-              }
-            })
-
-            this.setState({
-                selected_ings: result_ings,
-                search_query: this.prepareQuery(result_ings)
-              })
-          })
-      })
   }
 
   addIngredient(ing) {

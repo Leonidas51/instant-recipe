@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import IngredientsTooltip from "./IngredientsTooltip";
 
 function Recipe(props) {
   const {rec} = props;
@@ -22,7 +23,6 @@ function Recipe(props) {
       break;
   }
 
-
   return (
     <div className="recipe">
       <div className="recipe__pic-container">
@@ -39,6 +39,7 @@ function Recipe(props) {
         >
           {rec.name}
         </Link>
+
         <div className="recipe__description">
           {
             rec.instructions_source.length > 200 ?
@@ -62,6 +63,8 @@ function Recipe(props) {
               <div className="meter__value">{fill + '%'}</div>
             </div>
           </div>
+
+          <IngredientsTooltip />
 
           <div className="recipe__time">
             <div className="recipe__time-text">Время:</div>
