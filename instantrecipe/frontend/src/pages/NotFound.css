@@ -1,0 +1,17 @@
+.content-area_not-found {
+  width: 850px;
+  margin: 80px auto 20px auto;
+  color: #F9F6F6;
+}
+
+.error__title {
+  margin-top: 200px;
+  font-size: 3em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.error__description {
+  margin-bottom: 200px;
+  text-align: center;
+}
