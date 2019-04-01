@@ -161,8 +161,8 @@ def read_recipe_ings_info(args):
 					recipe_has_but_ingredient_list_doesnt = args[1].split('&')
 					recipe_has_but_ingredient_list_doesnt = [
 						ObjectId(ingredient) for ingredient in recipe_has_but_ingredient_list_doesnt]
-
-				data = []
+				LOG.info(matches, recipe_has_but_ingredient_list_doesnt)
+				data = {}
 				if len(matches):
 					user_has_ings = mongo.db.ingredients.find({'_id': {
 						'$in': matches

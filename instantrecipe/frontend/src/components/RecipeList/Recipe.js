@@ -64,7 +64,7 @@ function Recipe(props) {
             </div>
           </div>
 
-          <IngredientsTooltip />
+          <IngredientsTooltip rec={ rec }/>
 
           <div className="recipe__time">
             <div className="recipe__time-text">Время:</div>
