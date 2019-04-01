@@ -60,7 +60,7 @@ def read_recipe(recipe_id):
 			LOG.error('error while trying to read_recipe: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
 
-# sort_type = ['difficulty, 'time', 'full-match']
+# sort_type = ['timedesc', 'timeasc', 'full-match']
 def get_pipeline(ingredients_list, sort_conditions=[]):
 	pipeline = [
 		{'$match': {'published': True}},
@@ -118,10 +118,23 @@ def get_pipeline(ingredients_list, sort_conditions=[]):
 					'recipe_has_but_ingredient_list_doesnt_size': 1,
 					'ingredient_list_has_but_recipe_doesnt_size': 1
 				}}
+	timesort = {}
+	if 'timedesc' in sort_conditions:
+		timesort = {'$sort': {
+			'cooking_time_max': -1,
+			'cooking_time_min': -1,
+		}}
+	elif 'timeasc' in sort_conditions:
+		timesort = {'$sort': {
+			'cooking_time_max': 1,
+			'cooking_time_min': 1,
+		}}
 
 	limit = {'$limit' : 100}
-
-	pipeline.extend([count_match_percent, sort, limit])
+	if not timesort:
+		pipeline.extend([count_match_percent, sort, limit])
+	else:
+		pipeline.extend([count_match_percent, sort, timesort, limit])
 	return pipeline
 
 @recipes_bp.route('/recipe_list/<string:args>/', methods=['GET'])
