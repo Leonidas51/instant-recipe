@@ -12,18 +12,24 @@ class Config(object):
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
+    FLASK_ENV = 'development'
+    FLASK_DEBUG = True
 
 
 class TestingConfig(Config):
     """Configurations for Testing, with a separate test database."""
     TESTING = True
     DEBUG = True
+    FLASK_ENV = 'development'
+    FLASK_DEBUG = True
 
 
 class ProductionConfig(Config):
     """Configurations for Production."""
     DEBUG = False
     TESTING = False
+    FLASK_ENV = 'production'
+    FLASK_DEBUG = False
 
 
 app_config = {
