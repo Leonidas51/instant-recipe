@@ -101,10 +101,9 @@
 }
 
 .ingredients-tooltip__wrap {
-  /* слой между hoverable и container чтобы сохранить hover */
   position: absolute;
-  display: block; /* change this */
-  width: 300px;
+  display: none;
+  width: 170px;
   left: -15px;
   height: 10px;
   cursor: initial;
@@ -113,11 +112,12 @@
 .ingredients-tooltip__container {
   position: absolute;
   top: 10px;
+  width: 100%;
+  box-sizing: border-box;
   padding: 8px;
   background-color: #1E2734;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  width: 170px;
   z-index: 1000;
 }
 
@@ -140,8 +140,14 @@
   line-height: 20px;
 }
 
+.ingredients-tooltip__list {
+  margin-top: 8px;
+}
+
 .ingredients-tooltip__ing {
   font-size: 14px;
+  line-height: 18px;
+  text-align: start;
 }
 
 .ingredients-tooltip__ing_included_true {
