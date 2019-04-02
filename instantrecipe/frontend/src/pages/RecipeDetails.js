@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton"
 import "./RecipeDetails.css";
 
@@ -256,4 +256,4 @@ class RecipeDetails extends React.Component {
   }
 }
 
-export default RecipeDetails;
+export default withRouter(RecipeDetails);

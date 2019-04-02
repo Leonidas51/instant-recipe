@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { CookiesProvider, withCookies } from 'react-cookie';
 import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -17,24 +18,26 @@ class App extends React.Component {
 
   render() {
     return (
-      <Router>
-        <div>
-          <Header />
+      <CookiesProvider>
+        <Router>
+          <div>
+            <Header />
 
-          <Switch>
-            <Route exact path="/" component={Index} />
-            <Route path="/about" component={About} />
-            <Route path="/recipes/:search" component={RecipeList} />
-            <Route path="/recipe/details/:details" component={RecipeDetails} />
-            <Route component={NotFound} />
-          </Switch>
+            <Switch>
+              <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
+              <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
+              <Route path="/recipes/:search" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
+              <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
+              <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
+            </Switch>
 
-          <Footer />
+            <Footer />
 
-        </div>
-      </Router>
+          </div>
+        </Router>
+      </CookiesProvider>
     )
   }
 }
 
-export default App;
+export default withCookies(App);

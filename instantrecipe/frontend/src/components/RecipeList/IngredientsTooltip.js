@@ -34,8 +34,6 @@ class IngredientsTooltip extends React.Component {
                 matched_ings: result.user_has_ings,
                 missing_ings: result.user_doesnt_have_ings
               });
-              console.log(result.user_has_ings);
-              console.log(result.user_doesnt_have_ings);
             },
             (error) => {
               this.setState({

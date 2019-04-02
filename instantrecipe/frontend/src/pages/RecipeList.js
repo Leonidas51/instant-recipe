@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import InfiniteScroll from 'react-infinite-scroller';
 import SearchArea from "../components/shared/SearchArea/SearchArea";
 import Loader from "../components/shared/Loader";
@@ -170,4 +170,4 @@ class RecipeList extends React.Component {
   }
 }
 
-export default RecipeList;
+export default withRouter(RecipeList);
