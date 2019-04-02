@@ -193,7 +193,7 @@ class RecipeDetails extends React.Component {
                 this.state.recipe_loaded ?
                 this.state.recipe.ingredient_names.mandatory.map((val, i) => {
                   return (
-                    <p key={this.state.recipe.ingredient_ids[i]}>
+                    <p key={i}>
                       {i + 1}. {val[0]} {val[1]}
                     </p>
                   )
