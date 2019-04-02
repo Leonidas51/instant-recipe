@@ -43,11 +43,11 @@ class IngredientsTooltip extends React.Component {
             }
           )
           .catch((err) => {
-            console.log('error while converting to json: ' + err);
+            console.error('error while converting to json: ' + err);
           });
     })
     .catch((err) => {
-      console.log('error while fetching: ' + err);
+      console.error('error while fetching: ' + err);
     });
   }
 
