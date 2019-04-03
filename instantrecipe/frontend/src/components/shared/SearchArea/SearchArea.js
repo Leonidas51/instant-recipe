@@ -3,12 +3,15 @@ import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-d
 import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";
 import SelectedIng from "./SelectedIng";
+import SortOption from "./SortOption";
 import {debounce} from "../../../utils";
 import "./SearchArea.css";
 
 class SearchArea extends React.Component {
   constructor(props) {
     super(props);
+
+    const sort = localStorage.getItem('sort') || '';
 
     this.state = {
       error: null,
@@ -18,11 +21,16 @@ class SearchArea extends React.Component {
       selected_ings: [],
       search_query: null,
       random_ing: {},
-      preselect_required: true
+      preselect_required: true,
+      sort_selection_shown: false,
+      selected_sort: sort,
+      selected_sort_text: this.parseSort(sort),
+      sort_hint_text: ''
     }
 
     this.input = React.createRef();
 
+    this.onWindowClick = this.onWindowClick.bind(this);
     this.onChangeInput = this.onChangeInput.bind(this);
     this.onSuggestClick = this.onSuggestClick.bind(this);
     this.onSampleClick = this.onSampleClick.bind(this);
@@ -30,12 +38,17 @@ class SearchArea extends React.Component {
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.onSuggestHover = this.onSuggestHover.bind(this);
     this.fetchSuggestions = debounce(this.fetchSuggestions, 300);
+    this.onSortTypeClick = this.onSortTypeClick.bind(this);
+    this.onSortTypeHover = this.onSortTypeHover.bind(this);
+    this.onSortClick = this.onSortClick.bind(this);
   }
 
   componentDidMount() {
     if(this.props.showSample) {
       this.fetchRandomIng();
     }
+
+    window.addEventListener('click', this.onWindowClick);
   }
 
   componentDidUpdate(prevProps) {
@@ -51,6 +64,10 @@ class SearchArea extends React.Component {
     return {
       preselect_required: nextProps.forcePreselect
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('click', this.onWindowClick);
   }
 
   fetchRandomIng() {
@@ -82,22 +99,21 @@ class SearchArea extends React.Component {
   }
 
   fetchSuggestions(query) {
-    const self = this;
-
     fetch(`/api/ingredient/${query}`)
       .then(response => {
         return response.json();
       })
       .then(result => {
-        self.setState({suggested_ings: result});
+        this.setState({suggested_ings: result});
       })
       .catch(err => {
         console.error(err);
       })
   }
 
-  prepareQuery(ings) {
+  prepareQuery(ings, sort) {
     let selected_ings,
+        selected_sort = sort || '',
         query_obj = {},
         query;
 
@@ -108,7 +124,7 @@ class SearchArea extends React.Component {
         return {id: accumulated.id + "&" + addition.id};
       });
 
-      query = encodeURI(`/recipes/${query_obj.id}`)
+      query = encodeURI(`/recipes/${query_obj.id}/${selected_sort}`);
     } else {
       query = null;
     }
@@ -128,7 +144,7 @@ class SearchArea extends React.Component {
         input_value: '',
         suggested_ings: [],
         selected_ings: [...this.state.selected_ings, ing],
-        search_query: this.prepareQuery([...this.state.selected_ings, ing]),
+        search_query: this.prepareQuery([...this.state.selected_ings, ing], this.state.selected_sort),
         focused_ing: -1
       })
     };
@@ -144,7 +160,33 @@ class SearchArea extends React.Component {
     return false;
   }
 
+  closeSort() {
+    this.setState({
+      sort_hint_text: '',
+      sort_selection_shown: false
+    });
+  }
+
+  parseSort(sort_type) {
+    switch (sort_type) {
+      case 'min-expense':
+        return 'минимальным тратам';
+      case 'full-match':
+        return 'максимальному совпадению';
+      case 'timeasc':
+        return 'времени (по возрастанию)';
+      case 'timedesc':
+        return 'времени (по убыванию)';
+      case '':
+        return 'минимальным тратам';
+    }
+  }
+
   /* dom events */
+
+  onWindowClick(e) {
+    this.closeSort();
+  }
 
   onChangeInput(e) {
     this.setState({input_value: e.target.value});
@@ -193,7 +235,7 @@ class SearchArea extends React.Component {
 
     this.setState({
       selected_ings: selected_ings,
-      search_query: this.prepareQuery(selected_ings)
+      search_query: this.prepareQuery(selected_ings, this.state.selected_sort)
     });
 
     this.input.current.focus();
@@ -239,9 +281,49 @@ class SearchArea extends React.Component {
     }
   }
 
+  onSortClick(e) {
+    e.stopPropagation();
+
+    if(this.state.sort_selection_shown) {
+      this.closeSort();
+    } else {
+      this.setState({sort_selection_shown: true});
+    }
+  }
+
+  onSortTypeClick(e) {
+    this.setState({
+      selected_sort: e.target.dataset.sortType,
+      selected_sort_text: e.target.innerHTML,
+      search_query: this.prepareQuery(this.state.selected_ings, e.target.dataset.sortType)
+    }, () => {
+      localStorage.setItem('sort', this.state.selected_sort);
+      this.props.history.push(this.state.search_query);
+    })
+  }
+
+  onSortTypeHover(e) {
+    switch(e.target.dataset.sortType) {
+      case 'min-expense':
+        this.setState({sort_hint_text: 'Подберем рецепты с наименьшим количеством недостающих ингредиентов. Идеально для тех, кто совсем не хочет идти в магазин.'});
+        break;
+      case 'full-match':
+        this.setState({sort_hint_text: 'Подберем рецепты, в которых  присутствует максимальное количество ингредиентов из выбранных.'});
+        break;
+      default:
+        this.setState({sort_hint_text: ''});
+    }
+  }
+
   /* end dom events */
 
   render() {
+    let sort_hint = this.state.sort_hint_text ? (
+      <div className="search-settings__sort-tip">
+        {this.state.sort_hint_text}
+      </div>
+    ) : null
+
     return(
       <div className="search-area">
         <div className="input-container">
@@ -305,6 +387,39 @@ class SearchArea extends React.Component {
             })
           }
         </div>
+        
+        {
+          this.props.showSettings ? (
+            <div className="search-settings">
+              <div className="search-settings__sort">
+                <span className="search-settings__sort-text">Сортировать по: </span>
+                <div className="search-settings__sort-select" onClick={this.onSortClick}>
+                  <div className="search-settings__sort-selected">
+                    {this.state.selected_sort_text}
+                    <div className="search-settings__sort-triangle"></div>
+                  </div>
+
+                  <div 
+                    className="search-settings__sort-tooltip"
+                    style={{display: this.state.sort_selection_shown ? 'block' : 'none'}}
+                  >
+                    <div className="search-settings__sort-selection">
+                      <SortOption type="min-expense" text="минимальным тратам" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
+                      <SortOption type="full-match" text="максимальному совпадению" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
+                      <SortOption type="timeasc" text="времени (по возрастанию)" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
+                      <SortOption type="timedesc" text="времени (по убыванию)" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
+                    
+                    </div>
+
+                    {sort_hint}
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          ) : null
+        }
+
       </div>
     )
   }

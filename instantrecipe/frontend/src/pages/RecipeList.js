@@ -36,7 +36,8 @@ class RecipeList extends React.Component {
       this.setState({force_preselect: false});
     }
 
-    if(prevProps.match.params.search !== this.props.match.params.search) {
+    if(prevProps.match.params.search !== this.props.match.params.search ||
+      prevProps.match.params.sort !== this.props.match.params.sort) {
       this.setState({
         recipes_loaded: false,
         shown_recipes: [],
@@ -72,7 +73,10 @@ class RecipeList extends React.Component {
   }
 
   fetchRecipes() {
-    fetch(`/api/recipe_list/${this.props.match.params.search}`)
+    const {search} = this.props.match.params,
+          sort = this.props.match.params.sort || '';
+
+    fetch(`/api/recipe_list/${this.props.match.params.search}_${this.props.match.params.sort}`)
     .then((response) => {
       if(response.status === 204) {
         this.setState({error: {message: "Кажется, таких рецептов у нас нет!"}});
@@ -159,7 +163,9 @@ class RecipeList extends React.Component {
 
         <SearchArea
           showSample={false}
+          showSettings={true}
           ingredientList={this.state.ingredient_list}
+          selectedSort={this.props.match.params.sort || '' /* get from local storage */}
           forcePreselect={this.state.force_preselect}
         />
 

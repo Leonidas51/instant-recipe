@@ -15,7 +15,7 @@ class Index extends React.Component {
         <div className="content-area_index__logo">
           Рецепт Быстрого Приготовления
         </div>
-        <SearchArea showSample={true} />
+        <SearchArea showSample={true} showSettings={false} />
         <FeaturedRecipes />
         <div className="highlighted-text">
           <div className="highlighted-text__title">Добро пожаловать!</div>
