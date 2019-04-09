@@ -165,7 +165,7 @@ class RecipeList extends React.Component {
           showSample={false}
           showSettings={true}
           ingredientList={this.state.ingredient_list}
-          selectedSort={this.props.match.params.sort || '' /* get from local storage */}
+          selectedSort={this.props.match.params.sort || ''}
           forcePreselect={this.state.force_preselect}
         />
 

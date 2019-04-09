@@ -24,8 +24,7 @@ body {
 .highlighted-text {
   padding: 20px;
   border-radius: 10px;
-  background-color: #FCBC5D;
-  color: #1E2734;
+  background-color: #353D49;
 }
 
 .highlighted-text__title {
@@ -36,4 +35,14 @@ body {
 
 .highlighted-text__body {
 
+}
+
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .highlighted-text__title {
+    font-size: 28px;
+  }
 }

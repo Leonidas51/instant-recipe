@@ -11,6 +11,7 @@
   box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3);
   font-size: 23px;
   padding-left: 9px;
+  background-color: #F9F6F6;
   color: #1E2734;
 }
 
@@ -114,10 +115,10 @@
   align-items: center;
   padding: 10px;
   margin-right: 7px;
+  margin-bottom: 7px;
 
   background-color: #6BAA72;
   color: #1E2734;
-  font-size: 18px;
   box-sizing: border-box;
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 10px;
@@ -215,4 +216,28 @@
   color: #E5E5E5;
   animation: 0.3s ease-out 0s 1 tipSlide;
   animation-fill-mode: forwards;
+}
+
+@media screen and (max-width: 768px) {
+  .input-container__input {
+    font-size: 15px;
+    height: 40px;
+  }
+
+  .input-container__search-button {
+    width: auto;
+    padding: 0px 5px 0px 5px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 15px;
+  }
+
+  .input-container__suggestions {
+    top: 35px;
+    font-size: 15px;
+  }
+
+  .search_area__sample {
+    font-size: 17px;
+  }
 }

@@ -25,7 +25,7 @@
 }
 
 .featured-recipes__container {
-  width: 400px;
+  width: 48%;
   border-radius: 5px;
   overflow: hidden;
   background-color: #353D49;
@@ -54,3 +54,28 @@
 }
 
 /* featured recipes end */
+
+
+@media screen and (max-width: 768px) {
+  .content-area_index {
+    width: 95%;
+  }
+
+  .content-area_index__logo {
+    font-size: 30px;
+    margin-bottom: 15px;
+  }
+
+  .featured-recipes {
+    flex-direction: column;
+    margin: 5px auto 10px auto;
+  }
+
+  .featured-recipes__container {
+    width: 100%;
+  }
+
+  .featured-recipes__container:not(:last-child) {
+    margin-bottom: 10px;
+  }
+}

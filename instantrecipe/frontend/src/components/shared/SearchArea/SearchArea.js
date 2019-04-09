@@ -331,7 +331,7 @@ class SearchArea extends React.Component {
             ref={this.input}
             className="input-container__input"
             type="text"
-            placeholder="Начните вводить названия ингредиентов..."
+            placeholder="Поиск по ингредиентам"
             value={this.state.input_value}
             onChange={this.onChangeInput}
             onKeyUp={this.onInputKeyPress}
