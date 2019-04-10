@@ -24,14 +24,6 @@ def update_recipe(recipe_id):
 			LOG.error('error while trying to read_recipe: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
 
-@recipes_bp.route('/update_db/', methods=['GET'])
-def update_db():
-	for recipe in mongo.db.recipes.find({}):
-		instructions_source = filter_brackets(recipe['instructions_source'])
-		result = mongo.db.test.update_one({'_id': recipe['_id']}, {'$set': {'instructions_source': instructions_source}})
-		LOG.info(result, recipe['_id'], recipe['name'])
-	return jsonify(data = 'Check me out'), 200
-
 def filter_brackets(instructions):
 	match_square_and_round_brackets = re.compile('\[[»ЁёА-я0-9 »]+\]\([A-z0-9 \/]+\)')
 	match_square_brackets = re.compile('\[[»ЁёА-я »]+\]\[[A-z \/]+\]')
@@ -47,12 +39,19 @@ def filter_brackets(instructions):
 	instructions = match_square_brackets.sub(replace_square, instructions)
 	return instructions
 
+@recipes_bp.route('/update_db/', methods=['GET'])
+def update_db():
+	for recipe in mongo.db.recipes.find({}):
+		instructions_source = filter_brackets(recipe['instructions_source'])
+		result = mongo.db.recipes.update_one({'_id': recipe['_id']}, {'$set': {'instructions_source': instructions_source}})
+
+	return jsonify(data = 'check me out'), 200
+
 @recipes_bp.route('/recipe/<recipe_id>/', methods=['GET'])
 def read_recipe(recipe_id):
 	if request.method == 'GET':
 		try:
 			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)})
-			#data['instructions_source'] = filter_brackets(data['instructions_source'])
 			if data == None:
 				return jsonify(data = 'Nothing was found!'), 204
 			return jsonify(data), 200
