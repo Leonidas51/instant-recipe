@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 function UploadRecipePhotoButton(props) {
   return (
     <div className="recipe-pic-upload-button">
-      <p>Загрузить фото</p>
+      <div className="recipe-pic-upload-button__text">Загрузить фото</div>
     </div>
   )
 }

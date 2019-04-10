@@ -175,6 +175,7 @@
   position: absolute;
   top: 5px;
   width: 285px;
+  box-sizing: border-box;
   border: 1px solid rgba(0, 0, 0, 0.6);
   border-radius: 5px;
   background-color: #1E2734;
@@ -188,6 +189,11 @@
   line-height: 27px;
   color: #FCBC5D;
   cursor: pointer;
+
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 .search-settings__sort-option:hover {
@@ -214,8 +220,20 @@
   border-radius: 5px;
   background-color: #1E2734;
   color: #E5E5E5;
+  z-index: 1;
   animation: 0.3s ease-out 0s 1 tipSlide;
   animation-fill-mode: forwards;
+}
+
+@media screen and (max-width: 768px) {
+  @keyframes tipSlide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateY(108px);
+    }
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -243,5 +261,14 @@
 
   .search-settings {
     margin-top: 0;
+  }
+
+  .search-settings__sort-tip {
+    width: 240px;
+    height: auto;
+  }
+
+  .search-settings__sort-selection {
+    width: 240px;
   }
 }
