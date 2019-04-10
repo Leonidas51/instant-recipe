@@ -11,7 +11,7 @@ class SearchArea extends React.Component {
   constructor(props) {
     super(props);
 
-    const sort = localStorage.getItem('sort') || '';
+    const sort = this.props.cookies.get('by_ing_sort') || '';
 
     this.state = {
       error: null,
@@ -297,7 +297,7 @@ class SearchArea extends React.Component {
       selected_sort_text: e.target.innerHTML,
       search_query: this.prepareQuery(this.state.selected_ings, e.target.dataset.sortType)
     }, () => {
-      localStorage.setItem('sort', this.state.selected_sort);
+      this.props.cookies.set('by_ing_sort', this.state.selected_sort);
       this.props.history.push(this.state.search_query);
     })
   }

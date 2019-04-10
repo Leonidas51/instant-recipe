@@ -162,6 +162,7 @@ class RecipeList extends React.Component {
       <div className="content-area_recipe-list">
 
         <SearchArea
+          cookies={this.props.cookies}
           showSample={false}
           showSettings={true}
           ingredientList={this.state.ingredient_list}
