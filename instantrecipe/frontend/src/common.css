@@ -21,6 +21,12 @@ body {
   text-shadow: none;
 }
 
+.content-area {
+  width: 850px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .highlighted-text {
   padding: 20px;
   border-radius: 10px;
@@ -38,10 +44,16 @@ body {
 }
 
 @media screen and (max-width: 768px) {
+  .content-area {
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 600px) {
   html {
     font-size: 14px;
   }
-  
+
   .highlighted-text__title {
     font-size: 28px;
   }

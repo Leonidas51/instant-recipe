@@ -218,7 +218,7 @@
   animation-fill-mode: forwards;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 600px) {
   .input-container__input {
     font-size: 15px;
     height: 40px;
@@ -239,5 +239,9 @@
 
   .search_area__sample {
     font-size: 17px;
+  }
+
+  .search-settings {
+    margin-top: 0;
   }
 }

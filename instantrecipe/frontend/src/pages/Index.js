@@ -11,8 +11,8 @@ class Index extends React.Component {
 
   render() {
     return (
-      <div className="content-area_index">
-        <div className="content-area_index__logo">
+      <div className="content-area content-area_index">
+        <div className="content-area__logo">
           Рецепт Быстрого Приготовления
         </div>
         <SearchArea showSample={true} showSettings={false} cookies={this.props.cookies} />

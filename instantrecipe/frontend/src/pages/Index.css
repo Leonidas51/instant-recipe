@@ -1,9 +1,8 @@
 .content-area_index {
-  width: 850px;
   margin: 60px auto 20px auto;
 }
 
-.content-area_index__logo {
+.content-area__logo {
   margin-bottom: 30px;
   font-size: 50px;
   font-weight: bold;
@@ -55,13 +54,14 @@
 
 /* featured recipes end */
 
-
 @media screen and (max-width: 768px) {
   .content-area_index {
     width: 95%;
   }
+}
 
-  .content-area_index__logo {
+@media screen and (max-width: 600px) {
+  .content-area__logo {
     font-size: 30px;
     margin-bottom: 15px;
   }

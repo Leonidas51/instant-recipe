@@ -62,9 +62,10 @@ function Recipe(props) {
               <div className="meter__fill" style={{width: fill + '%','backgroundColor': meter_color}}></div>
               <div className="meter__value">{fill + '%'}</div>
             </div>
+
+            <IngredientsTooltip rec={ rec }/>
           </div>
 
-          <IngredientsTooltip rec={ rec }/>
 
           <div className="recipe__time">
             <div className="recipe__time-text">Время:</div>

@@ -9,7 +9,7 @@ class NotFound extends React.Component {
 
   render() {
     return (
-    <div className="content-area_not-found ">
+    <div className="content-area content-area_not-found">
       <h2 className="error__title">404</h2>
       <p className="error__description">Страница не найдена!</p>
     </div>);

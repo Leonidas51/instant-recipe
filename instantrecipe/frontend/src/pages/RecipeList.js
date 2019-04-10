@@ -159,7 +159,7 @@ class RecipeList extends React.Component {
     } 
 
     return(
-      <div className="content-area_recipe-list">
+      <div className="content-area content-area_recipe-list">
 
         <SearchArea
           cookies={this.props.cookies}

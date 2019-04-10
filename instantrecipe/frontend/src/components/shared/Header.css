@@ -50,7 +50,7 @@
   fill: #FCBC5D;
 }
 
-@media screen and (max-width:768px) {
+@media screen and (max-width: 600px) {
   .header {
     height: 50px;
     opacity: 0.8;

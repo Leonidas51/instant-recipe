@@ -99,7 +99,7 @@ class RecipeDetails extends React.Component {
     }
 
     return (
-      <div className="content-area_recipe-details">
+      <div className="content-area content-area_recipe-details">
         <div className="recipe-top-container">
           <div className="recipe-pic-container">
           {
