@@ -24,23 +24,13 @@ class SearchArea extends React.Component {
       preselect_required: true,
       sort_selection_shown: false,
       selected_sort: sort,
+      highlighted_sort: null,
       selected_sort_text: this.parseSort(sort),
       sort_hint_text: ''
     }
 
     this.input = React.createRef();
-
-    this.onWindowClick = this.onWindowClick.bind(this);
-    this.onChangeInput = this.onChangeInput.bind(this);
-    this.onSuggestClick = this.onSuggestClick.bind(this);
-    this.onSampleClick = this.onSampleClick.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
-    this.onInputKeyPress = this.onInputKeyPress.bind(this);
-    this.onSuggestHover = this.onSuggestHover.bind(this);
-    this.fetchSuggestions = debounce(this.fetchSuggestions, 300);
-    this.onSortTypeClick = this.onSortTypeClick.bind(this);
-    this.onSortTypeHover = this.onSortTypeHover.bind(this);
-    this.onSortClick = this.onSortClick.bind(this);
+    this.bindEvents();
   }
 
   componentDidMount() {
@@ -68,6 +58,21 @@ class SearchArea extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('click', this.onWindowClick);
+  }
+
+  bindEvents() {
+    this.onWindowClick = this.onWindowClick.bind(this);
+    this.onChangeInput = this.onChangeInput.bind(this);
+    this.onSuggestClick = this.onSuggestClick.bind(this);
+    this.onSampleClick = this.onSampleClick.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onInputKeyPress = this.onInputKeyPress.bind(this);
+    this.onSuggestHover = this.onSuggestHover.bind(this);
+    this.fetchSuggestions = debounce(this.fetchSuggestions, 300);
+    this.onSortTypeClick = this.onSortTypeClick.bind(this);
+    this.onSortTypeHover = this.onSortTypeHover.bind(this);
+    this.onSortClick = this.onSortClick.bind(this);
+    this.onSortTypeTap = this.onSortTypeTap.bind(this);
   }
 
   fetchRandomIng() {
@@ -163,7 +168,8 @@ class SearchArea extends React.Component {
   closeSort() {
     this.setState({
       sort_hint_text: '',
-      sort_selection_shown: false
+      sort_selection_shown: false,
+      highlighted_sort: null
     });
   }
 
@@ -179,6 +185,17 @@ class SearchArea extends React.Component {
         return 'времени (по убыванию)';
       case '':
         return 'минимальным тратам';
+    }
+  }
+
+  setSortHint(type) {
+    switch(type) {
+      case 'min-expense':
+        return 'Подберем рецепты с наименьшим количеством недостающих ингредиентов. Идеально для тех, кто совсем не хочет идти в магазин.';
+      case 'full-match':
+        return 'Подберем рецепты, в которых присутствует максимальное количество ингредиентов из выбранных.';
+      default:
+        return '';
     }
   }
 
@@ -291,8 +308,24 @@ class SearchArea extends React.Component {
     }
   }
 
+  onSortTypeTap(e) {
+    e.stopPropagation();
+
+    const hint = this.setSortHint(e.target.dataset.sortType)
+
+    if(this.state.highlighted_sort === e.target.dataset.sortType || !hint) {
+      this.onSortTypeClick(e);
+    } else {
+      this.setState({
+        highlighted_sort: e.target.dataset.sortType,
+        sort_hint_text: hint
+      })
+    }
+  }
+
   onSortTypeClick(e) {
-    console.log(1);
+    this.closeSort();
+
     this.setState({
       selected_sort: e.target.dataset.sortType,
       selected_sort_text: e.target.innerHTML,
@@ -304,21 +337,16 @@ class SearchArea extends React.Component {
   }
 
   onSortTypeHover(e) {
-    switch(e.target.dataset.sortType) {
-      case 'min-expense':
-        this.setState({sort_hint_text: 'Подберем рецепты с наименьшим количеством недостающих ингредиентов. Идеально для тех, кто совсем не хочет идти в магазин.'});
-        break;
-      case 'full-match':
-        this.setState({sort_hint_text: 'Подберем рецепты, в которых  присутствует максимальное количество ингредиентов из выбранных.'});
-        break;
-      default:
-        this.setState({sort_hint_text: ''});
-    }
+    this.setState({
+      sort_hint_text: this.setSortHint(e.target.dataset.sortType)
+    })
   }
 
   /* end dom events */
 
   render() {
+    const is_touch = is_touch_screen();
+
     return(
       <div className="search-area">
         <div className="input-container">
@@ -388,8 +416,8 @@ class SearchArea extends React.Component {
             <div className="search-settings">
               <SortSelection
                 onSortClick = {this.onSortClick}
-                onSortTypeHover = {this.onSortTypeHover}
-                onSortTypeClick = {this.onSortTypeClick}
+                onSortTypeHover = {is_touch ? null : this.onSortTypeHover}
+                onSortTypeClick = {is_touch ? this.onSortTypeTap : this.onSortTypeClick}
                 selectedSortText = {this.state.selected_sort_text}
                 sortSelectionShown = {this.state.sort_selection_shown}
                 sortHintText = {this.state.sort_hint_text}
