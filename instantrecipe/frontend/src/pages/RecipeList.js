@@ -24,6 +24,7 @@ class RecipeList extends React.Component {
     };
 
     this.loadMore = this.loadMore.bind(this);
+    console.log(props);
   }
 
   componentDidMount() {

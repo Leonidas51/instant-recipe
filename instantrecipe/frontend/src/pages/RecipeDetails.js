@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
-import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton"
+import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton";
+import ScrollToTop from "../components/shared/ScrollToTop";
 import "./RecipeDetails.css";
 
 const difficulty = [
@@ -100,6 +101,7 @@ class RecipeDetails extends React.Component {
 
     return (
       <div className="content-area content-area_recipe-details">
+        <ScrollToTop />
         <div className="recipe-top-container">
           <div className="recipe-pic-container">
           {
