@@ -11,7 +11,14 @@ class SearchArea extends React.Component {
   constructor(props) {
     super(props);
 
-    const sort = this.props.cookies.get('by_ing_sort') || '';
+    let sort; 
+
+    if(this.props.cookies.get('by_ing_sort')) {
+      sort = this.props.cookies.get('by_ing_sort');
+    }  else {
+      sort = this.props.match.params.sort || 'min-expense';
+      this.props.cookies.set('by_ing_sort', 'min-expense' , {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+    }
 
     this.state = {
       error: null,
@@ -331,7 +338,7 @@ class SearchArea extends React.Component {
       selected_sort_text: e.target.innerHTML,
       search_query: this.prepareQuery(this.state.selected_ings, e.target.dataset.sortType)
     }, () => {
-      this.props.cookies.set('by_ing_sort', this.state.selected_sort);
+      this.props.cookies.set('by_ing_sort', this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
       this.props.history.push(this.state.search_query);
     })
   }
