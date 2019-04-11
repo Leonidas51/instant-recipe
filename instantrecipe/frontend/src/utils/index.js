@@ -25,3 +25,7 @@ export function debounce(fn, delay) {
     timer = setTimeout(onComplete, delay);
   }
 }
+
+export function is_touch_screen() {
+  return Boolean(('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
+}

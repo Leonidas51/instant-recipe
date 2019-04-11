@@ -51,7 +51,6 @@
 
 .recipe__misc {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
 }
 
@@ -215,6 +214,7 @@
 
   .recipe__misc {
     margin-top: 10px;
+    flex-wrap: wrap;
   }
 
   .meter {

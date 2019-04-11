@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-d
 import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";
 import SelectedIng from "./SelectedIng";
-import SortOption from "./SortOption";
-import {debounce} from "../../../utils";
+import SortSelection from "./SortSelection";
+import {debounce, is_touch_screen} from "../../../utils";
 import "./SearchArea.css";
 
 class SearchArea extends React.Component {
@@ -292,6 +292,7 @@ class SearchArea extends React.Component {
   }
 
   onSortTypeClick(e) {
+    console.log(1);
     this.setState({
       selected_sort: e.target.dataset.sortType,
       selected_sort_text: e.target.innerHTML,
@@ -318,12 +319,6 @@ class SearchArea extends React.Component {
   /* end dom events */
 
   render() {
-    let sort_hint = this.state.sort_hint_text ? (
-      <div className="search-settings__sort-tip">
-        {this.state.sort_hint_text}
-      </div>
-    ) : null
-
     return(
       <div className="search-area">
         <div className="input-container">
@@ -391,31 +386,14 @@ class SearchArea extends React.Component {
         {
           this.props.showSettings ? (
             <div className="search-settings">
-              <div className="search-settings__sort">
-                <span className="search-settings__sort-text">Сортировать по: </span>
-                <div className="search-settings__sort-select" onClick={this.onSortClick}>
-                  <div className="search-settings__sort-selected">
-                    {this.state.selected_sort_text}
-                    <div className="search-settings__sort-triangle"></div>
-                  </div>
-
-                  <div 
-                    className="search-settings__sort-tooltip"
-                    style={{display: this.state.sort_selection_shown ? 'block' : 'none'}}
-                  >
-                    <div className="search-settings__sort-selection">
-                      <SortOption type="min-expense" text="минимальным тратам" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
-                      <SortOption type="full-match" text="максимальному совпадению" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
-                      <SortOption type="timeasc" text="времени (по возрастанию)" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
-                      <SortOption type="timedesc" text="времени (по убыванию)" onHover={this.onSortTypeHover} onClick={this.onSortTypeClick} />
-                    
-                    </div>
-
-                    {sort_hint}
-                  </div>
-
-                </div>
-              </div>
+              <SortSelection
+                onSortClick = {this.onSortClick}
+                onSortTypeHover = {this.onSortTypeHover}
+                onSortTypeClick = {this.onSortTypeClick}
+                selectedSortText = {this.state.selected_sort_text}
+                sortSelectionShown = {this.state.sort_selection_shown}
+                sortHintText = {this.state.sort_hint_text}
+              />
             </div>
           ) : null
         }
