@@ -9,9 +9,30 @@ LOG = logger.get_root_logger(
 tags_bp = Blueprint('tags', __name__)
 
 
-@tags_bp.route('/tag', methods=['GET', 'POST', 'DELETE', 'PATCH'])
-def tag():
+@tags_bp.route('/tag/<string:name>/', methods=['GET'])
+def read_tag(name):
     if request.method == 'GET':
-        query = dict(request.args)
-        data = mongo.db.tags.find_one(query)
-        return jsonify(data), 200
+        try:
+            name = name.lower()
+            data = mongo.db.tags.find({'name':{'$regex':u'(^' + name + '| ' + name + ')'}}).limit(10)
+            if data == None:
+                return jsonify(data = 'Nothing was found!'), 204
+            data = sorted(list(data), key=lambda x: 'a' + x['name'] if x['name'].startswith(name) else 'b' + x['name'])
+            return jsonify(data), 200
+        except Exception as e:
+            LOG.error('error while trying to read_tag: ' + str(e))
+            return jsonify(data = 'Nothing was found!'), 204
+
+@tags_bp.route('/random_tag/', methods=['GET'])
+def read_random_tag():
+    if request.method == 'GET':
+        try:
+            data = mongo.db.tags.aggregate([{ '$sample': {'size': 1} }])
+            data = list(data)
+            if data == None or len(data) == 0:
+                return jsonify(data = 'Nothing was found!'), 204
+            data = data[0]
+            return jsonify(data), 200
+        except Exception as e:
+            LOG.error('error while trying to read_random_tag: ' + str(e))
+            return jsonify(data = 'Nothing was found!'), 204
