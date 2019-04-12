@@ -190,7 +190,8 @@
 .search-settings__sort-option {
   padding-left: 8px;
   height: 27px;
-  line-height: 27px;
+  display: flex;
+  align-items: center;
   color: #FCBC5D;
   cursor: pointer;
 
