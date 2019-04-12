@@ -26,7 +26,7 @@ class App extends React.Component {
             <Switch>
               <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
               <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
-              <Route path="/recipes/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
+              <Route path="/recipes/:mode/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
