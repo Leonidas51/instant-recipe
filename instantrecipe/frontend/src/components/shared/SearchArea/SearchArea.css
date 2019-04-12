@@ -280,7 +280,7 @@
   transition: 0.3s;
 }
 
-.search-types__arrows_reverse {
+.search-types_open .search-types__arrows {
   transform: rotate(180deg);
 }
 

@@ -13,24 +13,28 @@ class SearchArea extends React.Component {
   constructor(props) {
     super(props);
 
-    const sort = this.props.cookies.get('by_ing_sort') || this.props.match.params.sort || 'min-expense';
+    const search_type =  this.props.match.params.type || this.props.cookies.get('search_type') || 'by_ings',
+          by_ing_sort = this.props.match.params.sort || this.props.cookies.get('by_ing_sort') || 'min-expense';
 
-    this.props.cookies.set('by_ing_sort', sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+    this.props.cookies.set('by_ing_sort', by_ing_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+    this.props.cookies.set('search_type', search_type, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
 
     this.state = {
       error: null,
-      mode: 'by_ings',
+      search_type: search_type,
       input_value: [],
       suggestions: [],
       focused_suggestion: -1,
       selected_ings: [],
+      selected_tags: [],
       search_query: null,
+      types_open: false,
       random_ing: {},
       preselect_required: true,
       sort_selection_shown: false,
-      selected_sort: sort,
+      selected_sort: by_ing_sort,
       highlighted_sort: null,
-      selected_sort_text: this.parseSort(sort),
+      selected_sort_text: this.parseSort(by_ing_sort),
       sort_hint_text: ''
     }
 
@@ -73,11 +77,14 @@ class SearchArea extends React.Component {
     this.onDeleteClick = this.onDeleteClick.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.onSuggestHover = this.onSuggestHover.bind(this);
-    this.fetchSuggestions = debounce(this.fetchSuggestions, 300);
+    this.fetchSuggestedIngs = debounce(this.fetchSuggestedIngs, 300);
+    this.fetchSuggestedTags = debounce(this.fetchSuggestedTags, 300);
     this.onSortTypeClick = this.onSortTypeClick.bind(this);
     this.onSortTypeHover = this.onSortTypeHover.bind(this);
     this.onSortClick = this.onSortClick.bind(this);
     this.onSortTypeTap = this.onSortTypeTap.bind(this);
+    this.onTypesBottomClick = this.onTypesBottomClick.bind(this);
+    this.onSearchTypeChange = this.onSearchTypeChange.bind(this);
   }
 
   fetchRandomIng() {
@@ -108,7 +115,7 @@ class SearchArea extends React.Component {
     });
   }
 
-  fetchSuggestions(query) {
+  fetchSuggestedIngs(query) {
     fetch(`/api/ingredient/${query}`)
       .then(response => {
         return response.json();
@@ -121,7 +128,11 @@ class SearchArea extends React.Component {
       })
   }
 
-  prepareQuery(ings, sort) {
+  fetchSuggestedTags(query) {
+    return;
+  }
+
+  prepareQueryIngs(ings, sort) {
     let selected_ings,
         selected_sort = sort || '',
         query_obj = {},
@@ -130,16 +141,36 @@ class SearchArea extends React.Component {
     selected_ings = ings || this.state.selected_ings;
 
     if (selected_ings.length) {
-      let query_obj = selected_ings.reduce((accumulated, addition) => {
+      query_obj = selected_ings.reduce((accumulated, addition) => {
         return {id: accumulated.id + "&" + addition.id};
       });
 
-      query = encodeURI(`/recipes/${this.state.mode}/${query_obj.id}/${selected_sort}`);
-    } else {
-      query = null;
+      return encodeURI(`/recipes/by_ings/${query_obj.id}/${selected_sort}`);
     }
 
-    return query;
+    return null;
+  }
+
+  prepareQueryName(val, sort) {
+    const selected_sort = sort || '';
+
+    if(val === '') {
+      return null;
+    }
+
+    return encodeURI(`/recipes/by_name/${val}/${selected_sort}`)
+  }
+
+  prepareQueryTags(tags, sort) {
+    let query_obj;
+
+    if(tags.length) {
+      query_obj = tags.reduce((accumulated, addition) => {
+        return {id: accumulated.id + "&" + addition.id};
+      });
+    }
+
+    return null;
   }
 
   addIngredient(ing) {
@@ -154,7 +185,7 @@ class SearchArea extends React.Component {
         input_value: '',
         suggestions: [],
         selected_ings: [...this.state.selected_ings, ing],
-        search_query: this.prepareQuery([...this.state.selected_ings, ing], this.state.selected_sort),
+        search_query: this.prepareQueryIngs([...this.state.selected_ings, ing], this.state.selected_sort),
         focused_suggestion: -1
       })
     };
@@ -204,6 +235,19 @@ class SearchArea extends React.Component {
     }
   }
 
+  parseSearchType(type) {
+    switch(type) {
+      case 'by_ings':
+        return 'Поиск по ингредиентам';
+      case 'by_name':
+        return 'Поиск по названию';
+      case 'by_tags':
+        return 'Поиск по тегам';
+      default:
+        return '';
+    }
+  }
+
   /* dom events */
 
   onWindowClick(e) {
@@ -218,7 +262,22 @@ class SearchArea extends React.Component {
       return;
     }
 
-    this.fetchSuggestions(e.target.value);
+    switch(this.state.search_type) {
+      case 'by_ings':
+        this.fetchSuggestedIngs(e.target.value);
+        break;
+      case 'by_name':
+        this.setState({
+          search_query: this.prepareQueryName(e.target.value)
+        })
+      case 'by_tags':
+        this.fetchSuggestedTags(e.target.value);
+        break;
+      default:
+        this.setState({
+          search_query: this.prepareQueryName(e.target.value)
+        })
+    }
   }
 
   onSuggestClick(e) {
@@ -257,7 +316,7 @@ class SearchArea extends React.Component {
 
     this.setState({
       selected_ings: selected_ings,
-      search_query: this.prepareQuery(selected_ings, this.state.selected_sort)
+      search_query: this.prepareQueryIngs(selected_ings, this.state.selected_sort)
     });
 
     this.input.current.focus();
@@ -329,21 +388,52 @@ class SearchArea extends React.Component {
   }
 
   onSortTypeClick(e) {
+    let query;
+
     this.closeSort();
 
-    this.setState({
-      selected_sort: e.target.dataset.sortType,
-      selected_sort_text: e.target.innerHTML,
-      search_query: this.prepareQuery(this.state.selected_ings, e.target.dataset.sortType)
-    }, () => {
-      this.props.cookies.set('by_ing_sort', this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
-      this.props.history.push(this.state.search_query);
-    })
+    switch(this.state.search_type) {
+      case 'by_ings':
+        query = this.prepareQueryIngs(this.state.selected_ings, e.target.dataset.sortType);
+
+        this.setState({
+          selected_sort: e.target.dataset.sortType,
+          selected_sort_text: e.target.innerHTML,
+          search_query: query
+        }, () => {
+          this.props.cookies.set('by_ing_sort', this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+          this.props.history.push(this.state.search_query);
+        })
+
+        break;
+      case 'by_name':
+        query = this.prepareQueryName(this.state.input_value, e.target.dataset.sortType);
+        break;
+      case 'by_tags':
+        query = this.prepareQueryTags(this.state.selected_tags, e.target.dataset.sortType);
+        break;
+      default:
+        return '';
+    }
   }
 
   onSortTypeHover(e) {
     this.setState({
       sort_hint_text: this.setSortHint(e.target.dataset.sortType)
+    })
+  }
+
+  onTypesBottomClick(e) {
+    this.setState(prevState => {
+      return {types_open: !prevState.types_open};
+    })
+  }
+
+  onSearchTypeChange(e) {
+    this.props.cookies.set('search_type', e.target.value, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+    this.setState({
+      search_type: e.target.value,
+      selected_ings: []
     })
   }
 
@@ -359,7 +449,7 @@ class SearchArea extends React.Component {
             ref={this.input}
             className="input-container__input"
             type="text"
-            placeholder="Поиск по ингредиентам"
+            placeholder={this.parseSearchType(this.state.search_type)}
             value={this.state.input_value}
             onChange={this.onChangeInput}
             onKeyUp={this.onInputKeyPress}
@@ -391,14 +481,26 @@ class SearchArea extends React.Component {
 
           </div>
 
-          <div className="search-types">
+          <div className={"search-types" + (this.state.types_open ? " search-types_open" : "")}>
             <div className="search-types__selection">
-              <RadioButton text="По ингредиентам" name="search-type" checked={true} negative={true} />
-              <RadioButton text="По названию" name="search-type" checked={false} negative={true} />
-              <RadioButton text="По тегам" name="search-type" checked={false} negative={true} />
+              <RadioButton
+                name="search-type" value="by_ings"
+                onChange={this.onSearchTypeChange} checked={this.state.search_type === 'by_ings'}
+                negative={true} text="По ингредиентам"
+              />
+              <RadioButton 
+                name="search-type" value="by_name"
+                onChange={this.onSearchTypeChange} checked={this.state.search_type === 'by_name'}
+                negative={true} text="По названию"
+              />
+              <RadioButton
+                name="search-type" value="by_tags"
+                onChange={this.onSearchTypeChange} checked={this.state.search_type === 'by_tags'}
+                negative={true} text="По тегам"
+              />
             </div>
             <div className="search-types__divider"></div>
-            <div className="search-types__bottom">
+            <div className="search-types__bottom" onClick={this.onTypesBottomClick}>
               <svg className="search-types__arrows">
                 <use xlinkHref="#two-arrows" />
               </svg>
@@ -407,7 +509,7 @@ class SearchArea extends React.Component {
         </div>
 
         {
-          this.props.showSample ? (
+          this.props.showSample && this.state.search_type !== 'by_name' ? (
             <div className="search_area__sample">
               <span>Например: </span>
               <span
@@ -434,6 +536,7 @@ class SearchArea extends React.Component {
           this.props.showSettings ? (
             <div className="search-settings">
               <SortSelection
+                searchByIngs = {this.state.search_type === 'by_ings'}
                 onSortClick = {this.onSortClick}
                 onSortTypeHover = {is_touch ? null : this.onSortTypeHover}
                 onSortTypeClick = {is_touch ? this.onSortTypeTap : this.onSortTypeClick}

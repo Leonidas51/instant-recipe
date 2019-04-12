@@ -22,8 +22,14 @@ function SortSelection(props) {
           style={{display: props.sortSelectionShown ? 'block' : 'none'}}
         >
           <div className="search-settings__sort-selection">
-            <SortOption type="min-expense" text="минимальным тратам" onHover={props.onSortTypeHover} onClick={props.onSortTypeClick} />
-            <SortOption type="full-match" text="максимальному совпадению" onHover={props.onSortTypeHover} onClick={props.onSortTypeClick} />
+            {
+              props.searchByIngs ?
+                <div>
+                  <SortOption type="min-expense" text="минимальным тратам" onHover={props.onSortTypeHover} onClick={props.onSortTypeClick} />
+                  <SortOption type="full-match" text="максимальному совпадению" onHover={props.onSortTypeHover} onClick={props.onSortTypeClick} />
+                </div>
+              : null
+            }
             <SortOption type="timeasc" text="времени (по возрастанию)" onHover={props.onSortTypeHover} onClick={props.onSortTypeClick} />
             <SortOption type="timedesc" text="времени (по убыванию)" onHover={props.onSortTypeHover} onClick={props.onSortTypeClick} />
           </div>

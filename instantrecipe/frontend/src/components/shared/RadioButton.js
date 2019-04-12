@@ -9,7 +9,13 @@ function RadioButton(props) {
   return(
     <label className={class_name}>
       {props.text}
-      <input name={props.name} type="radio" checked={props.checked} />
+      <input 
+        name={props.name}
+        value={props.value}
+        type="radio"
+        checked={props.checked}
+        onChange={props.onChange}
+      />
       <span className="radio-button__input"></span>
     </label>
   )
