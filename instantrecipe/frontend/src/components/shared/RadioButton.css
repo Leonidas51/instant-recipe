@@ -1,0 +1,46 @@
+.radio-button {
+  position: relative;
+  cursor: pointer;
+  padding-left: 20px;
+}
+
+.radio-button_negative {
+  color: #1E2734;
+}
+
+.radio-button > input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-button__input {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid #485362;
+  border-radius: 50%;
+  background-color: #EAE5E5;
+}
+
+.radio-button__input:after {
+  content: "";
+  position: absolute;
+  display: none;
+  width: 6px;
+  height: 6px;
+  top: 4px;
+  left: 4px;
+  border-radius: 50%;
+  color: #1E2734;
+  background-color: #1E2734;
+}
+
+.radio-button > input:checked ~ .radio-button__input:after {
+  display: block;
+}

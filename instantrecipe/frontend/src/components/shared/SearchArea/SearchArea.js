@@ -4,27 +4,25 @@ import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";
 import SelectedIng from "./SelectedIng";
 import SortSelection from "./SortSelection";
+import RadioButton from "../RadioButton";
 import {debounce, is_touch_screen} from "../../../utils";
 import "./SearchArea.css";
+import TwoArrows from "../../../icons/two-arrows.svg"
 
 class SearchArea extends React.Component {
   constructor(props) {
     super(props);
 
-    let sort; 
+    const sort = this.props.cookies.get('by_ing_sort') || this.props.match.params.sort || 'min-expense';
 
-    if(this.props.cookies.get('by_ing_sort')) {
-      sort = this.props.cookies.get('by_ing_sort');
-    }  else {
-      sort = this.props.match.params.sort || 'min-expense';
-      this.props.cookies.set('by_ing_sort', 'min-expense' , {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
-    }
+    this.props.cookies.set('by_ing_sort', sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
 
     this.state = {
       error: null,
+      mode: 'by_ings',
       input_value: [],
-      focused_ing: -1,
-      suggested_ings: [],
+      suggestions: [],
+      focused_suggestion: -1,
       selected_ings: [],
       search_query: null,
       random_ing: {},
@@ -49,7 +47,7 @@ class SearchArea extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if(this.props.ingredientList && this.state.preselect_required) {
+    if(this.state.preselect_required && this.props.ingredientList) {
       this.setState({
         selected_ings: this.props.ingredientList,
         preselect_required: false
@@ -116,7 +114,7 @@ class SearchArea extends React.Component {
         return response.json();
       })
       .then(result => {
-        this.setState({suggested_ings: result});
+        this.setState({suggestions: result});
       })
       .catch(err => {
         console.error(err);
@@ -136,7 +134,7 @@ class SearchArea extends React.Component {
         return {id: accumulated.id + "&" + addition.id};
       });
 
-      query = encodeURI(`/recipes/${query_obj.id}/${selected_sort}`);
+      query = encodeURI(`/recipes/${this.state.mode}/${query_obj.id}/${selected_sort}`);
     } else {
       query = null;
     }
@@ -148,16 +146,16 @@ class SearchArea extends React.Component {
     if(this.checkDuplicate(ing)) {
       this.setState({
         input_value: '',
-        suggested_ings: [],
-        focused_ing: -1
+        suggestions: [],
+        focused_suggestion: -1
       });
     } else {
       this.setState({
         input_value: '',
-        suggested_ings: [],
+        suggestions: [],
         selected_ings: [...this.state.selected_ings, ing],
         search_query: this.prepareQuery([...this.state.selected_ings, ing], this.state.selected_sort),
-        focused_ing: -1
+        focused_suggestion: -1
       })
     };
   }
@@ -216,7 +214,7 @@ class SearchArea extends React.Component {
     this.setState({input_value: e.target.value});
 
     if(!e.target.value) {
-      this.setState({suggested_ings: []});
+      this.setState({suggestions: []});
       return;
     }
 
@@ -234,8 +232,8 @@ class SearchArea extends React.Component {
   }
 
   onSuggestHover(e) {
-    if(this.state.focused_ing !== e.target.dataset.count) {
-      this.setState({focused_ing: e.target.dataset.count});
+    if(this.state.focused_suggestion !== e.target.dataset.count) {
+      this.setState({focused_suggestion: e.target.dataset.count});
     }
   }
 
@@ -272,26 +270,26 @@ class SearchArea extends React.Component {
 
     switch(key) {
       case 'ArrowUp':
-        if(this.state.focused_ing > -1) {
+        if(this.state.focused_suggestion > -1) {
           this.setState((prevState) => {
-            return {focused_ing: Number(prevState.focused_ing) - 1};
+            return {focused_suggestion: Number(prevState.focused_suggestion) - 1};
           })
         }
         break;
 
       case 'ArrowDown':
-        if(this.state.focused_ing < this.state.suggested_ings.length - 1) {
+        if(this.state.focused_suggestion < this.state.suggestions.length - 1) {
           this.setState((prevState) => {
-            return {focused_ing: Number(prevState.focused_ing) + 1};
+            return {focused_suggestion: Number(prevState.focused_suggestion) + 1};
           })
         }
         break;
 
       case 'Enter':
-        if(this.state.suggested_ings[this.state.focused_ing]) {
+        if(this.state.suggestions[this.state.focused_suggestion]) {
           new_ing = {
-            name: this.state.suggested_ings[this.state.focused_ing].name,
-            id: this.state.suggested_ings[this.state.focused_ing]._id
+            name: this.state.suggestions[this.state.focused_suggestion].name,
+            id: this.state.suggestions[this.state.focused_suggestion]._id
           }
 
           this.addIngredient(new_ing);
@@ -373,16 +371,16 @@ class SearchArea extends React.Component {
 
           <div
             className={`input-container__suggestions
-            ${this.state.suggested_ings.length ? '' : 'input-container__suggestions_hidden'}`}
+            ${this.state.suggestions.length ? '' : 'input-container__suggestions_hidden'}`}
           >
 
             {
-              this.state.suggested_ings.map((ing, i) => {
+              this.state.suggestions.map((ing, i) => {
                 return (
                   <SuggestedIng
                     key={ing._id}
                     count={i}
-                    focused={this.state.focused_ing}
+                    focused={this.state.focused_suggestion}
                     ingredient={ing}
                     onClick={this.onSuggestClick}
                     onMouseOver={this.onSuggestHover} /
@@ -391,6 +389,20 @@ class SearchArea extends React.Component {
               })
             }
 
+          </div>
+
+          <div className="search-types">
+            <div className="search-types__selection">
+              <RadioButton text="По ингредиентам" name="search-type" checked={true} negative={true} />
+              <RadioButton text="По названию" name="search-type" checked={false} negative={true} />
+              <RadioButton text="По тегам" name="search-type" checked={false} negative={true} />
+            </div>
+            <div className="search-types__divider"></div>
+            <div className="search-types__bottom">
+              <svg className="search-types__arrows">
+                <use xlinkHref="#two-arrows" />
+              </svg>
+            </div>
           </div>
         </div>
 

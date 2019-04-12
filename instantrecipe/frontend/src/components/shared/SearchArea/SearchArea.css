@@ -1,14 +1,17 @@
 .input-container {
   position: relative;
+  margin-bottom: 15px;
 }
 
 .input-container__input {
   width: 100%;
   height: 50px;
+  position: relative;
+  z-index: 2;
   box-sizing: border-box;
   border: 1px solid #000000;
   border-radius: 5px;
-  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 10px 0 4px -7px rgba(0, 0, 0, 0.3);
   font-size: 23px;
   padding-left: 9px;
   background-color: #F9F6F6;
@@ -24,6 +27,7 @@
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
+  z-index: 2;
 
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 5px;
@@ -75,7 +79,7 @@
   position: absolute;
   top: 46px;
   width: 100%;
-  z-index: 100;
+  z-index: 3;
 
   box-sizing: border-box;
   border: 1px solid #000000;
@@ -186,7 +190,8 @@
 .search-settings__sort-option {
   padding-left: 8px;
   height: 27px;
-  line-height: 27px;
+  display: flex;
+  align-items: center;
   color: #FCBC5D;
   cursor: pointer;
 
@@ -223,6 +228,60 @@
   z-index: 1;
   animation: 0.3s ease-out 0s 1 tipSlide;
   animation-fill-mode: forwards;
+}
+
+.search-types {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  min-height: 60px;
+  max-height: 80px;
+  padding: 15px 0 25px 0;
+  box-sizing: border-box;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3);
+  background-color: #FCBC5D;
+  transition: 0.5s;
+}
+
+.search-types_open {
+  top: 40px;
+}
+
+.search-types__selection {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.search-types__divider {
+  margin-top: 10px;
+  width: 100%;
+  height: 1px;
+  background-color: #485362;
+  opacity: 0.5;
+}
+
+.search-types__bottom {
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.search-types__arrows {
+  width: 30px;
+  height: 12px;
+  transition: 0.3s;
+}
+
+.search-types__arrows_reverse {
+  transform: rotate(180deg);
 }
 
 @media screen and (max-width: 768px) {
@@ -270,5 +329,15 @@
 
   .search-settings__sort-selection {
     width: 240px;
+  }
+  
+  .search-types {
+    padding-top: 0;
+    padding-bottom: 20px;
+  }
+
+  .search-types_open {
+    padding-top: 15px;
+    top: 30px;
   }
 }
