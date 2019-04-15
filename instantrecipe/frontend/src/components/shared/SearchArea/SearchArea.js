@@ -30,6 +30,7 @@ class SearchArea extends React.Component {
       search_query: null,
       types_open: false,
       random_ing: {},
+      random_tag: {},
       preselect_required: true,
       sort_selection_shown: false,
       selected_sort: by_ing_sort,
@@ -45,6 +46,7 @@ class SearchArea extends React.Component {
   componentDidMount() {
     if(this.props.showSample) {
       this.fetchRandomIng();
+      this.fetchRandomTag();
     }
 
     window.addEventListener('click', this.onWindowClick);
@@ -115,6 +117,34 @@ class SearchArea extends React.Component {
     });
   }
 
+  fetchRandomTag() {
+    fetch('/api/random_tag/')
+    .then((response) => {
+      if(response.status === 204) {
+        this.setState({error: {message: "Тэги не найдены"}});
+      } else
+        response.json()
+          .then(
+            (result) => {
+              this.setState({
+                random_tag: result
+              });
+            },
+            (error) => {
+              this.setState({
+                error: error
+              });
+            }
+          )
+          .catch((err) => {
+            console.error('error while converting to json: ' + err);
+          });
+    })
+    .catch((err) => {
+      console.error('error while fetching: ' + err);
+    });
+  }
+
   fetchSuggestedIngs(query) {
     fetch(`/api/ingredient/${query}`)
       .then(response => {
@@ -163,11 +193,13 @@ class SearchArea extends React.Component {
 
   prepareQueryTags(tags, sort) {
     let query_obj;
+    const selected_sort = sort || '';
 
     if(tags.length) {
       query_obj = tags.reduce((accumulated, addition) => {
         return {id: accumulated.id + "&" + addition.id};
       });
+      return encodeURI(`/recipes/by_tags/${query_obj.id}/${selected_sort}`);
     }
 
     return null;
@@ -488,7 +520,7 @@ class SearchArea extends React.Component {
                 onChange={this.onSearchTypeChange} checked={this.state.search_type === 'by_ings'}
                 negative={true} text="По ингредиентам"
               />
-              <RadioButton 
+              <RadioButton
                 name="search-type" value="by_name"
                 onChange={this.onSearchTypeChange} checked={this.state.search_type === 'by_name'}
                 negative={true} text="По названию"
@@ -509,21 +541,33 @@ class SearchArea extends React.Component {
         </div>
 
         {
-          this.props.showSample && this.state.search_type !== 'by_name' ? (
-            <div className="search_area__sample">
-              <span>Например: </span>
-              <span
-                className="search_area__sample_highlited"
-                data-id={this.state.random_ing._id}
-                data-name={this.state.random_ing.name}
-                onClick={this.onSampleClick}
-              >
-                {this.state.random_ing.name}
-              </span>
-            </div>
-            ) : null
+          this.props.showSample && this.state.search_type === 'by_ings' &&
+          <div className="search_area__sample">
+            <span>Например: </span>
+            <span
+              className="search_area__sample_highlited"
+              data-id={this.state.random_ing._id}
+              data-name={this.state.random_ing.name}
+              onClick={this.onSampleClick}
+            >
+              {this.state.random_ing.name}
+            </span>
+          </div>
         }
-
+        {
+          this.props.showSample && this.state.search_type === 'by_tags' &&
+          <div className="search_area__sample">
+            <span>Например: </span>
+            <span
+              className="search_area__sample_highlited"
+              data-id={this.state.random_tag._id}
+              data-name={this.state.random_tag.name}
+              onClick={this.onSampleClick}
+            >
+              {this.state.random_tag.name}
+            </span>
+          </div>
+        }
         <div className="search_area__selected-ings">
           {
             this.state.selected_ings.map((ing, i) => {
@@ -531,7 +575,7 @@ class SearchArea extends React.Component {
             })
           }
         </div>
-        
+
         {
           this.props.showSettings ? (
             <div className="search-settings">

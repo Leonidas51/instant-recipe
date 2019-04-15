@@ -92,7 +92,7 @@ class RecipeList extends React.Component {
   }
 
   fetchRecipesByIngs() {
-    fetch(`/api/recipe_list/${this.props.match.params.search}_${this.props.match.params.sort}`)
+    fetch(`/api/recipe_list/${this.props.match.params.type}/${this.props.match.params.search}/${this.props.match.params.sort}`)
     .then((response) => {
       if(response.status === 204) {
         this.setState({error: {message: "Кажется, таких рецептов у нас нет!"}});
@@ -180,7 +180,7 @@ class RecipeList extends React.Component {
 
         </InfiniteScroll>
       )
-    } 
+    }
 
     return(
       <div className="content-area content-area_recipe-list">
