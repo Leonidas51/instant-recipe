@@ -59,11 +59,11 @@ def read_recipe(recipe_id):
 			LOG.error('error while trying to read_recipe: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
 
-def get_ingredients_pipeline(items_list):
+def get_ingredients_pipeline(searched_items):
 	# находим массив совпадений ингредиентов
 	matches = {'$addFields': {
 		'matches': {
-			'$setIntersection': ['$ingredient_ids', items_list]
+			'$setIntersection': ['$ingredient_ids', searched_items]
 		},
 	}}
 	# находим количество совпадений ингредиентов
@@ -75,10 +75,10 @@ def get_ingredients_pipeline(items_list):
 	# выясняем дополнительные подробности
 	ings_info = {'$addFields': {
 		'ingredient_list_has_but_recipe_doesnt': {
-			'$setDifference': [items_list, '$ingredient_ids']
+			'$setDifference': [searched_items, '$ingredient_ids']
 		},
 		'recipe_has_but_ingredient_list_doesnt': {
-			'$setDifference': ['$ingredient_ids', items_list]
+			'$setDifference': ['$ingredient_ids', searched_items]
 		},
 	}}
 	ings_info_sizes = {'$addFields': {
@@ -91,14 +91,14 @@ def get_ingredients_pipeline(items_list):
 	}}
 	return matches, matches_size, match_condition, ings_info, ings_info_sizes
 
-#def get_recipe_names_pipeline(items_list):
+#def get_recipe_names_pipeline(searched_items):
 #	pass
 
-def get_tags_pipeline(items_list):
+def get_tags_pipeline(searched_items):
 	# находим массив совпадений ингредиентов
 	matches = {'$addFields': {
 		'matches': {
-			'$setIntersection': ['$ingredient_ids', items_list]
+			'$setIntersection': ['$ingredient_ids', searched_items]
 		},
 	}}
 	# находим количество совпадений ингредиентов
@@ -110,24 +110,36 @@ def get_tags_pipeline(items_list):
 	return matches, matches_size, match_condition
 
 # sort_type = ['timedesc', 'timeasc', 'full-match']
-def get_pipeline(search_type, items_list, sort_conditions=[]):
+def get_pipeline(search_type, searched_items, sort_conditions=[]):
 	pipeline = [
 		{'$match': {'published': True}}
 	]
-	count_match_percent = {}
-	sort = {}
 	matches = {}
 	matches_size = {}
 	match_condition = {}
-	ings_info = {}
-	ings_info_sizes = {}
+	sort = {}
+	timesort = {}
+	if 'timedesc' in sort_conditions:
+		timesort = {'$sort': {
+			'cooking_time_max': -1,
+			'cooking_time_min': -1,
+		}}
+	elif 'timeasc' in sort_conditions:
+		timesort = {'$sort': {
+			'cooking_time_max': 1,
+			'cooking_time_min': 1,
+		}}
+	limit = {'$limit' : 100}
 
 	if search_type == 'by_ings':
-		matches, matches_size, match_condition, ings_info, ings_info_sizes = get_ingredients_pipeline(items_list)
+		ings_info = {}
+		ings_info_sizes = {}
+		count_match_percent = {}
+		matches, matches_size, match_condition, ings_info, ings_info_sizes = get_ingredients_pipeline(searched_items)
 		if 'full-match' in sort_conditions:
 			count_match_percent = {'$addFields': {'matches_percent': {'$trunc': {
 										'$multiply': [{'$divide': ['$matches_size', {'$size': {
-											'$setUnion': ['$ingredient_ids', items_list]
+											'$setUnion': ['$ingredient_ids', searched_items]
 										}}]}, 100]
 									}}}}
 			# выдача от наибольшего совпадения до наименьшего
@@ -149,33 +161,30 @@ def get_pipeline(search_type, items_list, sort_conditions=[]):
 						'recipe_has_but_ingredient_list_doesnt_size': 1,
 						'ingredient_list_has_but_recipe_doesnt_size': 1
 					}}
+		if not timesort:
+			pipeline.extend([matches, matches_size, match_condition, ings_info, ings_info_sizes,
+			count_match_percent, sort, limit])
+		else:
+			pipeline.extend([matches, matches_size, match_condition, ings_info, ings_info_sizes,
+			count_match_percent, sort, timesort, limit])
 	elif search_type == 'by_tags':
-		matches, matches_size, match_condition = get_tags_pipeline(items_list)
+		matches, matches_size, match_condition = get_tags_pipeline(searched_items)
 		sort = {'$sort': { 'matches_size': -1 }}
+		if not timesort:
+			pipeline.extend([matches, matches_size, match_condition, sort, limit])
+		else:
+			pipeline.extend([matches, matches_size, match_condition, sort, timesort, limit])
 	elif search_type == 'by_name':
 		match_condition = {'$match': {
-					'name': {'$regex':u'(^' + name + '| ' + name + ')', '$options': 'i'}
-			      }}
-
-	timesort = {}
-	if 'timedesc' in sort_conditions:
-		timesort = {'$sort': {
-			'cooking_time_max': -1,
-			'cooking_time_min': -1,
-		}}
-	elif 'timeasc' in sort_conditions:
-		timesort = {'$sort': {
-			'cooking_time_max': 1,
-			'cooking_time_min': 1,
-		}}
-
-	limit = {'$limit' : 100}
-	if not timesort:
-		pipeline.extend([matches, matches_size, match_condition, ings_info, ings_info_sizes,
-		count_match_percent, sort, limit])
-	else:
-		pipeline.extend([matches, matches_size, match_condition, ings_info, ings_info_sizes,
-		count_match_percent, sort, timesort, limit])
+					 		  'name': {
+							  	  '$regex': u'(^' + searched_items + '| ' + searched_items + ')',
+								  '$options': 'i'
+							  }
+		      			  }}
+		if not timesort:
+			pipeline.extend([match_condition, limit])
+		else:
+			pipeline.extend([match_condition, timesort, limit])
 	return pipeline
 
 @recipes_bp.route('/recipe_list/<string:search_type>/<string:args>/<string:sort_conditions>/', methods=['GET'])
@@ -186,10 +195,13 @@ def read_recipe_list(search_type, args, sort_conditions):
 				LOG.info('search type: ' + search_type)
 				LOG.info('args: ' + args)
 				LOG.info('sort conditions: ' + sort_conditions)
-				items_list = args.split('&')
-				items_list = [ObjectId(item) for item in items_list]
+				if search_type != 'by_name':
+					searched_items = args.split('&')
+					searched_items = [ObjectId(item) for item in searched_items]
+				else:
+					searched_items = args
 				sort_conditions = sort_conditions.split('&')
-				data = mongo.db.recipes.aggregate(get_pipeline(search_type, items_list, sort_conditions))
+				data = mongo.db.recipes.aggregate(get_pipeline(search_type, searched_items, sort_conditions))
 				data = list(data)
 
 				if data == None:

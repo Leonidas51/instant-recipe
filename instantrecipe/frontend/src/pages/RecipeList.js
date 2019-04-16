@@ -76,22 +76,6 @@ class RecipeList extends React.Component {
   }
 
   fetchRecipes() {
-    switch (this.props.match.params.type) {
-      case 'by_ings':
-        this.fetchRecipesByIngs();
-        break;
-      case 'by_name':
-        this.fetchRecipesByName();
-        break;
-      case 'by_tags':
-        this.fetchRecipesByTags();
-        break;
-      default:
-        this.fetchRecipesByName();
-    }
-  }
-
-  fetchRecipesByIngs() {
     fetch(`/api/recipe_list/${this.props.match.params.type}/${this.props.match.params.search}/${this.props.match.params.sort}`)
     .then((response) => {
       if(response.status === 204) {
@@ -120,14 +104,6 @@ class RecipeList extends React.Component {
     .catch((err) => {
       console.error('error while fetching: ' + err);
     });
-  }
-
-  fetchRecipesByName() {
-    return;
-  }
-
-  fetchRecipesByTags() {
-    return;
   }
 
   loadMore() {

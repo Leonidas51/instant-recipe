@@ -159,7 +159,16 @@ class SearchArea extends React.Component {
   }
 
   fetchSuggestedTags(query) {
-    return;
+    fetch(`/api/tag/${query}`)
+      .then(response => {
+        return response.json();
+      })
+      .then(result => {
+        this.setState({suggestions: result});
+      })
+      .catch(err => {
+        console.error(err);
+      })
   }
 
   prepareQueryIngs(ings, sort) {
