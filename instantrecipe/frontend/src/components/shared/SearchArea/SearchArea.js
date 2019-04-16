@@ -303,8 +303,6 @@ class SearchArea extends React.Component {
       return;
     }
 
-    console.log(this.state.search_type);
-
     switch(this.state.search_type) {
       case 'by_ings':
         this.fetchSuggestedIngs(e.target.value);
@@ -315,7 +313,6 @@ class SearchArea extends React.Component {
         })
         break;
       case 'by_tags':
-        console.log(1);
         this.fetchSuggestedTags(e.target.value);
         break;
       default:
