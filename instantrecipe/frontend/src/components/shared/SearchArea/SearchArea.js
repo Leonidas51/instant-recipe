@@ -14,9 +14,9 @@ class SearchArea extends React.Component {
     super(props);
 
     const search_type =  this.props.match.params.type || this.props.cookies.get('search_type') || 'by_ings',
-          by_ing_sort = this.props.match.params.sort || this.props.cookies.get('by_ing_sort') || 'min-expense';
+          sort = this.props.match.params.sort || this.props.cookies.get(`${search_type}_sort`) || 'min-expense';
 
-    this.props.cookies.set('by_ing_sort', by_ing_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+    this.props.cookies.set(`${search_type}_sort`, sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
     this.props.cookies.set('search_type', search_type, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
 
     this.state = {
@@ -33,9 +33,9 @@ class SearchArea extends React.Component {
       random_tag: {},
       preselect_required: true,
       sort_selection_shown: false,
-      selected_sort: by_ing_sort,
+      selected_sort: sort,
       highlighted_sort: null,
-      selected_sort_text: this.parseSort(by_ing_sort),
+      selected_sort_text: this.parseSort(sort),
       sort_hint_text: ''
     }
 
@@ -169,11 +169,29 @@ class SearchArea extends React.Component {
       .catch(err => {
         console.error(err);
       })
-  }
+	}
+	
+	prepareQuery(args) {
+		let query;
 
-  prepareQueryIngs(ings, sort) {
+		switch(this.state.search_type) {
+			case 'by_ings':
+				query = this._prepareQueryIngs(...args);
+				break;
+			case 'by_name':
+				query = this._prepareQueryName(...args);
+				break;
+			case 'by_tags':
+				query = this._prepareQueryTags(...args);
+				break;
+		}
+
+		return query;
+	}
+
+  _prepareQueryIngs(ings, sort) {
     let selected_ings,
-        selected_sort = sort || '',
+        selected_sort = sort || this.state.selected_sort,
         query_obj = {},
         query;
 
@@ -190,28 +208,30 @@ class SearchArea extends React.Component {
     return null;
   }
 
-  prepareQueryName(val, sort) {
-    const selected_sort = sort || '';
+  _prepareQueryName(val, sort) {
+		const selected_sort = sort || this.state.selected_sort,
+					search = val || this.state.input_value;
 
-    if(val === '') {
+    if(!search.length) {
       return null;
     }
 
-    return encodeURI(`/recipes/by_name/${val}/${selected_sort}`)
+    return encodeURI(`/recipes/by_name/${search}/${selected_sort}`)
   }
 
-  prepareQueryTags(tags, sort) {
+  _prepareQueryTags(tags, sort) {
     let query_obj;
-    const selected_sort = sort || '';
+		const selected_sort = sort || this.state.selected_sort,
+					search = tags || this.state.selected_ings;
 
-    if(tags.length) {
-      query_obj = tags.reduce((accumulated, addition) => {
-        return {id: accumulated.id + "&" + addition.id};
-      });
-      return encodeURI(`/recipes/by_tags/${query_obj.id}/${selected_sort}`);
+    if(!search.length) {
+			return null;
     }
 
-    return null;
+		query_obj = search.reduce((accumulated, addition) => {
+			return {id: accumulated.id + "&" + addition.id};
+		});
+		return encodeURI(`/recipes/by_tags/${query_obj.id}/${selected_sort}`);
   }
 
   addIngredient(ing) {
@@ -226,7 +246,7 @@ class SearchArea extends React.Component {
         input_value: '',
         suggestions: [],
         selected_ings: [...this.state.selected_ings, ing],
-        search_query: this.prepareQueryIngs([...this.state.selected_ings, ing], this.state.selected_sort),
+        search_query: this.prepareQuery([[...this.state.selected_ings, ing], this.state.selected_sort]),
         focused_suggestion: -1
       })
     };
@@ -309,16 +329,12 @@ class SearchArea extends React.Component {
         break;
       case 'by_name':
         this.setState({
-          search_query: this.prepareQueryName(e.target.value)
+          search_query: this.prepareQuery([e.target.value])
         })
         break;
       case 'by_tags':
         this.fetchSuggestedTags(e.target.value);
         break;
-      default:
-        this.setState({
-          search_query: this.prepareQueryName(e.target.value)
-        })
     }
   }
 
@@ -358,7 +374,7 @@ class SearchArea extends React.Component {
 
     this.setState({
       selected_ings: selected_ings,
-      search_query: this.prepareQueryIngs(selected_ings, this.state.selected_sort)
+      search_query: this.prepareQuery([selected_ings, this.state.selected_sort])
     });
 
     this.input.current.focus();
@@ -430,33 +446,16 @@ class SearchArea extends React.Component {
   }
 
   onSortTypeClick(e) {
-    let query;
-
     this.closeSort();
 
-    switch(this.state.search_type) {
-      case 'by_ings':
-        query = this.prepareQueryIngs(this.state.selected_ings, e.target.dataset.sortType);
-
-        this.setState({
-          selected_sort: e.target.dataset.sortType,
-          selected_sort_text: e.target.innerHTML,
-          search_query: query
-        }, () => {
-          this.props.cookies.set('by_ing_sort', this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
-          this.props.history.push(this.state.search_query);
-        })
-
-        break;
-      case 'by_name':
-        query = this.prepareQueryName(this.state.input_value, e.target.dataset.sortType);
-        break;
-      case 'by_tags':
-        query = this.prepareQueryTags(this.state.selected_tags, e.target.dataset.sortType);
-        break;
-      default:
-        return '';
-    }
+		this.setState({
+			selected_sort: e.target.dataset.sortType,
+			selected_sort_text: e.target.innerHTML,
+			search_query: this.prepareQuery([null, e.target.dataset.sortType])
+		}, () => {
+			this.props.cookies.set(`${this.state.search_type}_sort`, this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+			this.props.history.push(this.state.search_query);
+		})
   }
 
   onSortTypeHover(e) {
@@ -472,10 +471,26 @@ class SearchArea extends React.Component {
   }
 
   onSearchTypeChange(e) {
-    this.props.cookies.set('search_type', e.target.value, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+		let new_sort = this.props.cookies.get(`${e.target.value}_sort`);
+
+		if(!new_sort) {
+			if(e.target.value === 'by_ings') {
+				new_sort = 'min-expense';
+			} else {
+				new_sort = 'timeasc';
+			}
+
+			this.props.cookies.set(`${e.target.value}_sort`, new_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+		}
+
+		this.props.cookies.set('search_type', e.target.value, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+
     this.setState({
       search_type: e.target.value,
-      selected_ings: []
+			selected_ings: [],
+			search_query: null,
+			selected_sort: new_sort,
+			types_open: false
     })
   }
 
