@@ -52,9 +52,10 @@ class SearchArea extends React.Component {
   }
 
   componentDidUpdate() {
-    if(this.state.preselect_required && this.props.ingredientList) {
+    if(this.state.preselect_required && (this.props.searchItems || this.props.searchString)) {
       this.setState({
-        selected_items: this.props.ingredientList,
+        selected_items: this.props.searchItems || [],
+        input_value: this.props.searchString || '',
         preselect_required: false
       })
     }

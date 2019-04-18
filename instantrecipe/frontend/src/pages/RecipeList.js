@@ -16,7 +16,8 @@ class RecipeList extends React.Component {
       error: null,
       recipes_loaded: false,
       recipe_list: [],
-      ingredient_list: null,
+      search_items: null,
+      search_string: '',
       force_preselect: false,
       shown_recipes: [],
       recipes_on_page: ITEMS_ON_PAGE,
@@ -28,10 +29,7 @@ class RecipeList extends React.Component {
 
   componentDidMount() {
     this.fetchRecipes();
-
-    if(this.props.match.params.type === 'by_ings') {
-      this.setIngsFromURL(this.props.match.params.search);
-    }
+    this.setFromUrl(this.props.match.params.search, this.props.match.params.type);
   }
 
   componentDidUpdate(prevProps) {
@@ -45,18 +43,33 @@ class RecipeList extends React.Component {
         recipes_loaded: false,
         shown_recipes: [],
         has_more: false,
+        search_items: null,
+        search_string: ''
       }, () => {
-        this.setIngsFromURL(this.props.match.params.search);
+        this.setFromUrl(this.props.match.params.search, this.props.match.params.type);
         this.fetchRecipes();
       });
     }
   }
 
-  setIngsFromURL(URL_string) {
-    let result_ings = [],
-        result_ings_ids = [];
+  setFromUrl(url, type) {
+    switch(type) {
+      case 'by_ings':
+        this._setIngsFromUrl(url);
+        break;
+      case 'by_name':
+        this._setNameFromUrl(url);
+        break;
+      case 'by_tags':
+        this._setTagsFromUrl(url);
+        break;
+    }
+  }
 
-    fetch(`/api/ingredient_by_id/${URL_string}`)
+  _setIngsFromUrl(url) {
+    let result_ings = [];
+
+    fetch(`/api/ingredient_by_id/${url}`)
       .then(response => {
         response.json()
           .then(result => {
@@ -68,9 +81,41 @@ class RecipeList extends React.Component {
             })
 
             this.setState({
-              ingredient_list: result_ings,
+              search_items: result_ings,
               force_preselect: true
             })
+          })
+      })
+  }
+
+  _setNameFromUrl(url) {
+    this.setState({
+      search_string: url,
+      force_preselect: true
+    });
+  }
+
+  _setTagsFromUrl(url) {
+    let result_tags = [];
+
+    fetch(`/api/tag_by_id/${url}`)
+      .then(response => {
+        response.json()
+          .then(result => {
+            result_tags = result.map(tag => {
+              return {
+                id: tag._id,
+                name: tag.name
+              }
+            })
+
+            this.setState({
+              search_items: result_tags,
+              force_preselect: true
+            })
+          })
+          .catch((err) => {
+            console.error('error while converting to json: ' + err);
           })
       })
   }
@@ -147,7 +192,7 @@ class RecipeList extends React.Component {
           this.state.shown_recipes.map((recipe, i) => {
             return (
               <div key={recipe._id}>
-                <Recipe rec={recipe} ings={this.state.ingredient_list} />
+                <Recipe rec={recipe} ings={this.state.search_items} />
                 <hr />
               </div>
             )
@@ -165,7 +210,8 @@ class RecipeList extends React.Component {
           cookies={this.props.cookies}
           showSample={false}
           showSettings={true}
-          ingredientList={this.state.ingredient_list}
+          searchItems={this.state.search_items}
+          searchString={this.state.search_string}
           selectedSort={this.props.match.params.sort || ''}
           forcePreselect={this.state.force_preselect}
         />
