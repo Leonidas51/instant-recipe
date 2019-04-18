@@ -189,9 +189,6 @@ def read_recipe_list(search_type, args, sort_conditions):
 	if request.method == 'GET':
 		try:
 			if args:
-				LOG.info('search type: ' + search_type)
-				LOG.info('args: ' + args)
-				LOG.info('sort conditions: ' + sort_conditions)
 				if search_type != 'by_name':
 					searched_items = args.split('&')
 					searched_items = [ObjectId(item) for item in searched_items]
