@@ -22,11 +22,10 @@ class SearchArea extends React.Component {
     this.state = {
       error: null,
       search_type: search_type,
-      input_value: [],
+      input_value: '',
       suggestions: [],
       focused_suggestion: -1,
-      selected_ings: [],
-      selected_tags: [],
+      selected_items: [],
       search_query: null,
       types_open: false,
       random_ing: {},
@@ -52,10 +51,10 @@ class SearchArea extends React.Component {
     window.addEventListener('click', this.onWindowClick);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     if(this.state.preselect_required && this.props.ingredientList) {
       this.setState({
-        selected_ings: this.props.ingredientList,
+        selected_items: this.props.ingredientList,
         preselect_required: false
       })
     }
@@ -190,15 +189,15 @@ class SearchArea extends React.Component {
 	}
 
   _prepareQueryIngs(ings, sort) {
-    let selected_ings,
+    let selected_items,
         selected_sort = sort || this.state.selected_sort,
         query_obj = {},
         query;
 
-    selected_ings = ings || this.state.selected_ings;
+    selected_items = ings || this.state.selected_items;
 
-    if (selected_ings.length) {
-      query_obj = selected_ings.reduce((accumulated, addition) => {
+    if (selected_items.length) {
+      query_obj = selected_items.reduce((accumulated, addition) => {
         return {id: accumulated.id + "&" + addition.id};
       });
 
@@ -211,7 +210,7 @@ class SearchArea extends React.Component {
   _prepareQueryName(val, sort) {
 		const selected_sort = sort || this.state.selected_sort,
 					search = val || this.state.input_value;
-
+    
     if(!search.length) {
       return null;
     }
@@ -222,7 +221,7 @@ class SearchArea extends React.Component {
   _prepareQueryTags(tags, sort) {
     let query_obj;
 		const selected_sort = sort || this.state.selected_sort,
-					search = tags || this.state.selected_ings;
+					search = tags || this.state.selected_items;
 
     if(!search.length) {
 			return null;
@@ -234,8 +233,8 @@ class SearchArea extends React.Component {
 		return encodeURI(`/recipes/by_tags/${query_obj.id}/${selected_sort}`);
   }
 
-  addIngredient(ing) {
-    if(this.checkDuplicate(ing)) {
+  addListItem(item) {
+    if(this.checkDuplicate(item)) {
       this.setState({
         input_value: '',
         suggestions: [],
@@ -245,16 +244,16 @@ class SearchArea extends React.Component {
       this.setState({
         input_value: '',
         suggestions: [],
-        selected_ings: [...this.state.selected_ings, ing],
-        search_query: this.prepareQuery([[...this.state.selected_ings, ing], this.state.selected_sort]),
+        selected_items: [...this.state.selected_items, item],
+        search_query: this.prepareQuery([[...this.state.selected_items, item], this.state.selected_sort]),
         focused_suggestion: -1
       })
     };
   }
 
-  checkDuplicate(ing) {
-    if(this.state.selected_ings.find(element => {
-      return element.id === ing.id;
+  checkDuplicate(item) {
+    if(this.state.selected_items.find(element => {
+      return element.id === item.id;
     })) {
       return true;
     }
@@ -316,35 +315,44 @@ class SearchArea extends React.Component {
   }
 
   onChangeInput(e) {
-    this.setState({input_value: e.target.value});
+    const input_val = e.target.value;
 
-    if(!e.target.value) {
-      this.setState({suggestions: []});
+    this.setState({input_value: input_val}, () => {
+      if(!input_val) {
+        if(this.state.search_type === 'by_name') {
+          this.setState({search_query: this.prepareQuery([])});
+        } else {
+          this.setState({suggestions: []});
+        }
+      }
+    });
+
+    if(!input_val) {
       return;
     }
 
     switch(this.state.search_type) {
       case 'by_ings':
-        this.fetchSuggestedIngs(e.target.value);
+        this.fetchSuggestedIngs(input_val);
         break;
       case 'by_name':
         this.setState({
-          search_query: this.prepareQuery([e.target.value])
+          search_query: this.prepareQuery([input_val])
         })
         break;
       case 'by_tags':
-        this.fetchSuggestedTags(e.target.value);
+        this.fetchSuggestedTags(input_val);
         break;
     }
   }
 
   onSuggestClick(e) {
-    const new_ing = {
+    const new_item = {
       name: e.target.dataset.name,
       id: e.target.dataset.id
     };
 
-    this.addIngredient(new_ing);
+    this.addListItem(new_item);
     this.input.current.focus();
   }
 
@@ -355,26 +363,26 @@ class SearchArea extends React.Component {
   }
 
   onSampleClick(e) {
-    const sample_ing = {
+    const sample = {
       name: e.target.dataset.name,
       id: e.target.dataset.id
     };
 
-    this.addIngredient(sample_ing);
+    this.addListItem(sample);
   }
 
   onDeleteClick(e) {
     const del_id = e.target.parentNode.dataset.id;
 
-    let selected_ings;
+    let selected_items;
 
-    selected_ings = this.state.selected_ings.filter((ing) => {
+    selected_items = this.state.selected_items.filter((ing) => {
       return ing.id !== del_id;
     })
 
     this.setState({
-      selected_ings: selected_ings,
-      search_query: this.prepareQuery([selected_ings, this.state.selected_sort])
+      selected_items: selected_items,
+      search_query: this.prepareQuery([selected_items, this.state.selected_sort])
     });
 
     this.input.current.focus();
@@ -383,7 +391,15 @@ class SearchArea extends React.Component {
   onInputKeyPress(e) {
     const key = e.key;
 
-    let new_ing;
+    let new_item;
+
+    if(this.state.search_type === 'by_name') {
+      if(this.state.input_value.length && key === 'Enter') {
+        this.props.history.push(this.state.search_query);
+      }
+
+      return;
+    }
 
     switch(key) {
       case 'ArrowUp':
@@ -404,12 +420,12 @@ class SearchArea extends React.Component {
 
       case 'Enter':
         if(this.state.suggestions[this.state.focused_suggestion]) {
-          new_ing = {
+          new_item = {
             name: this.state.suggestions[this.state.focused_suggestion].name,
             id: this.state.suggestions[this.state.focused_suggestion]._id
           }
 
-          this.addIngredient(new_ing);
+          this.addListItem(new_item);
         } else if(this.state.input_value.length === 0 && this.state.search_query) {
           this.props.history.push(this.state.search_query);
         }
@@ -487,7 +503,7 @@ class SearchArea extends React.Component {
 
     this.setState({
       search_type: e.target.value,
-			selected_ings: [],
+			selected_items: [],
 			search_query: null,
 			selected_sort: new_sort,
 			types_open: false
@@ -595,7 +611,7 @@ class SearchArea extends React.Component {
         }
         <div className="search_area__selected-ings">
           {
-            this.state.selected_ings.map((ing, i) => {
+            this.state.selected_items.map((ing, i) => {
                 return <SelectedIng key={ing.id} ingredient={ing} onDeleteClick={this.onDeleteClick} />
             })
           }
