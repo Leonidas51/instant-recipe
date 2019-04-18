@@ -60,17 +60,17 @@ def read_recipe(recipe_id):
 			return jsonify(data = 'Nothing was found!'), 204
 
 def get_ingredients_pipeline(searched_items):
-	# находим массив совпадений ингредиентов
+	# находим массив совпадений
 	matches = {'$addFields': {
 		'matches': {
 			'$setIntersection': ['$ingredient_ids', searched_items]
 		},
 	}}
-	# находим количество совпадений ингредиентов
+	# находим количество совпадений
 	matches_size = {'$addFields': {
 		'matches_size': {'$size': '$matches'},
 	}}
-	# число совпадений с введенными ингредиентами
+	# число совпадений с введенными данными
 	match_condition = {'$match': {'matches_size': {'$gt': 0}}}
 	# выясняем дополнительные подробности
 	ings_info = {'$addFields': {
@@ -91,21 +91,18 @@ def get_ingredients_pipeline(searched_items):
 	}}
 	return matches, matches_size, match_condition, ings_info, ings_info_sizes
 
-#def get_recipe_names_pipeline(searched_items):
-#	pass
-
 def get_tags_pipeline(searched_items):
-	# находим массив совпадений ингредиентов
+	# находим массив совпадений
 	matches = {'$addFields': {
 		'matches': {
-			'$setIntersection': ['$ingredient_ids', searched_items]
+			'$setIntersection': ['$tag_ids', searched_items]
 		},
 	}}
-	# находим количество совпадений ингредиентов
+	# находим количество совпадений
 	matches_size = {'$addFields': {
 		'matches_size': {'$size': '$matches'},
 	}}
-	# число совпадений с введенными ингредиентами
+	# число совпадений с введенными данными
 	match_condition = {'$match': {'matches_size': {'$gt': 0}}}
 	return matches, matches_size, match_condition
 
