@@ -49,9 +49,14 @@
   font-size: 17px;
 }
 
+.recipe__ings {
+  margin-top: 10px;
+}
+
 .recipe__misc {
   display: flex;
   justify-content: space-between;
+  margin-top: 5px;
 }
 
 .recipe__time {
@@ -79,13 +84,18 @@
   display: flex;
   align-items: center;
   flex-grow: 1;
-  padding: 0 10px 0 5px;
+}
+
+.ingredients-tooltip__text {
+  font-size: 17px;
+  font-weight: 700;
 }
 
 .ingredients-tooltip__hoverable {
   position: relative;
-  width: 32px;
+  width: 180px;
   height: 32px;
+  margin-left: 9px;
   border-radius: 10px;
   line-height: 32px;
   font-size: 17px;
@@ -95,6 +105,13 @@
   cursor: pointer;
 }
 
+.ingredients-tooltip__arrows {
+  fill: #E5E5E5;
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+}
+
 .ingredients-tooltip__hoverable:hover .ingredients-tooltip__wrap {
   display: block;
 }
@@ -102,15 +119,14 @@
 .ingredients-tooltip__wrap {
   position: absolute;
   display: none;
-  width: 170px;
-  left: -15px;
+  width: 180px;
   height: 10px;
   cursor: initial;
 }
 
 .ingredients-tooltip__container {
   position: absolute;
-  top: 10px;
+  top: 6px;
   width: 100%;
   box-sizing: border-box;
   padding: 8px;
@@ -124,7 +140,8 @@
   content: "";
   position: absolute;
   top: -7px;
-  left: 21px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-style: solid;
@@ -157,6 +174,11 @@
   color: #DC622D;
 }
 
+.ingredients-tooltip__ing_no-match::before {
+  content: "•";
+  margin-right: 5px;
+}
+
 /* ingredients tooltip end */
 
 /* meter */
@@ -174,7 +196,7 @@
 .meter__container {
   width: 180px;
   height: 30px;
-  margin-left: 15px;
+  margin-left: 20px;
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 10px;
@@ -217,20 +239,16 @@
     flex-wrap: wrap;
   }
 
+  .recipe__ings {
+    margin-bottom: 10px;
+  }
+
   .meter {
-    margin-bottom: 7px;
+    margin-bottom: 10px;
   }
 
   .recipe__time {
-    margin-bottom: 7px;
-  }
-
-  .ingredients-tooltip__wrap {
-    left: -110px;
-  }
-
-  .ingredients-tooltip__container::before {
-    left: 116px;
+    margin-bottom: 10px;
   }
 }
 

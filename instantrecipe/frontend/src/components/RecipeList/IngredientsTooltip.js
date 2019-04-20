@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Loader from "../shared/Loader";
+import TwoArrows from "../../icons/two-arrows.svg"
 
 class IngredientsTooltip extends React.Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class IngredientsTooltip extends React.Component {
       ings_loaded: false,
       matched_ings: [],
       missing_ings: [],
+      all_ings: []
     };
 
     this.onIconHover = this.onIconHover.bind(this);
@@ -62,57 +64,95 @@ class IngredientsTooltip extends React.Component {
       loading_started: true
     })
 
-    this.fetchRecipeInfo();
+    if(this.props.need_match) {
+      this.fetchRecipeInfo();
+      return;
+    }
+
+    this.setState({
+      all_ings: this.props.rec.ingredient_names.mandatory,
+      ings_loaded: true
+    });
   }
 
   /* end dom events */
 
   render() {
-    let matched_list,
-        missing_list;
+    let matched,
+        missing,
+        full,
+        ings_list;
 
     if(this.state.ings_loaded) {
-      matched_list = this.state.matched_ings ?
-        this.state.matched_ings.map(ing => {
-          return(
-            <div 
-              key={ing._id}
-              className="ingredients-tooltip__ing ingredients-tooltip__ing_included_true"
-            >
-              ✓ {ing.name.charAt(0).toUpperCase() + ing.name.slice(1)}
-            </div>
-          )
-        })
-        : null
+      if(this.props.need_match) {
+        matched = this.state.matched_ings ?
+          this.state.matched_ings.map(ing => {
+            return(
+              <div 
+                key={ing._id}
+                className="ingredients-tooltip__ing ingredients-tooltip__ing_included_true"
+              >
+                ✓ {ing.name.charAt(0).toUpperCase() + ing.name.slice(1)}
+              </div>
+            )
+          })
+          : null
 
-      missing_list = this.state.missing_ings ?
-        this.state.missing_ings.map(ing => {
-          return(
-            <div
-              key={ing._id}
-              className="ingredients-tooltip__ing ingredients-tooltip__ing_included_false"
-            >
-              ✗ {ing.name.charAt(0).toUpperCase() + ing.name.slice(1)}
-            </div>
-          )
-        })
-        : null
+        missing = this.state.missing_ings ?
+          this.state.missing_ings.map(ing => {
+            return(
+              <div
+                key={ing._id}
+                className="ingredients-tooltip__ing ingredients-tooltip__ing_included_false"
+              >
+                ✗ {ing.name.charAt(0).toUpperCase() + ing.name.slice(1)}
+              </div>
+            )
+          })
+          : null
+      } else {
+        full = Object.keys(this.state.all_ings).map((key, i) => {
+              return(
+                <div
+                  key={i}
+                  className="ingredients-tooltip__ing ingredients-tooltip__ing_no-match"
+                >
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </div>
+              )
+        });
+      }
+    }
+
+    if(this.props.need_match) {
+      ings_list = (
+        <div className="ingredients-tooltip__list">
+          {matched}
+          {missing}
+        </div>
+      )
+    } else {
+      ings_list = (
+        <div className="ingredients-tooltip__list">
+          {full}
+        </div>
+      )
     }
 
     return (
         <div className="ingredients-tooltip">
+        <span className="ingredients-tooltip__text">Ингредиенты:</span>
           <div className="ingredients-tooltip__hoverable" onMouseOver={this.onIconHover}>
-            ?
+            <svg className="ingredients-tooltip__arrows">
+                <use xlinkHref="#two-arrows" />
+            </svg>
             <div className="ingredients-tooltip__wrap">
               <div className="ingredients-tooltip__container">
                 <div className="ingredients-tooltip__section">
                   <div className="ingredients-tooltip__section-title">Ингредиенты:</div>
                     {
                       this.state.ings_loaded ? 
-                        <div className="ingredients-tooltip__list">
-                          {matched_list}
-                          {missing_list}
-                        </div>
+                        ings_list
                         : <Loader />
                     }
                 </div>

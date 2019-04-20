@@ -172,7 +172,8 @@ class RecipeList extends React.Component {
   /* end dom events */
 
   render() {
-    const { error, recipes_loaded, recipe_list } = this.state;
+    const { error, recipes_loaded, recipe_list } = this.state,
+          need_match = this.props.match.params.type === 'by_ings';
 
     let search_result = (
         <Loader text="Загружаем рецепты..." negative={false} />
@@ -192,7 +193,7 @@ class RecipeList extends React.Component {
           this.state.shown_recipes.map((recipe, i) => {
             return (
               <div key={recipe._id}>
-                <Recipe rec={recipe} ings={this.state.search_items} />
+                <Recipe rec={recipe} need_match={need_match} />
                 <hr />
               </div>
             )
