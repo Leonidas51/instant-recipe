@@ -149,7 +149,6 @@ class IngredientsTooltip extends React.Component {
             <div className="ingredients-tooltip__wrap">
               <div className="ingredients-tooltip__container">
                 <div className="ingredients-tooltip__section">
-                  <div className="ingredients-tooltip__section-title">Ингредиенты:</div>
                     {
                       this.state.ings_loaded ? 
                         ings_list
