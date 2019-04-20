@@ -470,8 +470,11 @@ class SearchArea extends React.Component {
 			selected_sort_text: e.target.innerHTML,
 			search_query: this.prepareQuery([null, e.target.dataset.sortType])
 		}, () => {
-			this.props.cookies.set(`${this.state.search_type}_sort`, this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
-			this.props.history.push(this.state.search_query);
+      this.props.cookies.set(`${this.state.search_type}_sort`, this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+
+      if(this.state.search_query) {
+        this.props.history.push(this.state.search_query);
+      }
 		})
   }
 
