@@ -213,7 +213,7 @@ class RecipeList extends React.Component {
           showSettings={true}
           searchItems={this.state.search_items}
           searchString={this.state.search_string}
-          selectedSort={this.props.match.params.sort || ''}
+          selectedSort={this.props.match.params.sort}
           forcePreselect={this.state.force_preselect}
         />
 
