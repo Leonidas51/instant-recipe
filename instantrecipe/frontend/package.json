@@ -2,6 +2,7 @@
   "name": "instantrecipe",
   "version": "1.0.0",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "compile": "webpack-dev-server --mode development",
     "build": "webpack --mode production"
