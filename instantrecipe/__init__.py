@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
 
+
 import logger
 from .instance.config import app_config
 
