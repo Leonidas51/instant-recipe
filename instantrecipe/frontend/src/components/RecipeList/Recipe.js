@@ -42,8 +42,8 @@ function Recipe(props) {
 
         <div className="recipe__description">
           {
-            rec.instructions_source.length > 200 ?
-              rec.instructions_source.slice(0, 200) + '...' :
+            rec.instructions_source.length > 125 ?
+              rec.instructions_source.slice(0, 125) + '...' :
               rec.instructions_source
           }
           <div>
@@ -55,17 +55,30 @@ function Recipe(props) {
             </Link>
           </div>
         </div>
-        <div className="recipe__misc">
-          <div className="meter">
-            <div className="meter__title">Совпадение:</div>
-            <div className="meter__container">
-              <div className="meter__fill" style={{width: fill + '%','backgroundColor': meter_color}}></div>
-              <div className="meter__value">{fill + '%'}</div>
-            </div>
 
-            <IngredientsTooltip rec={ rec }/>
+        {
+          props.need_match ?
+          <div className="recipe__ings">
+            <IngredientsTooltip rec={ rec } need_match={props.need_match} />
           </div>
+          : null
+        }
 
+        <div className="recipe__misc">
+          
+          {
+            props.need_match ?
+              <div className="meter">
+                <div className="meter__title">Совпадение:</div>
+                <div className="meter__container">
+                  <div className="meter__fill" style={{width: fill + '%','backgroundColor': meter_color}}></div>
+                  <div className="meter__value">{fill + '%'}</div>
+                </div>
+              </div>
+              : <div className="recipe__ings">
+                  <IngredientsTooltip rec={ rec } need_match={props.need_match} />
+                </div>
+          }
 
           <div className="recipe__time">
             <div className="recipe__time-text">Время:</div>

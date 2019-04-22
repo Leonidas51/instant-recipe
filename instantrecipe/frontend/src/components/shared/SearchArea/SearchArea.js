@@ -56,6 +56,8 @@ class SearchArea extends React.Component {
       this.setState({
         selected_items: this.props.searchItems || [],
         input_value: this.props.searchString || '',
+        selected_sort: this.props.selectedSort,
+        selected_sort_text: this.parseSort(this.props.selectedSort),
         preselect_required: false
       })
     }
@@ -467,11 +469,14 @@ class SearchArea extends React.Component {
 
 		this.setState({
 			selected_sort: e.target.dataset.sortType,
-			selected_sort_text: e.target.innerHTML,
+			selected_sort_text: this.parseSort(e.target.dataset.sortType),
 			search_query: this.prepareQuery([null, e.target.dataset.sortType])
 		}, () => {
-			this.props.cookies.set(`${this.state.search_type}_sort`, this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
-			this.props.history.push(this.state.search_query);
+      this.props.cookies.set(`${this.state.search_type}_sort`, this.state.selected_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
+
+      if(this.state.search_query) {
+        this.props.history.push(this.state.search_query);
+      }
 		})
   }
 
@@ -506,7 +511,8 @@ class SearchArea extends React.Component {
       search_type: e.target.value,
 			selected_items: [],
 			search_query: null,
-			selected_sort: new_sort,
+      selected_sort: new_sort,
+      selected_sort_text: this.parseSort(new_sort),
 			types_open: false
     })
   }
