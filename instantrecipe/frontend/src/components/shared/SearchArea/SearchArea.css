@@ -105,6 +105,15 @@
   cursor: pointer;
 }
 
+.input-container__suggestions-error {
+  margin-top: 6px;
+  padding: 5px;
+  text-align: center;
+  border-top: 0.25px solid rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+  color: #1E2734;
+}
+
 .input-container__suggested-ingredient:first-child {
   margin-top: 6px;
 }

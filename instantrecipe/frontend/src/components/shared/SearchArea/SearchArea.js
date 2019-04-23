@@ -24,6 +24,7 @@ class SearchArea extends React.Component {
       search_type: search_type,
       input_value: '',
       suggestions: [],
+      suggest_error: '',
       focused_suggestion: -1,
       selected_items: [],
       search_query: null,
@@ -148,12 +149,21 @@ class SearchArea extends React.Component {
   }
 
   fetchSuggestedIngs(query) {
+    let error = '';
+
     fetch(`/api/ingredient/${query}`)
       .then(response => {
         return response.json();
       })
       .then(result => {
-        this.setState({suggestions: result});
+        if(!result.length) {
+          error = 'Ингредиенты не найдены!'
+        }
+
+        this.setState({
+          suggestions: result,
+          suggest_error: error
+        });
       })
       .catch(err => {
         console.error(err);
@@ -161,12 +171,21 @@ class SearchArea extends React.Component {
   }
 
   fetchSuggestedTags(query) {
+    let error = '';
+
     fetch(`/api/tag/${query}`)
       .then(response => {
         return response.json();
       })
       .then(result => {
-        this.setState({suggestions: result});
+        if(!result.length) {
+          error = 'Теги не найдены!'
+        }
+
+        this.setState({
+          suggestions: result,
+          suggest_error: error
+        });
       })
       .catch(err => {
         console.error(err);
@@ -325,7 +344,10 @@ class SearchArea extends React.Component {
         if(this.state.search_type === 'by_name') {
           this.setState({search_query: this.prepareQuery([])});
         } else {
-          this.setState({suggestions: []});
+          this.setState({
+            suggestions: [],
+            suggest_error: ''
+          });
         }
       }
     });
@@ -509,6 +531,8 @@ class SearchArea extends React.Component {
 
     this.setState({
       search_type: e.target.value,
+      suggestions: [],
+      suggest_error: '',
 			selected_items: [],
 			search_query: null,
       selected_sort: new_sort,
@@ -541,8 +565,18 @@ class SearchArea extends React.Component {
 
           <div
             className={`input-container__suggestions
-            ${this.state.suggestions.length ? '' : 'input-container__suggestions_hidden'}`}
+            ${this.state.suggestions.length || (this.state.suggest_error && this.state.input_value.length)
+              ? ''
+              : 'input-container__suggestions_hidden'}`}
           >
+
+            {   
+              this.state.suggest_error && this.state.input_value.length
+              ? <div className="input-container__suggestions-error">
+                  {this.state.suggest_error}
+                </div>
+              : null
+            }
 
             {
               this.state.suggestions.map((ing, i) => {
