@@ -2,6 +2,12 @@
   margin: 50px auto 0 auto;
 }
 
+.recipe-list__error-message {
+  margin: 25px 0px;
+  text-align: center;
+  font-size: 23px;
+}
+
 .recipe {
   display: flex;
   justify-content: space-between;

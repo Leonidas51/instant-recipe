@@ -198,7 +198,7 @@ def read_recipe_list(search_type, args, sort_conditions):
 				data = mongo.db.recipes.aggregate(get_pipeline(search_type, searched_items, sort_conditions))
 				data = list(data)
 
-				if data == None:
+				if not data:
 					return jsonify(data = 'Nothing was found!'), 204
 
 				return jsonify(data), 200

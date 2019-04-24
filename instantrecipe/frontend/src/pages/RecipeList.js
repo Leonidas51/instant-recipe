@@ -130,6 +130,7 @@ class RecipeList extends React.Component {
           .then(
             (result) => {
               this.setState({
+                error: null,
                 recipes_loaded: true,
                 has_more: true,
                 recipe_list: result
@@ -180,7 +181,7 @@ class RecipeList extends React.Component {
     );
 
     if(error) {
-      search_result = <div className="error-message">{error.message}</div>
+      search_result = <div className="recipe-list__error-message">{error.message}</div>
     } else if(recipes_loaded) {
       search_result = (
         <InfiniteScroll
