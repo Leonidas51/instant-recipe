@@ -65,7 +65,8 @@ def remove_salt():
 			new_ingredient_names.pop(salt_id, None)
 			result = mongo.db.recipes.update_one(
 				{'_id': recipe['_id']},
-				{'$set': {'ingredient_names.mandatory': new_ingredient_names}})
+				{'$set': {'ingredient_names.mandatory': new_ingredient_names}})	
+	result = mongo.db.recipes.delete_one({'_id': ObjectId(salt_id)})
 
 	return jsonify(data = 'removed salt'), 200
 
