@@ -186,7 +186,7 @@ class RecipeDetails extends React.Component {
           <div className="ingredients__mandatory">
             {
               this.state.recipe_loaded ?
-              <p className="ingredients__title">Ингредиенты на {this.parseServes(this.state.recipe.serves)}</p>
+              <p className="ingredients__title">Ингредиенты на {this.parseServes(this.state.recipe.serves)}:</p>
               : null
             }
 

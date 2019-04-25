@@ -45,11 +45,6 @@
   font-size: 20px;
   color: #F9F6F6;
   text-decoration: none;
-  text-shadow:
-    -1px -1px 0 #000,  
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
 }
 
 /* featured recipes end */
