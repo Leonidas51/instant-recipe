@@ -66,7 +66,7 @@ def remove_salt():
 			result = mongo.db.recipes.update_one(
 				{'_id': recipe['_id']},
 				{'$set': {'ingredient_names.mandatory': new_ingredient_names}})
-	result = mongo.db.recipes.delete_one({'_id': salt_id})
+	result = mongo.db.ingredients.delete_one({'_id': salt_id})
 
 	return jsonify(data = 'removed salt'), 200
 
