@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: "./src/index.js",
@@ -39,6 +40,14 @@ module.exports = {
     publicPath: "/dist/",
     filename: "app.js"
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Рецепт Быстрого Приготовления',
+      template: 'public/templates/index.html',
+      inject: 'body',
+      hash: true
+    })
+  ],
   devServer: {
     contentBase: path.join(__dirname, "public/"),
     host: '0.0.0.0',

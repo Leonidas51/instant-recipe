@@ -28,7 +28,7 @@ class JSONEncoder(json.JSONEncoder):
 mongo = PyMongo()
 
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True, static_folder='frontend/dist', template_folder='frontend/public/templates')
+    app = Flask(__name__, instance_relative_config=True, static_folder='frontend/dist', template_folder='frontend/dist')
 
     if test_config is None:
         app.config.from_object(app_config[os.getenv('APP_SETTINGS')])
