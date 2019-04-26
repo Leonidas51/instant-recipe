@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 class About extends React.Component {
   constructor(props) {
@@ -7,7 +8,14 @@ class About extends React.Component {
   }
 
   render() {
-    return <div className="content-area">About!</div>
+    return (
+      <React.Fragment>
+        <Helmet>
+          <title>О нас - Рецепт Быстрого Приготовления</title>
+        </Helmet>
+        <div className="content-area">About!</div>
+      </React.Fragment>
+    )
   }
 }
 

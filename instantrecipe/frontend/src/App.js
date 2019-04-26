@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { CookiesProvider, withCookies } from 'react-cookie';
+import {Helmet} from "react-helmet";
 import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -21,6 +22,10 @@ class App extends React.Component {
       <CookiesProvider>
         <Router>
           <div>
+            <Helmet>
+              <title>Рецепт Быстрого Приготовления</title>
+            </Helmet>
+
             <Header />
 
             <Switch>

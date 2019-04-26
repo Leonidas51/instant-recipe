@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton";
 import ScrollToTop from "../components/shared/ScrollToTop";
 import "./RecipeDetails.css";
@@ -105,6 +106,14 @@ class RecipeDetails extends React.Component {
     }
 
     return (
+      <React.Fragment>
+      <Helmet>
+        {
+          this.state.recipe.name ? <title>{this.state.recipe.name} - Рецепт Быстрого Приготовления</title> 
+            : <title>Рецепт Быстрого Приготовления</title>
+        }
+      </Helmet>
+
       <div className="content-area content-area_recipe-details">
         <ScrollToTop />
         <div className="recipe-top-container">
@@ -263,6 +272,7 @@ class RecipeDetails extends React.Component {
           </div>
         </div>
       </div>
+      </React.Fragment>
     );
   }
 }

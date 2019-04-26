@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import InfiniteScroll from 'react-infinite-scroller';
 import SearchArea from "../components/shared/SearchArea/SearchArea";
 import Loader from "../components/shared/Loader";
@@ -206,21 +207,27 @@ class RecipeList extends React.Component {
     }
 
     return(
-      <div className="content-area content-area_recipe-list">
+      <React.Fragment>
+        <Helmet>
+          <title>Поиск - Рецепт Быстрого Приготовления</title>
+        </Helmet>
 
-        <SearchArea
-          cookies={this.props.cookies}
-          showSample={false}
-          showSettings={true}
-          searchItems={this.state.search_items}
-          searchString={this.state.search_string}
-          selectedSort={this.props.match.params.sort}
-          forcePreselect={this.state.force_preselect}
-        />
+        <div className="content-area content-area_recipe-list">
 
-        {search_result}
+          <SearchArea
+            cookies={this.props.cookies}
+            showSample={false}
+            showSettings={true}
+            searchItems={this.state.search_items}
+            searchString={this.state.search_string}
+            selectedSort={this.props.match.params.sort}
+            forcePreselect={this.state.force_preselect}
+          />
 
-      </div>
+          {search_result}
+
+        </div>
+      </React.Fragment>
     )
   }
 }
