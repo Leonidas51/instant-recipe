@@ -197,8 +197,15 @@
   font-size: 18px;
   font-weight: bold;
   display: flex;
-  flex-direction: row;
+  align-items: center;
   margin-bottom: 30px;
+}
+
+.recipe-share__icon {
+  width: 25px;
+  height: 25px;
+  margin-left: 2.5px;
+  margin-right: 2.5px;
 }
 
 .comment-section__content {

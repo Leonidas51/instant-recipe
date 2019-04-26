@@ -3,6 +3,11 @@ import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-d
 import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton";
 import ScrollToTop from "../components/shared/ScrollToTop";
 import "./RecipeDetails.css";
+import FacebookIcon from "../icons/social/facebook.svg";
+import VkIcon from "../icons/social/vk.svg";
+import TwitterIcon from "../icons/social/twitter.svg";
+import TelgramIcon from "../icons/social/telegram.svg";
+import OKIcon from "../icons/social/odnoklassniki.svg";
 
 const difficulty = [
   {text:'элементарно',color:'#4EC44B'},
@@ -243,7 +248,11 @@ class RecipeDetails extends React.Component {
         <div className="recipe-share">
           <p>Поделиться: </p>
           <div className="recipe-share__list">
-            вконтактик, фейсбукк, энстаграм
+            <svg className="recipe-share__icon"><use xlinkHref="#vk" /></svg>
+            <svg className="recipe-share__icon"><use xlinkHref="#odnoklassniki" /></svg>
+            <svg className="recipe-share__icon"><use xlinkHref="#facebook" /></svg>
+            <svg className="recipe-share__icon"><use xlinkHref="#twitter" /></svg>
+            <svg className="recipe-share__icon"><use xlinkHref="#telegram" /></svg>
           </div>
         </div>
         <div className="comment-section">
