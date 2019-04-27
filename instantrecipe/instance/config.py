@@ -5,7 +5,7 @@ class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True
-    SECRET = os.getenv('SECRET_KEY')
+    SECRET_KEY = os.getenv('SECRET_KEY')
     MONGO_URI = os.getenv('DB')
 
 

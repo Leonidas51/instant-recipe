@@ -4,6 +4,7 @@ import datetime
 from bson.objectid import ObjectId
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
+from flask_wtf.csrf import CSRFProtect
 
 
 import logger
@@ -45,11 +46,14 @@ def create_app(test_config=None):
     app.add_url_rule('/', endpoint='index')
     app.register_error_handler(404, errors.page_not_found)
 
-    from .controllers import ingredients, recipes, tags, tips
+    from .controllers import ingredients, recipes, tags, tips, users
     api_prefix = '/api'
     app.register_blueprint(ingredients.ingredients_bp, url_prefix=api_prefix)
     app.register_blueprint(recipes.recipes_bp, url_prefix=api_prefix)
     app.register_blueprint(tags.tags_bp, url_prefix=api_prefix)
     app.register_blueprint(tips.tips_bp, url_prefix=api_prefix)
+    app.register_blueprint(users.users_bp, url_prefix=api_prefix)
+
+    csrf = CSRFProtect(app)
 
     return app
