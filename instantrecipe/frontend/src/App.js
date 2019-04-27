@@ -24,6 +24,12 @@ class App extends React.Component {
           <div>
             <Helmet>
               <title>Рецепт Быстрого Приготовления</title>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width , initial-scale=1, shrink-to-fit=no" />
+              <meta name="description" content="Быстрый поиск рецептов по заданным ингредиентам" />
+              <meta property="og:title" content="Рецепт Быстрого Приготовления" />
+              <meta property="og:description" content="Быстрый поиск рецептов по заданным ингредиентам" />
+              <meta property="og:url" content="http://instantrecipe.ru/" />
             </Helmet>
 
             <Header />

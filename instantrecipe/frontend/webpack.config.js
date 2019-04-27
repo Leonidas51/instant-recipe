@@ -42,14 +42,13 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Рецепт Быстрого Приготовления',
-      template: 'public/templates/index.html',
+      template: 'src/index.html',
       inject: 'body',
       hash: true
     })
   ],
   devServer: {
-    contentBase: path.join(__dirname, "public/"),
+    contentBase: false,
     host: '0.0.0.0',
     port: 8000,
     publicPath: "/dist/",
