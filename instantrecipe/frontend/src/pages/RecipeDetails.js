@@ -94,11 +94,10 @@ class RecipeDetails extends React.Component {
   render() {
     const { error, recipe_loaded, recipe } = this.state;
 
-    let search_result = <div className="loading">loading...</div>;
     let difficulty_style = {};
 
     if(error) {
-      search_result = <div className="error-message">{ error.message }</div>
+      
     } else if(recipe_loaded) {
       difficulty_style = {
         backgroundColor: difficulty[this.state.recipe.difficulty - 1].color
@@ -109,9 +108,18 @@ class RecipeDetails extends React.Component {
       <React.Fragment>
       <Helmet>
         {
-          this.state.recipe.name ? <title>{this.state.recipe.name} - Рецепт Быстрого Приготовления</title> 
+          (recipe_loaded && !error)
+            ? <title>{recipe.name} - Рецепт Быстрого Приготовления</title>
             : <title>Рецепт Быстрого Приготовления</title>
         }
+
+        {
+          (recipe_loaded && !error)
+            ? <meta property="og:title" content={recipe.name} />
+            : null
+        }
+        
+        <meta property="og:description" content="Рецепт Быстрого Приготовления" />
       </Helmet>
 
       <div className="content-area content-area_recipe-details">
