@@ -149,6 +149,10 @@ def get_pipeline(search_type, searched_items, sort_conditions=[]):
 		else:
 			pipeline.extend([matches, matches_size, match_condition, sort, timesort, limit])
 	elif search_type == 'by_name':
+		searched_items = searched_items.lower()
+		match = re.match('^[ёа-я0-9 ]+$', searched_items)
+		if match is None:
+			return None
 		match_condition = {'$match': {
 					 		  'name': {
 							  	  '$regex': u'(^' + searched_items + '| ' + searched_items + ')',
@@ -166,13 +170,18 @@ def read_recipe_list(search_type, args, sort_conditions):
 	if request.method == 'GET':
 		try:
 			if args:
+				if sort_conditions is None:
+					return jsonify(data = 'Nothing was found!'), 204
 				if search_type != 'by_name':
 					searched_items = args.split('&')
 					searched_items = [ObjectId(item) for item in searched_items]
 				else:
 					searched_items = args
 				sort_conditions = sort_conditions.split('&')
-				data = mongo.db.recipes.aggregate(get_pipeline(search_type, searched_items, sort_conditions))
+				pipeline = get_pipeline(search_type, searched_items, sort_conditions)
+				if pipeline is None:
+					return jsonify(data = 'Nothing was found!'), 204
+				data = mongo.db.recipes.aggregate(pipeline)
 				data = list(data)
 
 				if not data:

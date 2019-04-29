@@ -15,18 +15,20 @@ ingredients_bp = Blueprint('ingredients', __name__)
 def read_ingredient(name):
     if request.method == 'GET':
         try:
+            if name is None or len(name) == 0:
+                return jsonify([]), 204
             name = name.lower()
-            match = re.match("^[ёа-я0-9 ]+$", name)
+            match = re.match('^[ёа-я0-9 ]+$', name)
             if match is None:
-                return jsonify(data = 'Nothing was found!'), 204
+                return jsonify([]), 204
             data = mongo.db.ingredients.find({'name':{'$regex':u'(^' + name + '| ' + name + ')'}}).limit(10)
             if data == None:
-                return jsonify(data = 'Nothing was found!'), 204
+                return jsonify([]), 204
             data = sorted(list(data), key=lambda x: 'a' + x['name'] if x['name'].startswith(name) else 'b' + x['name'])
             return jsonify(data), 200
         except Exception as e:
             LOG.error('error while trying to read_ingredient: ' + str(e))
-            return jsonify(data = 'Nothing was found!'), 204
+            return jsonify([]), 204
 
 @ingredients_bp.route('/random_ingredient/', methods=['GET'])
 def read_random_ingredient():

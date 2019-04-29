@@ -153,7 +153,11 @@ class SearchArea extends React.Component {
 
     fetch(`/api/ingredient/${query}`)
       .then(response => {
-        return response.json();
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return [];
+        }
       })
       .then(result => {
         if(!result.length) {
@@ -175,7 +179,11 @@ class SearchArea extends React.Component {
 
     fetch(`/api/tag/${query}`)
       .then(response => {
-        return response.json();
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return [];
+        }
       })
       .then(result => {
         if(!result.length) {
@@ -191,7 +199,7 @@ class SearchArea extends React.Component {
         console.error(err);
       })
 	}
-	
+
 	prepareQuery(args) {
 		let query;
 
@@ -232,7 +240,7 @@ class SearchArea extends React.Component {
   _prepareQueryName(val, sort) {
 		const selected_sort = sort || this.state.selected_sort,
 					search = val || this.state.input_value;
-    
+    search.replace(/#|.|\//g,'')
     if(!search.length) {
       return null;
     }
@@ -570,7 +578,7 @@ class SearchArea extends React.Component {
               : 'input-container__suggestions_hidden'}`}
           >
 
-            {   
+            {
               this.state.suggest_error && this.state.input_value.length
               ? <div className="input-container__suggestions-error">
                   {this.state.suggest_error}
