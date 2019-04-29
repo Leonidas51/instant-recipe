@@ -54,12 +54,13 @@ class Header extends React.Component {
   /* end dom events */
 
   render() {
+    /*
     let metas = document.getElementsByTagName('meta');
 
     for (let i = 0; i < metas.length; i++) {
       console.log(metas[i].getAttribute('name'));
       console.log(metas[i].getAttribute('content'));
-    }
+    }*/
     return (
       <div className={`header ${this.state.header_class}`}>
         <div className="header__logo"></div>

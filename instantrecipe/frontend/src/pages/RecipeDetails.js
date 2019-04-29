@@ -265,11 +265,34 @@ class RecipeDetails extends React.Component {
         <div className="recipe-share">
           <p>Поделиться: </p>
           <div className="recipe-share__list">
-            <svg className="recipe-share__icon"><use xlinkHref="#vk" /></svg>
-            <svg className="recipe-share__icon"><use xlinkHref="#odnoklassniki" /></svg>
-            <svg className="recipe-share__icon"><use xlinkHref="#facebook" /></svg>
-            <svg className="recipe-share__icon"><use xlinkHref="#twitter" /></svg>
-            <svg className="recipe-share__icon"><use xlinkHref="#telegram" /></svg>
+            <a 
+              href={"http://vk.com/share.php?url=" + window.location + "&title=" + encodeURI(this.state.recipe.name + " - Рецепт Быстрого Приготовления")}
+              target="_blank"
+            >
+              <svg className="recipe-share__icon"><use xlinkHref="#vk" /></svg>
+            </a>
+
+            <a href={"https://connect.ok.ru/offer?url=" + window.location + "&title=" + encodeURI(this.state.recipe.name + " - Рецепт Быстрого Приготовления")}>
+              <svg className="recipe-share__icon"><use xlinkHref="#odnoklassniki" /></svg>
+            </a>
+
+            <a
+              href={"http://www.facebook.com/sharer/sharer.php?u=" + window.location}
+              target="_blank"
+            >
+              <svg className="recipe-share__icon"><use xlinkHref="#facebook" /></svg>
+            </a>
+            
+            <a 
+              href={"http://twitter.com/share?url=" + window.location + "&text=" + encodeURI(this.state.recipe.name + " - Рецепт Быстрого Приготовления")}
+              target="_blank"
+            >
+              <svg className="recipe-share__icon"><use xlinkHref="#twitter" /></svg>
+            </a>
+
+            <a href={"tg://msg?text=" + encodeURI(this.state.recipe.name + " - Рецепт Быстрого Приготовления: ") + window.location}>
+              <svg className="recipe-share__icon"><use xlinkHref="#telegram" /></svg>
+            </a>
           </div>
         </div>
         <div className="comment-section">
