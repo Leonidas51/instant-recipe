@@ -237,7 +237,7 @@ class SearchArea extends React.Component {
       return null;
     }
 
-    return encodeURI(`/recipes/by_name/${search}/${selected_sort}`)
+    return `/recipes/by_name/${encodeURIComponent(search)}/${selected_sort}`
   }
 
   _prepareQueryTags(tags, sort) {
