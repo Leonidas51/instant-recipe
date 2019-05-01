@@ -2,9 +2,10 @@ import os
 import datetime
 from bson.objectid import ObjectId
 from passlib.hash import pbkdf2_sha256
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, session
 from instantrecipe import mongo
 import logger
+
 
 ROOT_PATH = os.environ.get('ROOT_PATH')
 LOG = logger.get_root_logger(
@@ -37,4 +38,7 @@ def logout():
     pass
 
 def register():
+    pass
+
+def get_user():
     pass

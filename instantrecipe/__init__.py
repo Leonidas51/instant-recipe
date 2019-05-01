@@ -5,7 +5,7 @@ from bson.objectid import ObjectId
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
 from flask_wtf.csrf import CSRFProtect
-
+from flask_session import Session
 
 import logger
 from .instance.config import app_config
@@ -55,5 +55,6 @@ def create_app(test_config=None):
     app.register_blueprint(users.users_bp, url_prefix=api_prefix)
 
     csrf = CSRFProtect(app)
+    Session(app)
 
     return app

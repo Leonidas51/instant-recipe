@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 
 class Config(object):
@@ -7,6 +8,8 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = os.getenv('SECRET_KEY')
     MONGO_URI = os.getenv('DB')
+    SESSION_TYPE = 'mongodb'
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
 
 
 class DevelopmentConfig(Config):
