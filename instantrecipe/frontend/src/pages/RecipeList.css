@@ -28,6 +28,10 @@
   object-fit: contain;
 }
 
+.recipe__pic_default {
+  object-fit: cover;
+}
+
 .recipe__information {
   width: 68%;
   display: flex;

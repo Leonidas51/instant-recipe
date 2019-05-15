@@ -12,12 +12,12 @@ class FeaturedRecipes extends React.Component {
     /* используем воображение */
     return [{
       name: 'Курица с кетчупом',
-      path: 'kuritsa-s-ketchupom',
+      photo: 'kuritsa-s-ketchupom/1.png',
       id: 'abcd'
     },
     {
       name: 'Курица с майонезом',
-      path: 'kuritsa-s-mayonezom',
+      photo: 'kuritsa-s-mayonezom/1.png',
       id: 'efgh'
     }];
   }
@@ -28,7 +28,11 @@ class FeaturedRecipes extends React.Component {
         {this.state.featured.map((recipe) => {
           return (
             <div key={recipe.id} className="featured-recipes__container">
-              <img className="featured-recipes__image" src={require(`../../images/${recipe.path}/1.png`)} />
+              {
+                recipe.photo
+                ? <img className="featured-recipes__image" src={require(`../../images/${recipe.photo}`)} />
+                : <img className="featured-recipes__image" src={require(`../../images/default.png`)} />
+              }
               <div className="featured-recipes__name">
                 <Link className="featured-recipes__link" to={`/recipe/${recipe.id}/`}> {recipe.name} </Link>
               </div>

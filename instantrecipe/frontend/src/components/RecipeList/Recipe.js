@@ -29,7 +29,11 @@ function Recipe(props) {
         <Link
           to={ encodeURI(`/recipe/details/${rec._id}`) }
         >
-          <img className="recipe__pic" src={require(`../../images/kuritsa-s-ketchupom/1.png`)} />
+          {
+            rec.photo.length
+            ? <img className="recipe__pic" src={require(`../../images/${rec.photo}`)} />
+            : <img className="recipe__pic recipe__pic_default" src={require(`../../images/default.png`)} />
+          }
         </Link>
       </div>
       <div className="recipe__information">
