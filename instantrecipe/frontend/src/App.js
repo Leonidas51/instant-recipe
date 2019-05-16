@@ -2,15 +2,16 @@ import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { CookiesProvider, withCookies } from 'react-cookie';
 import {Helmet} from "react-helmet";
+import "./reset.css";
+import "./common.css";
 import About from "./pages/About";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
+import TagByName from "./components/utils/TagByName";
 import Header from "./components/shared/Header";
 import Footer from "./components/shared/Footer";
-import "./reset.css";
-import "./common.css";
 
 class App extends React.Component {
   constructor(props) {
@@ -39,6 +40,7 @@ class App extends React.Component {
               <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
               <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
+              <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
 
