@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton";
-import ScrollToTop from "../components/shared/ScrollToTop";
+import ScrollToTop from "../components/utils/ScrollToTop";
 import "./RecipeDetails.css";
 import FacebookIcon from "../icons/social/facebook.svg";
 import VkIcon from "../icons/social/vk.svg";
@@ -144,13 +144,13 @@ class RecipeDetails extends React.Component {
                     if(this.state.recipe.tag_names[i+1]) {
                       return (
                         <span key={this.state.recipe.tag_ids[i]}>
-                          <span className="recipe-information__tag-name">{ tag }</span>,&nbsp;
+                          <Link to={encodeURI(`/tag_name/${tag}`)} className="recipe-information__tag-name">{ tag }</Link>,&nbsp;
                         </span>
                       )
                     } else {
                       return (
-                        <span key={this.state.recipe.tag_ids[i]} className="recipe-information__tag-name">
-                          { tag }
+                        <span key={this.state.recipe.tag_ids[i]}>
+                          <Link to={encodeURI(`/tag_name/${tag}`)} className="recipe-information__tag-name">{ tag }</Link>
                         </span>
                       )
                     }
