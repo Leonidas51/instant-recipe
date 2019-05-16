@@ -10,6 +10,8 @@ class Config(object):
     MONGO_URI = os.getenv('DB')
     SESSION_TYPE = 'mongodb'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
+    UPLOAD_FOLDER = 'instantrecipe/frontend/src/images'
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 Mb max
 
 
 class DevelopmentConfig(Config):

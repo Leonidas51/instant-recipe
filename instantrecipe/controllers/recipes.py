@@ -1,7 +1,9 @@
 import os
 import re
+from PIL import Image
 from bson.objectid import ObjectId
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, current_app
+from werkzeug.utils import secure_filename
 from instantrecipe import mongo
 import logger
 
@@ -228,11 +230,48 @@ def read_recipe_ings_info(args):
 
 @recipes_bp.route('/recipe/get_featured/', methods=['GET'])
 def get_featured_recipes():
+	if request.method == 'GET':
+		try:
+			data = mongo.db.recipes.find({'featured': True}).limit(2)
+			data = [recipe for recipe in data]
+			return jsonify(data), 200
+		except Exception as e:
+			LOG.error('error while trying to get_featured_recipes: ' + str(e))
+			return jsonify(data = 'Nothing was found!'), 204
+
+def compress_and_change_to_jpg(file):
 	try:
-		data = mongo.db.recipes.find({'featured': True}).limit(2)
-		data = [recipe for recipe in data]
-		#LOG.info(str(data))
-		return jsonify(data), 200
+		im = Image.open(file.stream)
+		size = (128, 128)
+		im.thumbnail(size)
+		im.save(file.stream, 'jpg')
 	except Exception as e:
-		LOG.error('error while trying to get_featured_recipes: ' + str(e))
-		return jsonify(data = 'Nothing was found!'), 204
+		LOG.error('error while trying to compress_and_change_to_jpg: ' + str(e))
+
+def allowed_file(filename):
+	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST', 'GET'])
+def upload_recipe_photo(recipe_id):
+	if request.method == 'POST':
+		try:
+			if 'file' not in request.files:
+				LOG.error('error: no file part in request')
+				return jsonify(data = 'error: no file part in request'), 200
+			file = request.files['file']
+			if file.filename == '':
+				LOG.error('error: no file attachment')
+				return jsonify(data = 'error: no file attachment'), 200
+			if file and allowed_file(file.filename):
+				filename = secure_filename(file.filename)
+			save_directory = os.path.join(current_app.config['UPLOAD_FOLDER'], 'recipes', recipe_id)
+			if not os.path.exists(save_directory):
+				os.makedirs(save_directory)
+				compress_and_change_to_jpg(file)
+				file.save(os.path.join(save_directory, filename))
+				return jsonify(data = 'success!'), 200
+		except Exception as e:
+			LOG.error('error while trying to upload_recipe_photo: ' + str(e))
+			return jsonify(data = 'Nothing was found!'), 204

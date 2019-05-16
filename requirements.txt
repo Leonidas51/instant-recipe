@@ -16,3 +16,4 @@ passlib==1.7.1
 pyjwt==1.7.1
 Flask-WTF==0.14.2
 flask_session==0.3.1
+pillow===6.0.0
