@@ -225,3 +225,14 @@ def read_recipe_ings_info(args):
 		except Exception as e:
 			LOG.error('error while trying to read_recipe_ings_info: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
+
+@recipes_bp.route('/recipe/get_featured/', methods=['GET'])
+def get_featured_recipes():
+	try:
+		data = mongo.db.recipes.find({'featured': True}).limit(2)
+		data = [recipe for recipe in data]
+		#LOG.info(str(data))
+		return jsonify(data), 200
+	except Exception as e:
+		LOG.error('error while trying to get_featured_recipes: ' + str(e))
+		return jsonify(data = 'Nothing was found!'), 204

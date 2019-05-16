@@ -177,7 +177,7 @@ class SearchArea extends React.Component {
   fetchSuggestedTags(query) {
     let error = '';
 
-    fetch(`/api/tag/${query}`)
+    fetch(`/api/suggested_tags/${query}`)
       .then(response => {
         if (response.status === 200) {
           return response.json();

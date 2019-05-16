@@ -10,8 +10,8 @@ LOG = logger.get_root_logger(
 tags_bp = Blueprint('tags', __name__)
 
 
-@tags_bp.route('/tag/<string:name>/', methods=['GET'])
-def read_tag(name):
+@tags_bp.route('/suggested_tags/<string:name>/', methods=['GET'])
+def read_suggested_tags(name):
     if request.method == 'GET':
         try:
             name = name.lower()
@@ -19,6 +19,19 @@ def read_tag(name):
             if data == None:
                 return jsonify(data = 'Nothing was found!'), 204
             data = sorted(list(data), key=lambda x: 'a' + x['name'] if x['name'].startswith(name) else 'b' + x['name'])
+            return jsonify(data), 200
+        except Exception as e:
+            LOG.error('error while trying to read_suggested_tags: ' + str(e))
+            return jsonify(data = 'Nothing was found!'), 204
+
+@tags_bp.route('/tag/<string:name>/', methods=['GET'])
+def read_tag(name):
+    if request.method == 'GET':
+        try:
+            name = name.lower()
+            data = mongo.db.tags.find_one({'name': name})
+            if data == None:
+                return jsonify(data = 'Nothing was found!'), 204
             return jsonify(data), 200
         except Exception as e:
             LOG.error('error while trying to read_tag: ' + str(e))
