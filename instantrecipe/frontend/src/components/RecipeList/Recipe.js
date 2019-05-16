@@ -31,8 +31,8 @@ function Recipe(props) {
         >
           {
             rec.photo.length
-            ? <img className="recipe__pic" src={require(`../../images/${rec.photo}`)} />
-            : <img className="recipe__pic recipe__pic_default" src={require(`../../images/default.png`)} />
+            ? <img className="recipe__pic" src={require(`../../images/recipes/${rec.photo}`)} />
+            : <img className="recipe__pic recipe__pic_default" src={require(`../../images/recipes/default.png`)} />
           }
         </Link>
       </div>

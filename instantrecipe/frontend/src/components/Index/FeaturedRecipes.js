@@ -30,8 +30,8 @@ class FeaturedRecipes extends React.Component {
             <div key={recipe.id} className="featured-recipes__container">
               {
                 recipe.photo
-                ? <img className="featured-recipes__image" src={require(`../../images/${recipe.photo}`)} />
-                : <img className="featured-recipes__image" src={require(`../../images/default.png`)} />
+                ? <img className="featured-recipes__image" src={require(`../../images/recipes/${recipe.photo}`)} />
+                : <img className="featured-recipes__image" src={require(`../../images/recipes/default.png`)} />
               }
               <div className="featured-recipes__name">
                 <Link className="featured-recipes__link" to={`/recipe/${recipe.id}/`}> {recipe.name} </Link>

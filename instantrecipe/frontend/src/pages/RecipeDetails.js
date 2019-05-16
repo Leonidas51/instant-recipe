@@ -129,8 +129,8 @@ class RecipeDetails extends React.Component {
           {
             this.state.recipe_loaded
             ? this.state.recipe.photo
-              ? <img className="recipe-pic" src={require(`../images/${this.state.recipe.photo}`)} />
-              : <img className="recipe-pic" src={require(`../images/default.png`)} />
+              ? <img className="recipe-pic" src={require(`../images/recipes/${this.state.recipe.photo}`)} />
+              : <img className="recipe-pic" src={require(`../images/recipes/default.png`)} />
             : null
           }
             <UploadRecipePhotoButton/>
