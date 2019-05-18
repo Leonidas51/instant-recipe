@@ -76,3 +76,10 @@
     margin-bottom: 10px;
   }
 }
+
+.highlighted-text__list {
+  list-style-type: disc;
+  padding-left: 40px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

@@ -20,7 +20,14 @@ class Index extends React.Component {
         <div className="highlighted-text">
           <div className="highlighted-text__title">Добро пожаловать!</div>
           <div className="highlighted-text__body">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            Здесь вы можете найти быстрый рецепт по заданным вами ингредиентам. Начните вводить ингредиенты в поле сверху, а затем выберите подходящий из выпавшего списка. Можно добавить произвольное количество ингредиентов.<br />
+            Желтая панель под строкой поиска позволяет выбрать вид поиска:
+            <ul className="highlighted-text__list">
+              <li>по ингредиентам;</li>
+              <li>по тэгам;</li>
+              <li>по названию рецепта.</li>
+            </ul>
+            Мы постараемся подобрать рецепты с наибольшим совпадением с выбранным вами списком, а на странице выдачи вы также сможете выбрать подходящий вам вид сортировки.
           </div>
         </div>
       </div>
