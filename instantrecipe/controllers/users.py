@@ -32,11 +32,11 @@ def register():
         email = request.json.get('email')
         password = request.json.get('password')
         if username is None or email is None or password is None:
-            return jsonify(data = 'Username, email or password are not valid'), 200
+            return jsonify({'result': 'error', 'message': 'Username, email or password are not valid'}), 200
         if User.find_by_email(email):
-            return jsonify(data = 'Email already in use!'), 200
+            return jsonify({'result': 'error', 'message': 'Email already in use!'}), 200
         if User.find_by_name(username):
-            return jsonify(data = 'Name already in use!'), 200
+            return jsonify({'result': 'error', 'message': 'Name already in use!'}), 200
         user = User(username, email, password)
         user.save_to_db()
         session['user'] = user
@@ -44,35 +44,37 @@ def register():
         return jsonify({'result': 'success'}), 200
     except Exception as e:
         LOG.error('error while trying to register: ' + str(e))
+        return jsonify({'result': 'error', 'message:': 'Something not right'}), 200
 
-@users_bp.route('/user/login/<string:username>/<string:password>/', methods=['GET'])
+@users_bp.route('/user/login/', methods=['POST'])
 def login(email, password):
     try:
         user = User()
         if not user.find_by_email(email):
-            return jsonify(data='Wrong username'), 200#return False
+            return jsonify({'result': 'error', 'message': 'Wrong username'}), 200
         user.set_from_db_by_email(email)
         if not user.verify_password(password):
-            return jsonify(data='Wrong password'), 200#return False
+            return jsonify({'result': 'error', 'message': 'Wrong password'}), 200
         session['user'] = user
         #auth_token = user.generate_auth_token()
-        return jsonify({'result': 'success'}), 200#return True
+        return jsonify({'result': 'success'}), 200
     except:
         LOG.error('error while trying to login: ' + str(e))
+        return jsonify({'result': 'error', 'message:': 'Something not right'}), 200
 
-@users_bp.route('/user/logout/', methods=['GET', 'POST'])
+@users_bp.route('/user/logout/', methods=['POST'])
 def logout():
     try:
         session.pop('user')
-        return jsonify(data = 'logged out')#return True
+        return jsonify({'result': 'success'}), 200
     except:
-        return jsonify(data = 'no user in session')#return False
+        return jsonify({'result': 'error', 'message:': 'No user in session'}), 200
 
-@users_bp.route('/user/isloggedin/', methods=['GET', 'POST'])
+@users_bp.route('/user/isloggedin/', methods=['POST'])
 def is_logged_in():
     if 'user' in session:
-        return True
-    return False
+        return jsonify({'result': 'success'}), 200
+    return jsonify({'result': 'error', 'message:': 'No user in session'}), 200
 
 @users_bp.route('/user/resource/', methods=['GET'])
 @login_required

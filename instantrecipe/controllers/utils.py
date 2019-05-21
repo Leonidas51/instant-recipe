@@ -11,6 +11,7 @@ LOG = logger.get_root_logger(
     __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
 utils_bp = Blueprint('utils', __name__)
 
+"""
 @utils_bp.route('/utils/csrf/', methods=['GET'])
 def request_CSRF_token():
     if request.method == 'GET':
@@ -20,7 +21,6 @@ def request_CSRF_token():
             LOG.error('error while trying to request_CSRF_token: ' + str(e))
             return jsonify(data = str(e)), 200
 
-"""
 def filter_brackets(instructions):
 	match_square_and_round_brackets = re.compile('\[[»ЁёА-я0-9 »]+\]\([A-z0-9 \/]+\)')
 	match_square_brackets = re.compile('\[[»ЁёА-я »]+\]\[[A-z0-9 \/]+\]')
