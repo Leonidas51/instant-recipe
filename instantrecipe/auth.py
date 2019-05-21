@@ -54,16 +54,23 @@ class User:
         return True
 
     @staticmethod
-    def already_exists(email):
+    def find_by_email(email):
         if not mongo.db.users.find_one({'email': email}):
             return False
         return True
 
+    @staticmethod
+    def find_by_name(name):
+        if not mongo.db.users.find_one({'name': name}):
+            return False
+        return True
+    """
     def find_by_email(self, email):
         result = mongo.db.users.find_one({'email': email})
         if not result:
             return False
         return True
+    """
 
 def login_required(func):
     @functools.wraps(func)

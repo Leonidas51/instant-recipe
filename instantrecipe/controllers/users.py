@@ -33,8 +33,10 @@ def register():
         password = request.json.get('password')
         if username is None or email is None or password is None:
             return jsonify(data = 'Username, email or password are not valid'), 200
-        if User.already_exists(email):
-            return jsonify(data = 'User already exists'), 200
+        if User.find_by_email(email):
+            return jsonify(data = 'Email already in use!'), 200
+        if User.find_by_name(username):
+            return jsonify(data = 'Name already in use!'), 200
         user = User(username, email, password)
         user.save_to_db()
         session['user'] = user

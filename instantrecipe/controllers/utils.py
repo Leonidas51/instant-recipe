@@ -1,3 +1,25 @@
+import os
+from bson.objectid import ObjectId
+from flask import request, jsonify, Blueprint, session
+from instantrecipe import mongo
+import logger
+from flask_wtf.csrf import generate_csrf
+
+
+ROOT_PATH = os.environ.get('ROOT_PATH')
+LOG = logger.get_root_logger(
+    __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
+utils_bp = Blueprint('utils', __name__)
+
+@utils_bp.route('/utils/csrf/', methods=['GET'])
+def request_CSRF_token():
+    if request.method == 'GET':
+        try:
+            return jsonify({'csrftoken': generate_csrf()}), 200
+        except Exception as e:
+            LOG.error('error while trying to request_CSRF_token: ' + str(e))
+            return jsonify(data = str(e)), 200
+
 """
 def filter_brackets(instructions):
 	match_square_and_round_brackets = re.compile('\[[»ЁёА-я0-9 »]+\]\([A-z0-9 \/]+\)')
