@@ -6,6 +6,7 @@ class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True
+    WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365 # one year (count in seconds)
     SECRET_KEY = os.getenv('SECRET_KEY')
     MONGO_URI = os.getenv('DB')
     SESSION_TYPE = 'mongodb'
