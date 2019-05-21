@@ -47,9 +47,11 @@ def register():
         return jsonify({'result': 'error', 'message:': 'Something not right'}), 200
 
 @users_bp.route('/user/login/', methods=['POST'])
-def login(email, password):
+def login():
     try:
         user = User()
+        email = request.json.get('email')
+        password = request.json.get('password')
         if not user.find_by_email(email):
             return jsonify({'result': 'error', 'message': 'Wrong username'}), 200
         user.set_from_db_by_email(email)
@@ -58,7 +60,7 @@ def login(email, password):
         session['user'] = user
         #auth_token = user.generate_auth_token()
         return jsonify({'result': 'success'}), 200
-    except:
+    except Exception as e:
         LOG.error('error while trying to login: ' + str(e))
         return jsonify({'result': 'error', 'message:': 'Something not right'}), 200
 

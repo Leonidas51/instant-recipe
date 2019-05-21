@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
+import Auth from "./pages/Auth";
 import TagByName from "./components/utils/TagByName";
 import Header from "./components/shared/Header";
 import Footer from "./components/shared/Footer";
@@ -40,6 +41,7 @@ class App extends React.Component {
               <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
               <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
+              <Route path="/auth" render={() => (<Auth cookies={this.props.cookies} />)} />
               <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
