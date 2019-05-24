@@ -68,7 +68,8 @@ def login():
                             'message': 'Неверное имя или e-mail'}), 400
         session['user'] = user
         #auth_token = user.generate_auth_token()
-        return jsonify({'result': 'success'}), 200
+        return jsonify({'result': 'success',
+                        'username': user.get()['name']}), 200
     except Exception as e:
         LOG.error('error while trying to login: ' + str(e))
         return jsonify({'result': 'error',
@@ -87,12 +88,13 @@ def logout():
 @users_bp.route('/user/isloggedin/', methods=['POST'])
 def is_logged_in():
     if 'user' in session:
-        return jsonify({'result': 'success'}), 200
+        return jsonify({'result': 'success',
+                        'username': session['user'].get()['name']}), 200
     return jsonify({'result': 'error',
                     'message:': 'Данный пользователь не осуществлял вход в аккаунт'}), 400
 
 @users_bp.route('/user/isadmin/', methods=['POST'])
-def is_logged_in():
+def is_admin():
     if 'user' in session and session['user'].get()['admin'] == True:
         return jsonify({'result': 'success'}), 200
     return jsonify({'result': 'error',

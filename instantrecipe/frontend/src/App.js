@@ -9,17 +9,114 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
-import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
+import Modal from "./components/hoc/Modal";
 import TagByName from "./components/utils/TagByName";
 import Header from "./components/shared/Header";
 import Footer from "./components/shared/Footer";
+import Auth from "./components/shared/Auth";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      is_logged_in: false,
+      is_admin: false,
+      username: '', //нужно api для получения в случае обновления страницы
+      auth_modal_open: false,
+    }
+
+    this.login = this.login.bind(this);
+    this.register = this.register.bind(this);
+    this.logout = this.logout.bind(this);
+    this.open_auth_modal = this.open_auth_modal.bind(this);
+    this.close_auth_modal = this.close_auth_modal.bind(this);
+  }
+
+  componentDidMount() {
+    this.update_logged_in();
+    this.update_admin();
+
+    this.setState({auth_modal: Modal(Auth, this.close_auth_modal)});
+  }
+
+  update_logged_in() {
+    fetch('api/user/isloggedin/', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': this.props.cookies.get('csrftoken')
+      }
+    })
+      .then((response) => {
+        if(response.status === 200) {
+          response.json()
+            .then((result) => {
+              this.setState({
+                is_logged_in: true,
+                username: result.username
+              })
+            })
+        }
+      })
+  }
+
+  update_admin() {
+    fetch('api/user/isadmin/', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': this.props.cookies.get('csrftoken')
+      }
+    })
+      .then((response) => {
+        if(response.status === 200) {
+          this.setState({is_admin: true});
+        }
+      })
+  }
+
+  open_auth_modal() {
+    this.setState({auth_modal_open: true});
+  }
+
+  close_auth_modal() {
+    this.setState({auth_modal_open: false});
+  }
+
+  login(username) {
+    this.setState({
+      is_logged_in: true,
+      username: username
+    });
+
+    this.update_admin();
+  }
+
+  register(username) {
+    this.setState({
+      is_logged_in: true,
+      username: username
+    })
+  }
+
+  logout() {
+    fetch('api/user/logout/', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': this.props.cookies.get('csrftoken')
+      },
+    })
+      .then((response) => {
+        this.setState({
+          is_logged_in: false,
+          username: ''
+        })
+      })
   }
 
   render() {
+    const AuthModal = this.state.auth_modal;
+
     return (
       <CookiesProvider>
         <Router>
@@ -34,20 +131,26 @@ class App extends React.Component {
               <meta property="og:url" content="http://instantrecipe.ru/" />
             </Helmet>
 
-            <Header />
+            <Header
+              isLoggedIn={this.state.is_logged_in}
+              isAdmin={this.state.is_admin}
+              username={this.state.username}
+              logout={this.logout}
+              openAuth={this.open_auth_modal}
+            />
 
             <Switch>
               <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
               <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
               <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
-              <Route path="/auth" render={() => (<Auth cookies={this.props.cookies} />)} />
               <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
+              <Route path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
 
             <Footer />
-
+            {this.state.auth_modal_open ? <AuthModal login={this.login} register={this.register} cookies={this.props.cookies} /> : null}
           </div>
         </Router>
       </CookiesProvider>

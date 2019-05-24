@@ -54,13 +54,6 @@ class Header extends React.Component {
   /* end dom events */
 
   render() {
-    /*
-    let metas = document.getElementsByTagName('meta');
-
-    for (let i = 0; i < metas.length; i++) {
-      console.log(metas[i].getAttribute('name'));
-      console.log(metas[i].getAttribute('content'));
-    }*/
     return (
       <div className={`header ${this.state.header_class}`}>
         <div className="header__logo"></div>
@@ -68,7 +61,24 @@ class Header extends React.Component {
           <Link className="header__link" to="/">Главная</Link>
           <Link className="header__link" to="/about">О нас</Link>
           <Link className="header__link" to="/contacts">Контакты</Link>
+
+          <div className="header__aside">
+            {
+              this.props.isLoggedIn && this.props.isAdmin
+              ? <Link className="header__link" to="/admin">Админ</Link>
+              : null
+            }
+            {
+              this.props.isLoggedIn
+                ? <React.Fragment>
+                    <Link className="header__link" to="/profile">{this.props.username}</Link>
+                    <div className="header__link" onClick={this.props.logout}>Выйти</div>
+                  </React.Fragment>
+                : <div className="header__link" onClick={this.props.openAuth}>Войти</div>
+            }
+          </div>
         </div>
+
         <div className="header__menu-icon-container" onClick={this.onIconClick}>
           <svg className="header__menu-icon">
             <use xlinkHref="#headermenu" />
