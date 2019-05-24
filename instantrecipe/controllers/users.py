@@ -10,6 +10,7 @@ ROOT_PATH = os.environ.get('ROOT_PATH')
 LOG = logger.get_root_logger(
     __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
 users_bp = Blueprint('users', __name__)
+SERVER_ERROR = 'Произошла ошибка сервера! Приносим свои извинения'
 
 @users_bp.route('/user/create_collection/', methods=['GET'])
 def create_users_collecton():
@@ -32,19 +33,25 @@ def register():
         email = request.json.get('email')
         password = request.json.get('password')
         if username is None or email is None or password is None:
-            return jsonify({'result': 'error', 'message': 'Username, email or password are not valid'}), 200
+            return jsonify({'result': 'error',
+                            'message': 'Имя, e-mail или пароль введены неверно!'}), 400
         if User.find_by_email(email):
-            return jsonify({'result': 'error', 'message': 'Email already in use!'}), 200
+            return jsonify({'result': 'error',
+                            'message': 'Пользователь с таким e-mail уже зарегистрирован!'}), 400
         if User.find_by_name(username):
-            return jsonify({'result': 'error', 'message': 'Name already in use!'}), 200
+            return jsonify({'result': 'error',
+                            'message': 'Пользователь с таким именем уже зарегистрирован!'}), 400
         user = User(username, email, password)
         user.save_to_db()
         session['user'] = user
         #auth_token = user.generate_auth_token()
-        return jsonify({'result': 'success'}), 200
+        return jsonify({'result': 'success',
+                        'message': 'Вы успешно зарегистрированы!',
+                        'username': username}), 200
     except Exception as e:
         LOG.error('error while trying to register: ' + str(e))
-        return jsonify({'result': 'error', 'message:': 'Something not right'}), 200
+        return jsonify({'result': 'error',
+                        'message:': SERVER_ERROR}), 400
 
 @users_bp.route('/user/login/', methods=['POST'])
 def login():
@@ -53,30 +60,43 @@ def login():
         email = request.json.get('email')
         password = request.json.get('password')
         if not user.find_by_email(email):
-            return jsonify({'result': 'error', 'message': 'Wrong username'}), 200
+            return jsonify({'result': 'error',
+                            'message': 'Неверное имя или e-mail'}), 400
         user.set_from_db_by_email(email)
         if not user.verify_password(password):
-            return jsonify({'result': 'error', 'message': 'Wrong password'}), 200
+            return jsonify({'result': 'error',
+                            'message': 'Неверное имя или e-mail'}), 400
         session['user'] = user
         #auth_token = user.generate_auth_token()
         return jsonify({'result': 'success'}), 200
     except Exception as e:
         LOG.error('error while trying to login: ' + str(e))
-        return jsonify({'result': 'error', 'message:': 'Something not right'}), 200
+        return jsonify({'result': 'error',
+                        'message:': SERVER_ERROR}), 400
 
 @users_bp.route('/user/logout/', methods=['POST'])
 def logout():
     try:
         session.pop('user')
-        return jsonify({'result': 'success'}), 200
+        return jsonify({'result': 'success',
+                        'message:': 'Вы успешно вышли из аккаунта'}), 200
     except:
-        return jsonify({'result': 'error', 'message:': 'No user in session'}), 200
+        return jsonify({'result': 'error',
+                        'message:': 'Данный пользователь не осуществлял вход в аккаунт'}), 400
 
 @users_bp.route('/user/isloggedin/', methods=['POST'])
 def is_logged_in():
     if 'user' in session:
         return jsonify({'result': 'success'}), 200
-    return jsonify({'result': 'error', 'message:': 'No user in session'}), 200
+    return jsonify({'result': 'error',
+                    'message:': 'Данный пользователь не осуществлял вход в аккаунт'}), 400
+
+@users_bp.route('/user/isadmin/', methods=['POST'])
+def is_logged_in():
+    if 'user' in session and session['user'].get()['admin'] == True:
+        return jsonify({'result': 'success'}), 200
+    return jsonify({'result': 'error',
+                    'message:': 'Для данного действия требуются права администратора'}), 400
 
 @users_bp.route('/user/resource/', methods=['GET'])
 @login_required
