@@ -1,4 +1,5 @@
 import os
+import re
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, session
 from instantrecipe import mongo
@@ -26,13 +27,30 @@ def create_users_collecton():
             LOG.error('error while trying to create_users_collecton: ' + str(e))
             return jsonify(data = 'Collection already exists'), 200
 
+def validate_username(name):
+    if name is None or not re.match(r'[А-яA-z0-9]+', name):
+        return False
+    return True
+
+def validate_email(email):
+    if email is None or not re.match(r'[А-яA-z0-9]+@[А-яA-z0-9]+\.[А-яA-z0-9]+', email):
+        return False
+    return True
+
+def validate_password(password):
+    if password is None or len(password) < 6:
+        return False
+    return True
+
 @users_bp.route('/user/register/', methods=['POST'])
 def register():
     try:
         username = request.json.get('username')
         email = request.json.get('email')
         password = request.json.get('password')
-        if username is None or email is None or password is None:
+        if not validate_username(username) or \
+            not validate_email(email) or \
+            not validate_password(password):
             return jsonify({'result': 'error',
                             'message': 'Имя, e-mail или пароль введены неверно!'}), 400
         if User.find_by_email(email):
@@ -59,13 +77,16 @@ def login():
         user = User()
         email = request.json.get('email')
         password = request.json.get('password')
+        if validate_email(email) or not validate_username(password):
+            return jsonify({'result': 'error',
+                            'message': 'E-mail или пароль введены неверно!'}), 400
         if not user.find_by_email(email):
             return jsonify({'result': 'error',
-                            'message': 'Неверное имя или e-mail'}), 400
+                            'message': 'Неверный e-mail или пароль'}), 400
         user.set_from_db_by_email(email)
         if not user.verify_password(password):
             return jsonify({'result': 'error',
-                            'message': 'Неверное имя или e-mail'}), 400
+                            'message': 'Неверный e-mail или пароль'}), 400
         session['user'] = user
         #auth_token = user.generate_auth_token()
         return jsonify({'result': 'success',
@@ -86,7 +107,7 @@ def logout():
                         'message:': 'Данный пользователь не осуществлял вход в аккаунт'}), 400
 
 @users_bp.route('/user/isloggedin/', methods=['POST'])
-def is_logged_in():
+def if_logged_in_return_name():
     if 'user' in session:
         return jsonify({'result': 'success',
                         'username': session['user'].get()['name']}), 200
