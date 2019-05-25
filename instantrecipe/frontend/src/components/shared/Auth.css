@@ -24,6 +24,7 @@
   box-sizing: border-box;
   border-style: solid;
   border-radius: 5px;
+  transition: 0.3s;
 }
 
 .auth__input_outline_error {
@@ -38,6 +39,11 @@
   color: #FCBC5D;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.auth__error {
+  margin-bottom: 5px;
+  color: #E73A23;;
 }
 
 .auth__button {

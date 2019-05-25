@@ -8,15 +8,12 @@ class Auth extends React.Component {
     super(props);
 
     this.state = {
-      login_email: '',
-      login_pass: '',
-      reg_email: '',
-      reg_username: '',
-      reg_pass: '',
-      reg_pass_repeat: '',
-      reg_pass_match: true,
+      reg_email: '', reg_username: '', reg_pass: '', reg_pass_repeat: '', reg_pass_match: true,
+      login_email: '', login_pass: '',
       mode: 'register',
-      error: null
+      error: null,
+      email_error: false,
+      username_error: false
     }
 
     this.onRegEmailChange = this.onRegEmailChange.bind(this);
@@ -28,6 +25,40 @@ class Auth extends React.Component {
     this.switchMode = this.switchMode.bind(this);
     this._login = this._login.bind(this);
     this._register = this._register.bind(this);
+  }
+
+  validateFields() {
+    if(!this.state.reg_email.length || !this.state.reg_username.length || !this.state.reg_pass.length) {
+      this.setState({error: 'Заполните все поля'});
+      return false;
+    }
+
+    if(!/^.+@[А-яA-z0-9]+\..+$/.test(this.state.reg_email)) {
+      this.setState({
+        email_error: true,
+        error: 'Введите валидный E-mail'
+      })
+      return false;
+    }
+
+    if(!/^[-_.\'`А-яA-z0-9]+$/.test(this.state.reg_username)) {
+      this.setState({
+        username_error: true,
+        error: 'Имя может содержать только буквы, цифры и символы - _ . \' `'
+      })
+      return false;
+    }
+
+    if(this.state.reg_pass.length < 6) {
+      this.setState({error: 'Пароль должен содержать как минимум 6 символов'});
+    }
+
+    if(!this.state.reg_pass_match) {
+      this.setState({error: 'Введённые пароли не совпадают'});
+      return false;
+    }
+
+    return true;
   }
 
   _login(e) {
@@ -55,11 +86,15 @@ class Auth extends React.Component {
         } else if(response.status === 400) {
           response.json()
             .then((result) => {
-              this.setState({error: result.message});
+              this.setState({
+                error: result.message,
+                mode: 'login'
+              });
             })
         } else {
           this.setState({
-            error: 'Произошла ошибка сервера. Попробуйте позже.'
+            error: 'Произошла ошибка сервера. Попробуйте позже.',
+            mode: 'login'
           })
         }
       })
@@ -67,8 +102,12 @@ class Auth extends React.Component {
 
   _register(e) {
     const {reg_email, reg_username, reg_pass} = this.state;
-    this.switchMode('loading')();
 
+    if(!this.validateFields()) {
+      return;
+    }
+
+    this.switchMode('loading')();
     fetch('/api/user/register/', {
       method: 'POST',
       headers: {
@@ -91,11 +130,15 @@ class Auth extends React.Component {
         } else if(response.status === 400) {
           response.json()
             .then((result) => {
-              this.setState({error: result.message});
+              this.setState({
+                error: result.message,
+                mode: 'register'
+              });
             })
         } else {
           this.setState({
-            error: 'Произошла ошибка сервера. Попробуйте позже.'
+            error: 'Произошла ошибка сервера. Попробуйте позже.',
+            mode: 'register'
           })
         }
       })
@@ -104,11 +147,17 @@ class Auth extends React.Component {
   /* dom events */
   
   onRegEmailChange(e) {
-    this.setState({reg_email: e.target.value});
+    this.setState({
+      reg_email: e.target.value,
+      email_error: false
+    });
   }
 
   onRegUsernameChange(e) {
-    this.setState({reg_username: e.target.value});
+    this.setState({
+      reg_username: e.target.value,
+      username_error: false
+    });
   }
 
   onRegPasswordChange(e) {
@@ -135,7 +184,10 @@ class Auth extends React.Component {
 
   switchMode(mode) {
     return function(e) {
-      this.setState({mode: mode});
+      this.setState({
+        mode: mode,
+        error: ''
+      });
     }.bind(this);
   }
 
@@ -151,11 +203,21 @@ class Auth extends React.Component {
             <h2 className="auth__title">Регистрация</h2>
             <div className="auth__field">
               <div className="auth__field-name">E-mail</div>
-              <input className="auth__input" type="text" value={this.state.reg_email} onChange={this.onRegEmailChange} />
+              <input
+                className={this.state.email_error ? "auth__input auth__input_outline_error" : "auth__input"}
+                type="text"
+                value={this.state.reg_email}
+                onChange={this.onRegEmailChange}
+              />
             </div>
             <div className="auth__field">
               <div className="auth__field-name">Имя</div>
-              <input className="auth__input" type="text" value={this.state.reg_username} onChange={this.onRegUsernameChange} />
+              <input
+                className={this.state.username_error ? "auth__input auth__input_outline_error" : "auth__input"}
+                type="text"
+                value={this.state.reg_username}
+                onChange={this.onRegUsernameChange}
+              />
             </div>
             <div className="auth__field">
               <div className="auth__field-name">Пароль</div>
@@ -176,6 +238,7 @@ class Auth extends React.Component {
               />
             </div>
             <div className="auth__text">Уже есть аккаунт? <span className="auth__link" onClick={this.switchMode('login')}>Войти</span></div>
+            {this.state.error ? <div className="auth__error">{this.state.error}</div> : null}
             <div className="auth__button auth__register-button" onClick={this._register}>Зарегистрироваться</div>
           </div>
         );
@@ -194,6 +257,7 @@ class Auth extends React.Component {
             </div>
             <div className="auth__text"><span className="auth__link" onClick={this.switchMode('restore')}>Забыли пароль</span></div>
             <div className="auth__text"><span className="auth__link" onClick={this.switchMode('register')}>Зарегистрироваться</span></div>
+            {this.state.error ? <div className="auth__error">{this.state.error}</div> : null}
             <div className="auth__button auth__login-button" onClick={this._login}>Войти</div>
           </div>
         );
@@ -208,7 +272,8 @@ class Auth extends React.Component {
       case 'success':
         body = (
           <div className="auth__success">
-            <h2 className="auth__title">кайф</h2>
+            <h2 className="auth__title">Регистрация прошла успешно!</h2>
+            <div className="auth__text">На ваш адрес {this.state.reg_email} было отправлено письмо с подтверждением.</div>
           </div>
         )
         break;
