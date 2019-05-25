@@ -28,12 +28,12 @@ def create_users_collecton():
             return jsonify(data = 'Collection already exists'), 200
 
 def validate_username(name):
-    if name is None or not re.match(r'[А-яA-z0-9]+', name):
+    if name is None or not re.match(r'^[-_.\'`А-яA-z0-9]+$', name):
         return False
     return True
 
 def validate_email(email):
-    if email is None or not re.match(r'[А-яA-z0-9]+@[А-яA-z0-9]+\.[А-яA-z0-9]+', email):
+    if email is None or not re.match(r'^.+@[А-яA-z0-9]+\..+$', email):
         return False
     return True
 
