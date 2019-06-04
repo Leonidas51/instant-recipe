@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import "./NotFound.css";
+import "./Errors.css";
 
 class NotFound extends React.Component {
   constructor(props) {

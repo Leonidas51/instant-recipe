@@ -6,6 +6,7 @@ from flask import Flask, render_template
 from flask_pymongo import PyMongo
 from flask_wtf.csrf import CSRFProtect
 from flask_session import Session
+from flask_mail import Mail
 
 import logger
 from .instance.config import app_config
@@ -27,6 +28,7 @@ class JSONEncoder(json.JSONEncoder):
 		return json.JSONEncoder.default(self, o)
 
 mongo = PyMongo()
+mail = Mail()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True, static_folder='frontend/dist', template_folder='frontend/dist')
@@ -57,5 +59,6 @@ def create_app(test_config=None):
 
     csrf = CSRFProtect(app)
     Session(app)
+    mail.init_app(app)
 
     return app

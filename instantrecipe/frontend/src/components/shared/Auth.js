@@ -64,7 +64,6 @@ class Auth extends React.Component {
   _login(e) {
     const {login_email, login_pass} = this.state;
     this.switchMode('loading')();
-
     fetch('api/user/login/', {
       method: 'POST',
       headers: {
@@ -80,7 +79,7 @@ class Auth extends React.Component {
         if(response.status === 200) {
           response.json()
             .then((result) => {
-              this.switchMode('success')();
+              this.switchMode('login_success')();
               this.props.login(result.username);
             })
         } else if(response.status === 400) {
@@ -124,7 +123,7 @@ class Auth extends React.Component {
         if(response.status === 200) {
           response.json()
             .then((result) => {
-              this.switchMode('success')();
+              this.switchMode('reg_success')();
               this.props.register(result.username);
             })
         } else if(response.status === 400) {
@@ -145,7 +144,7 @@ class Auth extends React.Component {
   }
 
   /* dom events */
-  
+
   onRegEmailChange(e) {
     this.setState({
       reg_email: e.target.value,
@@ -166,7 +165,7 @@ class Auth extends React.Component {
 
   onRegPasswordRepeatChange(e) {
     this.setState({reg_pass_repeat: e.target.value});
-    
+
     if(e.target.value === this.state.reg_pass) {
       this.setState({reg_pass_match: true});
     } else {
@@ -220,7 +219,7 @@ class Auth extends React.Component {
               />
             </div>
             <div className="auth__field">
-              <div className="auth__field-name">Пароль</div>
+              <div className="auth__field-name">Пароль (не менее 6 символов)</div>
               <input
                 className={this.state.reg_pass_match ? "auth__input" : "auth__input auth__input_outline_error"}
                 type="password"
@@ -269,11 +268,19 @@ class Auth extends React.Component {
           </div>
         )
         break;
-      case 'success':
+      case 'reg_success':
         body = (
           <div className="auth__success">
             <h2 className="auth__title">Регистрация прошла успешно!</h2>
-            <div className="auth__text">На ваш адрес {this.state.reg_email} было отправлено письмо с подтверждением.</div>
+            <div className="auth__text">В течение X минут на ваш адрес {this.state.reg_email} придёт письмо с подтверждением.</div>
+          </div>
+        )
+        break;
+      case 'login_success':
+        body = (
+          <div className="auth__success">
+            <h2 className="auth__title">Успешно!</h2>
+            <div className="auth__text">Вы авторизованы</div>
           </div>
         )
         break;

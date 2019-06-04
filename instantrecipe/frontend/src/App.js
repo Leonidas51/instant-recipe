@@ -5,6 +5,7 @@ import {Helmet} from "react-helmet";
 import "./reset.css";
 import "./common.css";
 import About from "./pages/About";
+import Unconfirmed from "./pages/Unconfirmed";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
@@ -36,13 +37,13 @@ class App extends React.Component {
 
   componentDidMount() {
     this.update_logged_in();
-    this.update_admin();
+    //this.update_admin();
 
     this.setState({auth_modal: Modal(Auth, this.close_auth_modal)});
   }
 
   update_logged_in() {
-    fetch('api/user/isloggedin/', {
+    fetch('/api/user/isloggedin/', {
       method: 'POST',
       headers: {
         'X-CSRF-Token': this.props.cookies.get('csrftoken')
@@ -54,6 +55,7 @@ class App extends React.Component {
             .then((result) => {
               this.setState({
                 is_logged_in: true,
+                is_admin: result.admin,
                 username: result.username
               })
             })
@@ -62,7 +64,7 @@ class App extends React.Component {
   }
 
   update_admin() {
-    fetch('api/user/isadmin/', {
+    fetch('/api/user/isadmin/', {
       method: 'POST',
       headers: {
         'X-CSRF-Token': this.props.cookies.get('csrftoken')
@@ -100,7 +102,7 @@ class App extends React.Component {
   }
 
   logout() {
-    fetch('api/user/logout/', {
+    fetch('/api/user/logout/', {
       method: 'POST',
       headers: {
         'X-CSRF-Token': this.props.cookies.get('csrftoken')
@@ -145,6 +147,7 @@ class App extends React.Component {
               <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
               <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
+              <Route path="/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
               <Route path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>

@@ -8,11 +8,24 @@ class Config(object):
     CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365 # one year (count in seconds)
     SECRET_KEY = os.getenv('SECRET_KEY')
+    SALT = os.getenv('SALT')
     MONGO_URI = os.getenv('DB')
     SESSION_TYPE = 'mongodb'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     UPLOAD_FOLDER = 'instantrecipe/frontend/src/images'
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 Mb max
+
+    # mail settings
+    MAIL_SERVER = 'smtp.yandex.ru'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+
+    # authentication
+    MAIL_USERNAME = os.getenv('APP_MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('APP_MAIL_PASSWORD')
+
+    # mail accounts
+    MAIL_DEFAULT_SENDER = MAIL_USERNAME + '@yandex.ru'
 
 
 class DevelopmentConfig(Config):
