@@ -2,12 +2,12 @@ import os
 import re
 import datetime
 from bson.objectid import ObjectId
-from flask import request, jsonify, Blueprint, session, url_for, render_template
+from flask import request, jsonify, Blueprint, session, url_for, render_template, redirect
 import logger
 from instantrecipe import mongo
 from instantrecipe.auth import User, login_required, confirm_required, \
-                               generate_confirmation_token, confirm_token
-from instantrecipe.email import send_email
+                               confirm_confirmation_token, confirm_restoration_token
+from instantrecipe.email import send_verification_email, send_restore_password_email
 
 
 ROOT_PATH = os.environ.get('ROOT_PATH')
@@ -47,14 +47,6 @@ def validate_password(password):
         return False
     return True
 
-def send_verification_email(email):
-    email_token = generate_confirmation_token(email)
-    confirm_url = url_for('users.confirm_email', token=email_token, _external=True)
-    html = '<h1>Для подтверждения перейдите по ссылке:</h1><br />' + \
-           '<a href="' + confirm_url + '">' + confirm_url + '</a>'
-    subject = 'Подтверждение e-mail'
-    send_email(email, subject, html)
-
 @users_bp.route('/user/resend_verification_email/', methods=['POST'])
 def resend_verification_email():
     try:
@@ -65,6 +57,24 @@ def resend_verification_email():
                             'message:': 'Попробуйте проверить почту (и папку спам!)'}), 200
     except Exception as e:
         LOG.error('error while trying to resend_verification_email: ' + str(e))
+        return jsonify({'result': 'error',
+                        'message:': SERVER_ERROR}), 400
+
+@users_bp.route('/user/restore_password_entered_email/', methods=['POST'])
+def restore_password_entered_email():
+    try:
+        email = request.json.get('email')
+        if not validate_email(email):
+            jsonify({'result': 'error',
+                     'message:': 'Введенный e-mail не валиден'}), 400
+        if User.find_by_email(email):
+            send_restore_password_email(email)
+            return jsonify({'result': 'success',
+                            'message:': 'Попробуйте проверить почту (и папку спам!)'}), 200
+        return jsonify({'result': 'error',
+                        'message:': 'Пользователь с введенными данными не зарегистрирован'}), 400
+    except Exception as e:
+        LOG.error('error while trying to restore_password_entered_email: ' + str(e))
         return jsonify({'result': 'error',
                         'message:': SERVER_ERROR}), 400
 
@@ -164,7 +174,7 @@ def is_admin():
 @login_required
 def confirm_email(token):
     try:
-        email = confirm_token(token)
+        email = confirm_confirmation_token(token)
     except:
         return jsonify({'result': 'error',
                         'message': 'Ссылка для подтверждения недействительна или просрочена'}), 400
@@ -179,3 +189,39 @@ def confirm_email(token):
         user.update(confirmation_data)
     return jsonify({'result': 'success',
                     'message': 'E-mail успешно подтвержден'}), 200
+
+@users_bp.route('/user/restore_password_with_token/<token>/', methods=['GET'])
+def restore_password_with_token(token):
+    try:
+        try:
+            email = confirm_restoration_token(token)
+        except:
+            return jsonify({'result': 'error',
+                            'message': 'Ссылка для восстановления недействительна или просрочена'}), 400
+        session['email_reset'] = email
+        return redirect('/passwordrestoration')
+    except Exception as e:
+        LOG.error('error while trying to restore_password_with_token: ' + str(e))
+        return jsonify({'result': 'error',
+                        'message:': SERVER_ERROR}), 400
+
+@users_bp.route('/user/restore_password_new_password/', methods=['POST'])
+def restore_password_new_password():
+    try:
+        if request.method == 'POST':
+            if session.get('email_reset', None):
+                new_password = request.json.get('password')
+                email = session.get('email_reset')
+                session.pop('email_reset')
+                user = User()
+                user.set_from_db_by_email(email)
+                reset_data = {'password': user.hash_password(new_password)}
+                user.update(reset_data)
+                return jsonify({'result': 'success',
+                                'message': 'Пароль восстановлен'}), 200
+            return jsonify({'result': 'error',
+                            'message': 'Страница только для восстановления пароля'}), 200
+    except Exception as e:
+        LOG.error('error while trying to restore_password_new_password: ' + str(e))
+        return jsonify({'result': 'error',
+                        'message:': SERVER_ERROR}), 400

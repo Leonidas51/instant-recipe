@@ -8,7 +8,8 @@ class Config(object):
     CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365 # one year (count in seconds)
     SECRET_KEY = os.getenv('SECRET_KEY')
-    SALT = os.getenv('SALT')
+    CONFIRM_SALT = os.getenv('CONFIRM_SALT')
+    RESTORE_SALT = os.getenv('RESTORE_SALT')
     MONGO_URI = os.getenv('DB')
     SESSION_TYPE = 'mongodb'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import "./Errors.css";
 
-class About extends React.Component {
+class Unconfirmed extends React.Component {
   constructor(props) {
     super(props);
     this.resend = this.resend.bind(this);
@@ -59,4 +59,4 @@ class About extends React.Component {
   }
 }
 
-export default About;
+export default Unconfirmed;

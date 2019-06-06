@@ -120,14 +120,30 @@ def login_required(func):
 
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    return serializer.dumps(email, salt=current_app.config['SALT'])
+    return serializer.dumps(email, salt=current_app.config['CONFIRM_SALT'])
 
-def confirm_token(token, expiration=3600):
+def confirm_confirmation_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
         email = serializer.loads(
             token,
-            salt=current_app.config['SALT'],
+            salt=current_app.config['CONFIRM_SALT'],
+            max_age=expiration
+        )
+    except:
+        return False
+    return email
+
+def generate_restoration_token(email):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=current_app.config['RESTORE_SALT'])
+
+def confirm_restoration_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(
+            token,
+            salt=current_app.config['RESTORE_SALT'],
             max_age=expiration
         )
     except:

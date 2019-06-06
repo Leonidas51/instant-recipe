@@ -6,6 +6,7 @@ import "./reset.css";
 import "./common.css";
 import About from "./pages/About";
 import Unconfirmed from "./pages/Unconfirmed";
+import PasswordRestoration from "./pages/PasswordRestoration";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
@@ -148,6 +149,7 @@ class App extends React.Component {
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
               <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
               <Route path="/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
+              <Route path="/passwordrestoration" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
               <Route path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>

@@ -9,7 +9,7 @@ class Auth extends React.Component {
 
     this.state = {
       reg_email: '', reg_username: '', reg_pass: '', reg_pass_repeat: '', reg_pass_match: true,
-      login_email: '', login_pass: '',
+      login_email: '', login_pass: '', restore_email: '',
       mode: 'register',
       error: null,
       email_error: false,
@@ -22,9 +22,11 @@ class Auth extends React.Component {
     this.onRegPasswordRepeatChange = this.onRegPasswordRepeatChange.bind(this);
     this.onLoginEmailChange = this.onLoginEmailChange.bind(this);
     this.onLoginPassChange = this.onLoginPassChange.bind(this);
+    this.onRestoreEmailChange = this.onRestoreEmailChange.bind(this);
     this.switchMode = this.switchMode.bind(this);
     this._login = this._login.bind(this);
     this._register = this._register.bind(this);
+    this._restore = this._restore.bind(this);
   }
 
   validateFields() {
@@ -143,6 +145,44 @@ class Auth extends React.Component {
       })
   }
 
+  _restore(e) {
+    const {restore_email} = this.state;
+
+    //this.switchMode('loading')();
+    fetch('/api/user/restore_password_entered_email/', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': this.props.cookies.get('csrftoken'),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: restore_email
+      })
+    })
+      .then((response) => {
+        if(response.status === 200) {
+          response.json()
+            .then((result) => {
+              alert('Пожалуйста, проверьте почту')
+              mode: 'register'
+            })
+        } else if(response.status === 400) {
+          response.json()
+            .then((result) => {
+              this.setState({
+                error: result.message,
+                mode: 'register'
+              });
+            })
+        } else {
+          this.setState({
+            error: 'Произошла ошибка сервера. Попробуйте позже.',
+            mode: 'register'
+          })
+        }
+      })
+  }
+
   /* dom events */
 
   onRegEmailChange(e) {
@@ -179,6 +219,10 @@ class Auth extends React.Component {
 
   onLoginPassChange(e) {
     this.setState({login_pass: e.target.value});
+  }
+
+  onRestoreEmailChange(e) {
+    this.setState({restore_email: e.target.value});
   }
 
   switchMode(mode) {
@@ -264,7 +308,13 @@ class Auth extends React.Component {
       case 'restore':
         body = (
           <div className="auth__restore">
-          <h2 className="auth__title">восстановка</h2>
+          <h2 className="auth__title">Восстановление</h2>
+          <div className="auth__text">На этот адрес будет отправлено письмо для восстановления пароля</div>
+          <div className="auth__field">
+            <div className="auth__field-name">E-mail</div>
+            <input className="auth__input" type="text" value={this.state.restore_email} onChange={this.onRestoreEmailChange} />
+          </div>
+          <div className="auth__button auth__login-button" onClick={this._restore}>Отправить</div>
           </div>
         )
         break;
