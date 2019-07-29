@@ -17,23 +17,18 @@ class Config(object):
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 Mb max
 
     # mail settings
-    MAIL_SERVER = 'smtp.yandex.ru'
+    MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-
-    # authentication
-    MAIL_USERNAME = os.getenv('APP_MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('APP_MAIL_PASSWORD')
-
-    # mail accounts
-    MAIL_DEFAULT_SENDER = MAIL_USERNAME + '@yandex.ru'
-
 
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
     FLASK_ENV = 'development'
     FLASK_DEBUG = True
+
+    MAIL_USERNAME = os.getenv('DEV_MAIL_USER')
+    MAIL_PASSWORD = os.getenv('DEV_MAIL_PASSWORD')
 
 
 class TestingConfig(Config):
@@ -43,6 +38,8 @@ class TestingConfig(Config):
     FLASK_ENV = 'development'
     FLASK_DEBUG = True
 
+    #Полин че это
+
 
 class ProductionConfig(Config):
     """Configurations for Production."""
@@ -50,6 +47,8 @@ class ProductionConfig(Config):
     TESTING = False
     FLASK_ENV = 'production'
     FLASK_DEBUG = False
+
+    #туточки почта на прод
 
 
 app_config = {

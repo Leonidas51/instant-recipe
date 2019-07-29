@@ -15,7 +15,7 @@ def send_email(to, subject, html):
         subject,
         recipients=[to],
         html=html,
-        sender=current_app.config['MAIL_DEFAULT_SENDER']
+        sender=current_app.config['MAIL_USERNAME']
     )
     mail.send(msg)
 
