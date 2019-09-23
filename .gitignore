@@ -8,4 +8,5 @@ output.log
 envvars
 .vscode
 logs/
-PaulineDesktop.pem
+rbpKeys/
+rbp_dump/

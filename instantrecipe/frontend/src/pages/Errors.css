@@ -15,3 +15,9 @@
   margin-bottom: 200px;
   text-align: center;
 }
+
+.error__button {
+  cursor: pointer;
+  font-weight: bolder;
+  color: #FCBC5D;
+}

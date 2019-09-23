@@ -13,5 +13,5 @@ index_bp = Blueprint('index', __name__)
 @index_bp.route('/<path:path>')
 def index(path = ''):
     response = make_response(render_template('index.html'))
-    response.set_cookie('csrftoken', generate_csrf(), samesite='Strict')
+    #response.set_cookie('csrftoken', generate_csrf(), samesite='Strict')
     return response
