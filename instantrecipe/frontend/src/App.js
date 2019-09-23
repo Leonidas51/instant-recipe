@@ -7,10 +7,13 @@ import "./common.css";
 import About from "./pages/About";
 import Unconfirmed from "./pages/Unconfirmed";
 import PasswordRestoration from "./pages/PasswordRestoration";
+import UserConfirm from "./pages/UserConfirm";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
+import Profile from "./pages/Profile";
+import Indev from "./pages/Indev";
 import Admin from "./pages/Admin";
 import Modal from "./components/hoc/Modal";
 import TagByName from "./components/utils/TagByName";
@@ -38,9 +41,18 @@ class App extends React.Component {
 
   componentDidMount() {
     this.update_logged_in();
-    //this.update_admin();
+    this.update_admin();
 
     this.setState({auth_modal: Modal(Auth, this.close_auth_modal)});
+    fetch('/api/get_csrf/')
+      .then((response) => {
+        if(response.status === 200) {
+          response.json()
+            .then((result) => {
+              this.props.cookies.set('csrftoken', result.csrf, {path: '/', sameSite: 'lax'});
+            })
+        }
+      })
   }
 
   update_logged_in() {
@@ -148,8 +160,11 @@ class App extends React.Component {
               <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
               <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies}/>)} />
               <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
-              <Route path="/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
-              <Route path="/passwordrestoration" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
+              <Route path="/user/confirm/:token" render={() => (<UserConfirm cookies={this.props.cookies}/>)} />
+              <Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
+              <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
+              <Route path="/profile" render={() => (<Profile cookies={this.props.cookies} />)} />
+              <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
               <Route path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>

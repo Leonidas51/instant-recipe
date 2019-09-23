@@ -3,6 +3,7 @@ import re
 import datetime
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, session, url_for, render_template, redirect
+from flask_wtf.csrf import generate_csrf
 import logger
 from instantrecipe import mongo
 from instantrecipe.auth import User, login_required, confirm_required, \
@@ -15,6 +16,15 @@ LOG = logger.get_root_logger(
     __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
 users_bp = Blueprint('users', __name__)
 SERVER_ERROR = 'Произошла ошибка сервера! Приносим свои извинения'
+
+@users_bp.route('/get_csrf/', methods=['GET'])
+def get_csrf():
+    try:
+        gen_csrf = generate_csrf()
+        return jsonify(csrf = gen_csrf), 200
+    except Exception as e:
+        LOG.error('error while generating csrf: ' + str(e))
+        return jsonify(error = str(e)), 400
 
 @users_bp.route('/user/create_admin/', methods=['GET'])
 def create_admin():
@@ -170,12 +180,15 @@ def is_admin():
     return jsonify({'result': 'error',
                     'message:': 'Для данного действия требуются права администратора'}), 400
 
+@users_bp.route('/user/redirect/confirm/<token>/')
+def redirect_confirm_email(token):
+    return redirect('/user/confirm/' + token)
+
 @users_bp.route('/user/confirm/<token>/')
-@login_required
 def confirm_email(token):
-    try:
-        email = confirm_confirmation_token(token)
-    except:
+    email = confirm_confirmation_token(token)
+
+    if not email:
         return jsonify({'result': 'error',
                         'message': 'Ссылка для подтверждения недействительна или просрочена'}), 400
     user = User()
@@ -190,16 +203,21 @@ def confirm_email(token):
     return jsonify({'result': 'success',
                     'message': 'E-mail успешно подтвержден'}), 200
 
-@users_bp.route('/user/restore_password_with_token/<token>/', methods=['GET'])
+@users_bp.route('/user/redirect/restore_password/<token>/')
+def redirect_restore_password(token):
+    return redirect('/user/restore/' + token)
+
+@users_bp.route('/user/restore/<token>/', methods=['GET'])
 def restore_password_with_token(token):
     try:
-        try:
-            email = confirm_restoration_token(token)
-        except:
+        email = confirm_restoration_token(token)
+
+        if email:
+            session['email_reset'] = email
+            return jsonify({'result': 'success'}), 200
+        else:
             return jsonify({'result': 'error',
                             'message': 'Ссылка для восстановления недействительна или просрочена'}), 400
-        session['email_reset'] = email
-        return redirect('/passwordrestoration')
     except Exception as e:
         LOG.error('error while trying to restore_password_with_token: ' + str(e))
         return jsonify({'result': 'error',
@@ -209,18 +227,23 @@ def restore_password_with_token(token):
 def restore_password_new_password():
     try:
         if request.method == 'POST':
-            if session.get('email_reset', None):
+            if session.get('email_reset'):
                 new_password = request.json.get('password')
+                if(len(new_password) < 6):
+                    return jsonify({'result': 'error',
+                                    'message': 'Пароль должен быть не короче 6 символов'}), 400
+
                 email = session.get('email_reset')
                 session.pop('email_reset')
                 user = User()
                 user.set_from_db_by_email(email)
-                reset_data = {'password': user.hash_password(new_password)}
+                reset_data = {'password_hash': user.hash_password(new_password)}
                 user.update(reset_data)
                 return jsonify({'result': 'success',
                                 'message': 'Пароль восстановлен'}), 200
-            return jsonify({'result': 'error',
-                            'message': 'Страница только для восстановления пароля'}), 200
+            else:
+                return jsonify({'result': 'error',
+                                'message': 'Ссылка для восстановления недействительна или просрочена'}), 400
     except Exception as e:
         LOG.error('error while trying to restore_password_new_password: ' + str(e))
         return jsonify({'result': 'error',

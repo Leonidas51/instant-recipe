@@ -20,7 +20,7 @@ function Modal(ModalBody, onClose) {
       return(
         <div className='modal' onClick={this.close}>
           <div className="modal__body">
-            <ModalBody {...this.props} />
+            <ModalBody {...this.props} close={onClose} />
           </div>
         </div>
       )

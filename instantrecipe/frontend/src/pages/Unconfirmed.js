@@ -50,7 +50,7 @@ class Unconfirmed extends React.Component {
         <div className="content-area content-area_not-found">
           <h2 className="error__title">Ошибка</h2>
           <p className="error__description">
-            Для просмотра этой страницы требуется подтвердить e-mail.<br />
+            Для выполнения этого действия требуется подтвердить e-mail.<br />
             Не получили e-mail? <a className="error__button" onClick={this.resend}>[Послать еще раз]</a>
           </p>
         </div>

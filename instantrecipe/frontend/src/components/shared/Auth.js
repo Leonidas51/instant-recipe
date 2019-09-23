@@ -6,7 +6,6 @@ import "./Auth.css";
 class Auth extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       reg_email: '', reg_username: '', reg_pass: '', reg_pass_repeat: '', reg_pass_match: true,
       login_email: '', login_pass: '', restore_email: '',
@@ -103,7 +102,7 @@ class Auth extends React.Component {
 
   _register(e) {
     const {reg_email, reg_username, reg_pass} = this.state;
-
+    console.log(this.props.cookies.get('csrftoken'));
     if(!this.validateFields()) {
       return;
     }
@@ -148,7 +147,7 @@ class Auth extends React.Component {
   _restore(e) {
     const {restore_email} = this.state;
 
-    //this.switchMode('loading')();
+    this.switchMode('loading')();
     fetch('/api/user/restore_password_entered_email/', {
       method: 'POST',
       headers: {
@@ -163,8 +162,8 @@ class Auth extends React.Component {
         if(response.status === 200) {
           response.json()
             .then((result) => {
-              alert('Пожалуйста, проверьте почту')
-              mode: 'register'
+              alert('На адрес ' + restore_email + ' была отправлена ссылка для восстановления пароля.')
+              this.props.close();
             })
         } else if(response.status === 400) {
           response.json()
@@ -248,7 +247,7 @@ class Auth extends React.Component {
               <div className="auth__field-name">E-mail</div>
               <input
                 className={this.state.email_error ? "auth__input auth__input_outline_error" : "auth__input"}
-                type="text"
+                type="email"
                 value={this.state.reg_email}
                 onChange={this.onRegEmailChange}
               />
@@ -292,7 +291,7 @@ class Auth extends React.Component {
             <h2 className="auth__title">Вход</h2>
             <div className="auth__field">
               <div className="auth__field-name">E-mail</div>
-              <input className="auth__input" type="text" value={this.state.login_email} onChange={this.onLoginEmailChange} />
+              <input className="auth__input" type="email" value={this.state.login_email} onChange={this.onLoginEmailChange} />
             </div>
             <div className="auth__field">
               <div className="auth__field-name">Пароль</div>
@@ -329,8 +328,7 @@ class Auth extends React.Component {
       case 'login_success':
         body = (
           <div className="auth__success">
-            <h2 className="auth__title">Успешно!</h2>
-            <div className="auth__text">Вы авторизованы</div>
+            <h2 className="auth__title">Вход выполнен успешно!</h2>
           </div>
         )
         break;
