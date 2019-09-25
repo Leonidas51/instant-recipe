@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, make_response
+from flask import Blueprint, render_template, make_response, send_from_directory
 from flask_wtf.csrf import generate_csrf
 import logger
 
@@ -15,3 +15,13 @@ def index(path = ''):
     response = make_response(render_template('index.html'))
     #response.set_cookie('csrftoken', generate_csrf(), samesite='Strict')
     return response
+
+@index_bp.route('/images/recipes/dist/<path:path>')
+def show_image(path):
+    LOG.info('images/recipes/dist/' + path + 'main.jpg')
+    LOG.info(os.path.isfile('instantrecipe/images/recipes/dist/' + path + 'main.jpg'))
+    if os.path.isfile('instantrecipe/images/recipes/dist/' + path + 'main.jpg'):
+        return send_from_directory('images/recipes/dist/' + path, 'main.jpg')
+    else:
+        return send_from_directory('images/recipes/dist/', 'default.png')
+        

@@ -55,11 +55,7 @@ class FeaturedRecipes extends React.Component {
               this.state.featured.map((recipe) => {
                 return (
                   <div key={recipe._id} className="featured-recipes__container">
-                    {
-                      recipe.photo
-                      ? <img className="featured-recipes__image" src={require(`../../images/recipes/${recipe.photo}`)} />
-                      : <img className="featured-recipes__image" src={require(`../../images/recipes/default.png`)} />
-                    }
+                    <img className="featured-recipes__image" src={`/images/recipes/dist/${recipe._id}/`} />
                     <div className="featured-recipes__name">
                       <Link className="featured-recipes__link" to={`/recipe/details/${recipe._id}/`}> {recipe.name} </Link>
                     </div>
