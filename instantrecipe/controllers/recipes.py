@@ -249,29 +249,36 @@ def compress_and_change_to_jpg(file):
 		LOG.error('error while trying to compress_and_change_to_jpg: ' + str(e))
 
 def allowed_file(filename):
-	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST', 'GET'])
+@recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST'])
 def upload_recipe_photo(recipe_id):
 	if request.method == 'POST':
 		try:
-			if 'file' not in request.files:
-				LOG.error('error: no file part in request')
-				return jsonify(data = 'error: no file part in request'), 200
-			file = request.files['file']
+			if 'photo' not in request.files:
+				return jsonify(error = 'Ошибка: файл не был прикреплён'), 400
+			file = request.files['photo']
+
 			if file.filename == '':
-				LOG.error('error: no file attachment')
-				return jsonify(data = 'error: no file attachment'), 200
+				return jsonify(error = 'Ошибка: файл не был прикреплён'), 400
+
+			#также проверять есть ли рецепт с таким id
+
+			if not allowed_file(file.filename):
+				return jsonify(error = 'Формат не соответствует требованиям'), 400
+
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
-			save_directory = os.path.join(current_app.config['UPLOAD_FOLDER'], 'recipes', recipe_id)
+			save_directory = os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id)
 			if not os.path.exists(save_directory):
 				os.makedirs(save_directory)
-				compress_and_change_to_jpg(file)
-				file.save(os.path.join(save_directory, filename))
-				return jsonify(data = 'success!'), 200
+
+			#compress_and_change_to_jpg(file)
+
+			file.save(os.path.join(save_directory, filename))
+			return jsonify(data = 'success!'), 200
 		except Exception as e:
 			LOG.error('error while trying to upload_recipe_photo: ' + str(e))
-			return jsonify(data = 'Nothing was found!'), 204
+			return jsonify(error = 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'), 500

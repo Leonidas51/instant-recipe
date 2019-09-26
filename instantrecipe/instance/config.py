@@ -13,8 +13,8 @@ class Config(object):
     MONGO_URI = os.getenv('DB')
     SESSION_TYPE = 'mongodb'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
-    UPLOAD_FOLDER = 'instantrecipe/frontend/src/images'
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 Mb max
+    PHOTOS_UPLOAD_FOLDER = 'instantrecipe/images/recipes/upload'
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024 # 5 Mb max
 
     # mail settings
     MAIL_SERVER = 'smtp.gmail.com'

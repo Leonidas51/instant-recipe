@@ -28,7 +28,7 @@ class App extends React.Component {
     this.state = {
       is_logged_in: false,
       is_admin: false,
-      username: '', //нужно api для получения в случае обновления страницы
+      username: '',
       auth_modal_open: false,
     }
 
@@ -43,7 +43,10 @@ class App extends React.Component {
     this.update_logged_in();
     this.update_admin();
 
-    this.setState({auth_modal: Modal(Auth, this.close_auth_modal)});
+    this.setState({
+      auth_modal: Modal(Auth, this.close_auth_modal)
+    });
+
     fetch('/api/get_csrf/')
       .then((response) => {
         if(response.status === 200) {

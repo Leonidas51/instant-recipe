@@ -1,9 +1,10 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import UploadRecipePhotoButton from "../components/RecipeDetails/UploadRecipePhotoButton";
 import ScrollToTop from "../components/utils/ScrollToTop";
 import "./RecipeDetails.css";
+import Modal from "../components/hoc/Modal";
+import UploadPhotoModal from "../components/RecipeDetails/UploadPhotoModal";
 import FacebookIcon from "../icons/social/facebook.svg";
 import VkIcon from "../icons/social/vk.svg";
 import TwitterIcon from "../icons/social/twitter.svg";
@@ -26,12 +27,24 @@ class RecipeDetails extends React.Component {
     this.state = {
       error: null,
       recipe_loaded: false,
-      recipe: {}
+      recipe: {},
+      modal_upload_photo_open: false
     };
+
+    this.openUploadPhotoModal = this.openUploadPhotoModal.bind(this);
+    this.closeUploadPhotoModal = this.closeUploadPhotoModal.bind(this);
   }
 
   componentDidMount() {
     this.fetchRecipe();
+  }
+
+  openUploadPhotoModal() {
+    this.setState({modal_upload_photo_open: true});
+  }
+
+  closeUploadPhotoModal() {
+    this.setState({modal_upload_photo_open: false});
   }
 
   parseServes(serves) {
@@ -94,6 +107,8 @@ class RecipeDetails extends React.Component {
   render() {
     const { error, recipe_loaded, recipe } = this.state;
 
+    const UploadModal = Modal(UploadPhotoModal, this.closeUploadPhotoModal);
+
     let difficulty_style = {};
 
     if(error) {
@@ -128,10 +143,12 @@ class RecipeDetails extends React.Component {
           <div className="recipe-pic-container">
           {
             this.state.recipe_loaded
-            ? <img className="recipe-pic" src={`/images/recipes/dist/${this.state.recipe._id}`} />
+            ? <img className="recipe-pic" src={`/images/recipes/dist/${this.state.recipe._id}/`} />
             : null
           }
-            <UploadRecipePhotoButton/>
+          <div className="recipe-pic-upload-button" onClick={this.openUploadPhotoModal}>
+            <div className="recipe-pic-upload-button__text">Предложить фото</div>
+          </div>
           </div>
           <div className="recipe-information">
             <div className="recipe-information__title">{ this.state.recipe.name }</div>
@@ -303,6 +320,7 @@ class RecipeDetails extends React.Component {
           </div>
         </div>
       </div>
+      {this.state.modal_upload_photo_open ? <UploadModal recipe_id={this.state.recipe._id} cookies={this.props.cookies} /> : null}
       </React.Fragment>
     );
   }

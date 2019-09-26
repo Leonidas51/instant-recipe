@@ -1,0 +1,26 @@
+.upload-photo__title {
+  font-size: 25px;
+  text-align: center;
+}
+
+.upload-photo__input {
+  margin-top: 15px;
+  font: inherit;
+  color: #E5E5E5;
+}
+
+.upload-photo__confirm-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-photo__info {
+  margin-top: 5px;
+}
+
+.upload-photo__error {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: #E73A23;
+}
