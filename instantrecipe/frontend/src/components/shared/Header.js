@@ -39,8 +39,8 @@ class Header extends React.Component {
   onScroll(e) {
     this.setState(prevState => {
       return {
-        prevScrollPos: e.pageY,
-        header_class: prevState.prevScrollPos < e.pageY && !prevState.header_open ? 'header_hidden' : ''
+        prevScrollPos: window.scrollY,
+        header_class: prevState.prevScrollPos < window.scrollY && !prevState.header_open ? 'header_hidden' : ''
       }
     })
   }
