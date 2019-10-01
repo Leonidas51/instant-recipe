@@ -18,8 +18,6 @@ def index(path = ''):
 
 @index_bp.route('/images/recipes/dist/<path:path>')
 def show_image(path):
-    LOG.info('images/recipes/dist/' + path + 'main.jpg')
-    LOG.info(os.path.isfile('instantrecipe/images/recipes/dist/' + path + 'main.jpg'))
     if os.path.isfile('instantrecipe/images/recipes/dist/' + path + 'main.jpg'):
         return send_from_directory('images/recipes/dist/' + path, 'main.jpg')
     else:
