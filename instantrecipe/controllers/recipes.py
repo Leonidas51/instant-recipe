@@ -265,9 +265,13 @@ def upload_recipe_photo(recipe_id):
 
 			if file.filename == '':
 				return jsonify(error = 'Ошибка: файл не был прикреплён'), 400
+			
+			if not ObjectId.is_valid(recipe_id):
+				return jsonify(error = 'Рецепт не найден'), 400
 
-			#также проверять есть ли рецепт с таким id
-
+			if mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}) == None:
+				return jsonify(error = 'Рецепт не найден'), 400
+			
 			if not allowed_file(file.filename):
 				return jsonify(error = 'Формат не соответствует требованиям'), 400
 
