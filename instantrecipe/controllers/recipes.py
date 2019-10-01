@@ -1,6 +1,7 @@
 import os
 import re
 from PIL import Image
+from shutil import copyfile
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, current_app
 from werkzeug.utils import secure_filename
@@ -239,14 +240,15 @@ def get_featured_recipes():
 			LOG.error('error while trying to get_featured_recipes: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
 
-def compress_and_change_to_jpg(file):
+def make_thumbnail(path):
 	try:
-		im = Image.open(file.stream)
-		size = (128, 128)
+		file, ext = os.path.splitext(path)
+		size = 250, 200
+		im = Image.open(path)
 		im.thumbnail(size)
-		im.save(file.stream, 'jpg')
+		im.save(file + '.jpg', format='JPEG')
 	except Exception as e:
-		LOG.error('error while trying to compress_and_change_to_jpg: ' + str(e))
+		LOG.error('error while trying to make_thumbnail: ' + str(e))
 
 def allowed_file(filename):
 	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
@@ -275,9 +277,13 @@ def upload_recipe_photo(recipe_id):
 			if not os.path.exists(save_directory):
 				os.makedirs(save_directory)
 
-			#compress_and_change_to_jpg(file)
+			main_path = os.path.join(save_directory, 'main.jpg')
+			thumb_path = os.path.join(save_directory, 'thumbnail.jpg')
 
-			file.save(os.path.join(save_directory, filename))
+			file.save(main_path)
+			copyfile(main_path, thumb_path)
+			make_thumbnail(thumb_path)
+
 			return jsonify(data = 'success!'), 200
 		except Exception as e:
 			LOG.error('error while trying to upload_recipe_photo: ' + str(e))
