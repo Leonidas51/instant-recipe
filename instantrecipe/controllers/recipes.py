@@ -275,18 +275,22 @@ def upload_recipe_photo(recipe_id):
 			if not allowed_file(file.filename):
 				return jsonify(error = 'Формат не соответствует требованиям'), 400
 
-			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)
 			save_directory = os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id)
+
 			if not os.path.exists(save_directory):
 				os.makedirs(save_directory)
+				filename = '1.jpg'
+			else:
+				count = 1
+				while True:
+					if os.path.isfile(os.path.join(save_directory, str(count) + '.jpg')):
+						count += 1
+					else:
+						filename = str(count) + '.jpg'
+						break
 
-			main_path = os.path.join(save_directory, 'main.jpg')
-			thumb_path = os.path.join(save_directory, 'thumbnail.jpg')
-
-			file.save(main_path)
-			copyfile(main_path, thumb_path)
-			make_thumbnail(thumb_path)
+			path = os.path.join(save_directory, filename)
+			file.save(path)
 
 			return jsonify(data = 'success!'), 200
 		except Exception as e:
