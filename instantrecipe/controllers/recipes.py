@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, current_app
 from werkzeug.utils import secure_filename
 from instantrecipe import mongo
+from instantrecipe.auth import User, login_required, confirm_required
 import logger
 
 
@@ -256,6 +257,8 @@ def allowed_file(filename):
 		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST'])
+@login_required
+@confirm_required
 def upload_recipe_photo(recipe_id):
 	if request.method == 'POST':
 		try:

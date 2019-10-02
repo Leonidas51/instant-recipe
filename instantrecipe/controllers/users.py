@@ -200,6 +200,9 @@ def confirm_email(token):
         confirmation_data = {'confirmed': True,
                              'confirmed_on': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         user.update(confirmation_data)
+        user.set_from_db_by_email(email)
+        session['user'] = user
+
     return jsonify({'result': 'success',
                     'message': 'E-mail успешно подтвержден'}), 200
 

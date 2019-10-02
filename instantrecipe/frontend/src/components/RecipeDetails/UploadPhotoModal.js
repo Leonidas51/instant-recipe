@@ -46,6 +46,8 @@ class UploadPhotoModal extends React.Component {
           close_timer = setTimeout(() => {
             this.props.close();
           }, 5000);
+        } else if(response.status === 403) {
+          this.setState({error: 'Для выполнения этого действия необходимо авторизоваться и подтвердить аккаунт'});
         } else {
           response.json()
             .then(result => {

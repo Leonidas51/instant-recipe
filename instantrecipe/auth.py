@@ -102,10 +102,11 @@ def confirm_required(func):
     def wrapper_confirm_required(*args, **kwargs):
         if session.get('user', None) is None:
             return jsonify({'result': 'error',
-                            'message': 'Вы не авторизованы'}), 200
+                            'message': 'Вы не авторизованы'}), 403
         else:
             if not session.get('user', None).get()['confirmed']:
-                return redirect('/unconfirmed')
+                return jsonify({'result': 'error',
+                                'message': 'Необходимо подтвердить аккаунт'}), 403
         return func(*args, **kwargs)
     return wrapper_confirm_required
 
@@ -114,7 +115,7 @@ def login_required(func):
     def wrapper_login_required(*args, **kwargs):
         if session.get('user', None) is None:
             return jsonify({'result': 'error',
-                            'message': 'Вы не авторизованы'}), 200
+                            'message': 'Вы не авторизованы'}), 403
         return func(*args, **kwargs)
     return wrapper_login_required
 

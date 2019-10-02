@@ -65,7 +65,7 @@ class Auth extends React.Component {
   _login(e) {
     const {login_email, login_pass} = this.state;
     this.switchMode('loading')();
-    fetch('api/user/login/', {
+    fetch('/api/user/login/', {
       method: 'POST',
       headers: {
         'X-CSRF-Token': this.props.cookies.get('csrftoken'),

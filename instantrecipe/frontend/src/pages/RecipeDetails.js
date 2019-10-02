@@ -40,6 +40,11 @@ class RecipeDetails extends React.Component {
   }
 
   openUploadPhotoModal() {
+    if(!this.props.is_logged_in) {
+      this.props.openAuth();
+      return;
+    }
+
     this.setState({modal_upload_photo_open: true});
   }
 
