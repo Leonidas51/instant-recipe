@@ -29,3 +29,18 @@ export function debounce(fn, delay) {
 export function is_touch_screen() {
   return Boolean(('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
 }
+
+export function get_csrf() {
+  return new Promise(function(resolve, reject) {
+    fetch('/api/get_csrf/')
+        .then((response) => {
+          if(response.status === 200) {
+            response.json()
+              .then((data) => {
+                resolve(data.csrf);
+              })
+          }
+        })
+    }
+  )
+}

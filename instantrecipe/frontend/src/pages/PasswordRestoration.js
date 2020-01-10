@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import {get_csrf} from "../utils/";
 import Loader from "../components/shared/Loader";
 import './PasswordRestoration.css';
 
@@ -39,28 +40,28 @@ class PasswordRestoration extends React.Component {
   }
 
   restorePassword(new_pass) {
-    console.log(new_pass);
-    fetch('/api/user/restore_password_new_password/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken'),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        password: new_pass
+    get_csrf().then((csrf) => {
+      fetch('/api/user/restore_password_new_password/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          password: new_pass
+        })
       })
+        .then(response => {
+          if(response.status === 200) {
+            this.setState({restore_success: true});
+          } else {
+            response.json()
+              .then(result => {
+                this.setState({restore_error: result.message});
+              })
+          }
+        })
     })
-      .then(response => {
-        if(response.status === 200) {
-          this.setState({restore_success: true});
-        } else {
-          response.json()
-            .then(result => {
-              this.setState({restore_error: result.message});
-            })
-        }
-      })
-      
   }
 
   onPassInputChange(e) {

@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { CookiesProvider, withCookies } from 'react-cookie';
 import {Helmet} from "react-helmet";
+import {get_csrf} from "./utils/"
 import "./reset.css";
 import "./common.css";
 import About from "./pages/About";
@@ -46,51 +47,45 @@ class App extends React.Component {
     this.setState({
       auth_modal: Modal(Auth, this.close_auth_modal)
     });
-
-    fetch('/api/get_csrf/')
-      .then((response) => {
-        if(response.status === 200) {
-          response.json()
-            .then((result) => {
-              this.props.cookies.set('csrftoken', result.csrf, {path: '/', sameSite: 'lax'});
-            })
-        }
-      })
   }
 
   update_logged_in() {
-    fetch('/api/user/isloggedin/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken')
-      }
-    })
-      .then((response) => {
-        if(response.status === 200) {
-          response.json()
-            .then((result) => {
-              this.setState({
-                is_logged_in: true,
-                is_admin: result.admin,
-                username: result.username
-              })
-            })
+    get_csrf().then((csrf) => {
+      fetch('/api/user/isloggedin/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf
         }
       })
+        .then((response) => {
+          if(response.status === 200) {
+            response.json()
+              .then((result) => {
+                this.setState({
+                  is_logged_in: true,
+                  is_admin: result.admin,
+                  username: result.username
+                })
+              })
+          }
+        })
+    })
   }
 
   update_admin() {
-    fetch('/api/user/isadmin/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken')
-      }
-    })
-      .then((response) => {
-        if(response.status === 200) {
-          this.setState({is_admin: true});
+    get_csrf().then((csrf) => {
+      fetch('/api/user/isadmin/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf
         }
       })
+        .then((response) => {
+          if(response.status === 200) {
+            this.setState({is_admin: true});
+          }
+        })
+    })
   }
 
   open_auth_modal() {
@@ -118,18 +113,20 @@ class App extends React.Component {
   }
 
   logout() {
-    fetch('/api/user/logout/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken')
-      },
-    })
-      .then((response) => {
-        this.setState({
-          is_logged_in: false,
-          username: ''
-        })
+    get_csrf().then((csrf) => {
+      fetch('/api/user/logout/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf
+        },
       })
+        .then((response) => {
+          this.setState({
+            is_logged_in: false,
+            username: ''
+          })
+        })
+    })
   }
 
   render() {

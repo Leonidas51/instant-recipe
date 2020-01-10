@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import "./UploadPhotoModal.css";
+import {get_csrf} from "../../utils/";
 import Loader from "../shared/Loader";
 
 let close_timer;
@@ -32,34 +33,36 @@ class UploadPhotoModal extends React.Component {
 
     this.setState({loading: true})
 
-    fetch(`/api/recipe/upload_photo/${this.props.recipe_id}`, {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken')
-      },
-      body: data
-    })
-      .then(response => {
-        this.setState({loading: false});
-        if(response.status === 200) {
-          this.setState({success: true});
-          close_timer = setTimeout(() => {
-            this.props.close();
-          }, 5000);
-        } else if(response.status === 403) {
-          this.setState({error: 'Для выполнения этого действия необходимо авторизоваться и подтвердить аккаунт'});
-        } else {
-          response.json()
-            .then(result => {
-              if(result.error) {
-                this.setState({error: result.error});
-              } 
-            })
-            .catch(err => {
-              this.setState({error: 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'});
-            }) 
-        }
+    get_csrf().then((csrf) => {
+      fetch(`/api/recipe/upload_photo/${this.props.recipe_id}`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf
+        },
+        body: data
       })
+        .then(response => {
+          this.setState({loading: false});
+          if(response.status === 200) {
+            this.setState({success: true});
+            close_timer = setTimeout(() => {
+              this.props.close();
+            }, 5000);
+          } else if(response.status === 403) {
+            this.setState({error: 'Для выполнения этого действия необходимо авторизоваться и подтвердить аккаунт'});
+          } else {
+            response.json()
+              .then(result => {
+                if(result.error) {
+                  this.setState({error: result.error});
+                } 
+              })
+              .catch(err => {
+                this.setState({error: 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'});
+              }) 
+          }
+        })
+    })
   }
 
   componentWillUnmount() {

@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import {get_csrf} from "../utils/";
 import "./Errors.css";
 
 class Unconfirmed extends React.Component {
@@ -10,35 +11,37 @@ class Unconfirmed extends React.Component {
   }
 
   resend(e) {
-    fetch('/api/user/resend_verification_email/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken'),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        resend: true
+    get_csrf().then((csrf) => {
+      fetch('/api/user/resend_verification_email/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          resend: true
+        })
       })
+        .then((response) => {
+          if(response.status === 200) {
+            response.json()
+              .then((result) => {
+                alert(result.message);
+              })
+          } else if(response.status === 400) {
+            response.json()
+              .then((result) => {
+                this.setState({
+                  error: result.message
+                });
+              })
+          } else {
+            this.setState({
+              error: 'Произошла ошибка сервера. Попробуйте позже.'
+            })
+          }
+        })
     })
-      .then((response) => {
-        if(response.status === 200) {
-          response.json()
-            .then((result) => {
-              alert(result.message);
-            })
-        } else if(response.status === 400) {
-          response.json()
-            .then((result) => {
-              this.setState({
-                error: result.message
-              });
-            })
-        } else {
-          this.setState({
-            error: 'Произошла ошибка сервера. Попробуйте позже.'
-          })
-        }
-      })
   }
 
   render() {

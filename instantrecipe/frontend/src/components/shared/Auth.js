@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Loader from "./Loader";
+import {get_csrf} from "../../utils/";
 import "./Auth.css";
 
 class Auth extends React.Component {
@@ -62,42 +63,46 @@ class Auth extends React.Component {
     return true;
   }
 
+  
+
   _login(e) {
     const {login_email, login_pass} = this.state;
     this.switchMode('loading')();
-    fetch('/api/user/login/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken'),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: login_email,
-        password: login_pass
+    get_csrf().then((csrf) => {
+      fetch('/api/user/login/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: login_email,
+          password: login_pass
+        })
       })
+        .then((response) => {
+          if(response.status === 200) {
+            response.json()
+              .then((result) => {
+                this.switchMode('login_success')();
+                this.props.login(result.username);
+              })
+          } else if(response.status === 400) {
+            response.json()
+              .then((result) => {
+                this.setState({
+                  error: result.message,
+                  mode: 'login'
+                });
+              })
+          } else {
+            this.setState({
+              error: 'Произошла ошибка сервера. Попробуйте позже.',
+              mode: 'login'
+            })
+          }
+        })
     })
-      .then((response) => {
-        if(response.status === 200) {
-          response.json()
-            .then((result) => {
-              this.switchMode('login_success')();
-              this.props.login(result.username);
-            })
-        } else if(response.status === 400) {
-          response.json()
-            .then((result) => {
-              this.setState({
-                error: result.message,
-                mode: 'login'
-              });
-            })
-        } else {
-          this.setState({
-            error: 'Произошла ошибка сервера. Попробуйте позже.',
-            mode: 'login'
-          })
-        }
-      })
   }
 
   _register(e) {
@@ -108,39 +113,42 @@ class Auth extends React.Component {
     }
 
     this.switchMode('loading')();
-    fetch('/api/user/register/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken'),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: reg_email,
-        username: reg_username,
-        password: reg_pass
+
+    get_csrf().then((csrf) => {
+      fetch('/api/user/register/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: reg_email,
+          username: reg_username,
+          password: reg_pass
+        })
       })
-    })
-      .then((response) => {
-        if(response.status === 200) {
-          response.json()
-            .then((result) => {
-              this.switchMode('reg_success')();
-              this.props.register(result.username);
+        .then((response) => {
+          if(response.status === 200) {
+            response.json()
+              .then((result) => {
+                this.switchMode('reg_success')();
+                this.props.register(result.username);
+              })
+          } else if(response.status === 400) {
+            response.json()
+              .then((result) => {
+                this.setState({
+                  error: result.message,
+                  mode: 'register'
+                });
+              })
+          } else {
+            this.setState({
+              error: 'Произошла ошибка сервера. Попробуйте позже.',
+              mode: 'register'
             })
-        } else if(response.status === 400) {
-          response.json()
-            .then((result) => {
-              this.setState({
-                error: result.message,
-                mode: 'register'
-              });
-            })
-        } else {
-          this.setState({
-            error: 'Произошла ошибка сервера. Попробуйте позже.',
-            mode: 'register'
-          })
-        }
+          }
+        })
       })
   }
 
@@ -148,38 +156,41 @@ class Auth extends React.Component {
     const {restore_email} = this.state;
 
     this.switchMode('loading')();
-    fetch('/api/user/restore_password_entered_email/', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': this.props.cookies.get('csrftoken'),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: restore_email
+
+    get_csrf().then((csrf) => {
+      fetch('/api/user/restore_password_entered_email/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: restore_email
+        })
       })
+        .then((response) => {
+          if(response.status === 200) {
+            response.json()
+              .then((result) => {
+                alert('На адрес ' + restore_email + ' была отправлена ссылка для восстановления пароля.')
+                this.props.close();
+              })
+          } else if(response.status === 400) {
+            response.json()
+              .then((result) => {
+                this.setState({
+                  error: result.message,
+                  mode: 'register'
+                });
+              })
+          } else {
+            this.setState({
+              error: 'Произошла ошибка сервера. Попробуйте позже.',
+              mode: 'register'
+            })
+          }
+        })
     })
-      .then((response) => {
-        if(response.status === 200) {
-          response.json()
-            .then((result) => {
-              alert('На адрес ' + restore_email + ' была отправлена ссылка для восстановления пароля.')
-              this.props.close();
-            })
-        } else if(response.status === 400) {
-          response.json()
-            .then((result) => {
-              this.setState({
-                error: result.message,
-                mode: 'register'
-              });
-            })
-        } else {
-          this.setState({
-            error: 'Произошла ошибка сервера. Попробуйте позже.',
-            mode: 'register'
-          })
-        }
-      })
   }
 
   /* dom events */
