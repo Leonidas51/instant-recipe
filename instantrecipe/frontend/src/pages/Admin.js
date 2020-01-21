@@ -9,7 +9,7 @@ class Admin extends React.Component {
   render() {
     return (
       <div className="content-area">
-        <p>hi i'm an admin page</p>
+        <Link className="link" to="/admin/suggested_images">Предложенные фотографии</Link>
       </div>
     );
   }

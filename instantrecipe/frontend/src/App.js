@@ -21,6 +21,7 @@ import TagByName from "./components/utils/TagByName";
 import Header from "./components/shared/Header";
 import Footer from "./components/shared/Footer";
 import Auth from "./components/shared/Auth";
+import SuggestedImages from "./pages/SuggestedImages";
 
 class App extends React.Component {
   constructor(props) {
@@ -123,6 +124,7 @@ class App extends React.Component {
         .then((response) => {
           this.setState({
             is_logged_in: false,
+            is_admin: false,
             username: ''
           })
         })
@@ -165,7 +167,8 @@ class App extends React.Component {
               <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
               <Route path="/profile" render={() => (<Profile cookies={this.props.cookies} />)} />
               <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
-              <Route path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+              <Route exact path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+              <Route path="/admin/suggested_images" render={() => (this.state.is_admin ? <SuggestedImages cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
 

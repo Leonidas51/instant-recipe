@@ -4,6 +4,7 @@ from flask import request, jsonify, Blueprint, session
 from instantrecipe import mongo
 import logger
 from flask_wtf.csrf import generate_csrf
+from instantrecipe.auth import User, admin_required
 
 
 ROOT_PATH = os.environ.get('ROOT_PATH')
@@ -67,3 +68,13 @@ def remove_salt():
 
 	return jsonify(data = 'removed salt'), 200
 """
+
+@utils_bp.route('/create_images_table/', methods=['GET'])
+@admin_required
+def create_images_table():
+	try:
+		mongo.db.create_collection('upload_images')
+		return jsonify(result = 'success'), 200
+	except Exception as e:
+		LOG.error('error while trying to create_images_table: ' + str(e))
+		

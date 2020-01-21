@@ -1,9 +1,8 @@
 import os
 import re
-from PIL import Image
 from shutil import copyfile
 from bson.objectid import ObjectId
-from flask import request, jsonify, Blueprint, current_app
+from flask import request, jsonify, Blueprint, current_app, session
 from werkzeug.utils import secure_filename
 from instantrecipe import mongo
 from instantrecipe.auth import User, login_required, confirm_required
@@ -241,16 +240,6 @@ def get_featured_recipes():
 			LOG.error('error while trying to get_featured_recipes: ' + str(e))
 			return jsonify(data = 'Nothing was found!'), 204
 
-def make_thumbnail(path):
-	try:
-		file, ext = os.path.splitext(path)
-		size = 250, 200
-		im = Image.open(path)
-		im.thumbnail(size)
-		im.save(file + '.jpg', format='JPEG')
-	except Exception as e:
-		LOG.error('error while trying to make_thumbnail: ' + str(e))
-
 def allowed_file(filename):
 	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 	return '.' in filename and \
@@ -292,6 +281,14 @@ def upload_recipe_photo(recipe_id):
 						filename = str(count) + '.jpg'
 						break
 
+			upload = {}
+			upload['uploader_id'] = session.get('user').get()['_id']
+			upload['uploader_name'] = session.get('user').get()['name']
+			upload['recipe_id'] = recipe_id
+			upload['recipe_name'] = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}).get('name')
+			upload['path'] = filename
+
+			mongo.db.upload_images.insert_one(upload)
 			path = os.path.join(save_directory, filename)
 			file.save(path)
 

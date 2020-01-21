@@ -14,6 +14,7 @@ class Config(object):
     SESSION_TYPE = 'mongodb'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     PHOTOS_UPLOAD_FOLDER = 'instantrecipe/images/recipes/upload'
+    PHOTOS_DIST_FOLDER = 'instantrecipe/images/recipes/dist'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024 # 5 Mb max
 
     # mail settings

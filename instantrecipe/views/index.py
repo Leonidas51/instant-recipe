@@ -1,6 +1,7 @@
 import os
 from flask import Blueprint, render_template, make_response, send_from_directory
 from flask_wtf.csrf import generate_csrf
+from instantrecipe.auth import admin_required
 import logger
 
 ROOT_PATH = os.environ.get('ROOT_PATH')
@@ -23,3 +24,10 @@ def show_image(path):
     else:
         return send_from_directory('images/recipes/dist/', 'default.png')
         
+@index_bp.route('/images/recipes/upload/<path:path>')
+@admin_required
+def show_upload_image(path):
+    if os.path.isfile('instantrecipe/images/recipes/upload/' + path):
+        return send_from_directory('images/recipes/upload/', path)
+    else:
+        return send_from_directory('images/recipes/dist/', 'default.png')

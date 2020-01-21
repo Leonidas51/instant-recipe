@@ -119,6 +119,18 @@ def login_required(func):
         return func(*args, **kwargs)
     return wrapper_login_required
 
+def admin_required(func):
+    @functools.wraps(func)
+    def wrapper_admin_required(*args, **kwargs):
+        if session.get('user', None) is None:
+            return jsonify({'result': 'error',
+                            'message': 'Вы не авторизованы'}), 403
+        if session['user'].get()['admin'] == True:
+            return func(*args, **kwargs)
+        return jsonify({'result': 'error',
+                    'message:': 'Для данного действия требуются права администратора'}), 400
+    return wrapper_admin_required
+
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     return serializer.dumps(email, salt=current_app.config['CONFIRM_SALT'])
