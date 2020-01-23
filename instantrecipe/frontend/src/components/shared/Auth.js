@@ -16,6 +16,8 @@ class Auth extends React.Component {
       username_error: false
     }
 
+    this.onLoginFormSubmit = this.onLoginFormSubmit.bind(this);
+    this.onRegisterFormSubmit = this.onRegisterFormSubmit.bind(this);
     this.onRegEmailChange = this.onRegEmailChange.bind(this);
     this.onRegUsernameChange = this.onRegUsernameChange.bind(this);
     this.onRegPasswordChange = this.onRegPasswordChange.bind(this);
@@ -53,6 +55,7 @@ class Auth extends React.Component {
 
     if(this.state.reg_pass.length < 6) {
       this.setState({error: 'Пароль должен содержать как минимум 6 символов'});
+      return false;
     }
 
     if(!this.state.reg_pass_match) {
@@ -107,10 +110,11 @@ class Auth extends React.Component {
 
   _register(e) {
     const {reg_email, reg_username, reg_pass} = this.state;
-    console.log(this.props.cookies.get('csrftoken'));
+    console.log(1);
     if(!this.validateFields()) {
       return;
     }
+    console.log(2);
 
     this.switchMode('loading')();
 
@@ -195,6 +199,16 @@ class Auth extends React.Component {
 
   /* dom events */
 
+  onLoginFormSubmit(e) {
+    e.preventDefault();
+    this._login();
+  }
+
+  onRegisterFormSubmit(e) {
+    e.preventDefault();
+    this._register();
+  }
+
   onRegEmailChange(e) {
     this.setState({
       reg_email: e.target.value,
@@ -253,6 +267,7 @@ class Auth extends React.Component {
       case 'register':
         body = (
           <div className="auth__registration">
+            <form onSubmit={this.onRegisterFormSubmit}>
             <h2 className="auth__title">Регистрация</h2>
             <div className="auth__field">
               <div className="auth__field-name">E-mail</div>
@@ -292,26 +307,29 @@ class Auth extends React.Component {
             </div>
             <div className="auth__text">Уже есть аккаунт? <span className="auth__link" onClick={this.switchMode('login')}>Войти</span></div>
             {this.state.error ? <div className="auth__error">{this.state.error}</div> : null}
-            <div className="auth__button auth__register-button" onClick={this._register}>Зарегистрироваться</div>
+            <input type="submit" className="auth__button auth__register-button" value="Зарегистрироваться" />
+            </form>
           </div>
         );
         break;
       case 'login':
         body = (
           <div className="auth__login">
-            <h2 className="auth__title">Вход</h2>
-            <div className="auth__field">
-              <div className="auth__field-name">E-mail</div>
-              <input className="auth__input" type="email" value={this.state.login_email} onChange={this.onLoginEmailChange} />
-            </div>
-            <div className="auth__field">
-              <div className="auth__field-name">Пароль</div>
-              <input className="auth__input" type="password" value={this.state.login_pass} onChange={this.onLoginPassChange} />
-            </div>
-            <div className="auth__text"><span className="auth__link" onClick={this.switchMode('restore')}>Забыли пароль</span></div>
-            <div className="auth__text"><span className="auth__link" onClick={this.switchMode('register')}>Зарегистрироваться</span></div>
-            {this.state.error ? <div className="auth__error">{this.state.error}</div> : null}
-            <div className="auth__button auth__login-button" onClick={this._login}>Войти</div>
+            <form onSubmit={this.onLoginFormSubmit}>
+              <h2 className="auth__title">Вход</h2>
+              <div className="auth__field">
+                <div className="auth__field-name">E-mail</div>
+                <input className="auth__input" type="email" value={this.state.login_email} onChange={this.onLoginEmailChange} />
+              </div>
+              <div className="auth__field">
+                <div className="auth__field-name">Пароль</div>
+                <input className="auth__input" type="password" value={this.state.login_pass} onChange={this.onLoginPassChange} />
+              </div>
+              <div className="auth__text"><span className="auth__link" onClick={this.switchMode('restore')}>Забыли пароль</span></div>
+              <div className="auth__text"><span className="auth__link" onClick={this.switchMode('register')}>Зарегистрироваться</span></div>
+              {this.state.error ? <div className="auth__error">{this.state.error}</div> : null}
+              <input type="submit" className="auth__button auth__login-button" value="Войти" />
+            </form>
           </div>
         );
         break;

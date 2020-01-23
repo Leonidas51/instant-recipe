@@ -47,15 +47,18 @@
 }
 
 .auth__button {
+  display: block;
   width: 65%;
   height: 35px;
   line-height: 35px;
   margin-left: auto;
   margin-right: auto;
+  border: none;
   border-radius: 5px;
   font-weight: 700;
   text-align: center;
   cursor: pointer;
+  color: inherit;
 }
 
 .auth__register-button {
