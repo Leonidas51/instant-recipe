@@ -32,6 +32,13 @@ body {
   cursor: pointer;
 }
 
+.page-title {
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 28px;
+  text-align: center;
+}
+
 .highlighted-text {
   padding: 20px;
   border-radius: 5px;

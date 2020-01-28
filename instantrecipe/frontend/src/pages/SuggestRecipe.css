@@ -1,0 +1,142 @@
+.suggest-form {
+  margin-top: 30px;
+}
+
+.suggest-form__data-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.suggest-form__input-name {
+  display: block;
+  width: 25%;
+}
+
+.suggest-form__input-name_taller {
+  align-self: flex-start;
+  height: 30px;
+  line-height: 30px;
+}
+
+.suggest-form__text-input, .suggest-form__select {
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+}
+
+.suggest-form__text-input_name {
+  width: 100%;
+}
+
+.suggest-form__text-input_time {
+  width: 50px;
+}
+
+.suggest-form__select_difficulty {
+  width: 35%;
+}
+
+.suggest-form__text-input_ing {
+  width: 55%;
+}
+
+.suggest-form__text-input_ing_amount {
+  width: 20%;
+}
+
+.suggest-form__input-area {
+  width: 75%;
+  position: relative;
+}
+
+.suggest-form__dash {
+  display: inline-block;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.suggest-form__ings-inputs {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.suggest-form__ing-input-clear {
+  position: absolute;
+  cursor: pointer;
+  top: 6.5px;
+  left: 51.5%;
+  color: #222;
+}
+
+.suggest-form__ing-suggestions {
+  position: absolute;
+  top: 30px;
+  box-sizing: border-box;
+  min-width: 35%;
+  z-index: 3;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  line-height: 25px;
+  font-size: 20px;
+  background-color: #F9F6F6;
+  color: #222;
+}
+
+.suggest-form__suggested-ing {
+  width: 100%;
+  padding-left: 7px;
+  padding-right: 7px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.suggest-form__suggested-ing:hover {
+  background-color: rgba(86, 204, 242, 0.5);
+}
+
+.suggest-form__suggested-ing-error {
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.suggest-form__add-ing-btn {
+  width: 16%;
+  align-self: center;
+  text-align: end;
+}
+
+.suggest-form__ings-error {
+  margin-top: 5px;
+  color: #E73A23;
+}
+
+.suggest-form__chosen-ing {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  height: 30px;
+  line-height: 30px;
+}
+
+.suggest-form__chosen-ing-name {
+  width: 55%;
+}
+
+.suggest-form__chosen-ing-amount {
+  width: 20%;
+  text-align: center;
+}
+
+.suggest-form__chosen-ing-remove {
+  width: 16%;
+  text-align: center;
+}
+
+.suggest-form__chosen-ing-remove > span {
+  cursor: pointer;
+}

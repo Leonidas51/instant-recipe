@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
 import Profile from "./pages/Profile";
+import SuggestRecipe from "./pages/SuggestRecipe";
 import Indev from "./pages/Indev";
 import Admin from "./pages/Admin";
 import Modal from "./components/hoc/Modal";
@@ -166,6 +167,7 @@ class App extends React.Component {
               <Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
               <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
               <Route path="/profile" render={() => (<Profile cookies={this.props.cookies} />)} />
+              <Route path="/suggest_recipe" render={() => (<SuggestRecipe cookies={this.props.cookies} />)} />
               <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
               <Route exact path="/admin" render={() => (this.state.is_admin ? <Admin cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route path="/admin/suggested_images" render={() => (this.state.is_admin ? <SuggestedImages cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
