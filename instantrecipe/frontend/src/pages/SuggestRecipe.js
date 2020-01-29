@@ -19,17 +19,32 @@ class SuggestRecipe extends React.Component {
       ing_chosen: false,
       ings_suggest: [],
       ings_suggest_error: '',
-      ings: []
+      ings: [],
+      current_opt_ing_name: '',
+      current_opt_ing_amount: '',
+      current_opt_ing_error: '',
+      opt_ings: [],
+      steps: ['', ''],
+      steps_error: '',
+      photo: '',
+      upload_key: Date.now()
     }
 
     this.ing_input = React.createRef();
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onIngInputChange = this.onIngInputChange.bind(this);
+    this.onStepInputChange = this.onStepInputChange.bind(this);
     this.onSuggestedIngClick = this.onSuggestedIngClick.bind(this);
     this.onClearIngClick = this.onClearIngClick.bind(this);
     this.onRemoveIngClick = this.onRemoveIngClick.bind(this);
+    this.onRemoveOptIngClick = this.onRemoveOptIngClick.bind(this);
     this.onAddIngClick = this.onAddIngClick.bind(this);
+    this.onAddOptIngClick = this.onAddOptIngClick.bind(this);
+    this.onAddStepClick = this.onAddStepClick.bind(this);
+    this.onRemoveStepClick = this.onRemoveStepClick.bind(this);
+    this.onPhotoUploadChange = this.onPhotoUploadChange.bind(this);
+    this.onRemovePhotoClick = this.onRemovePhotoClick.bind(this);
     this.onSuggestFormSubmit = this.onSuggestFormSubmit.bind(this);
   }
 
@@ -82,8 +97,20 @@ class SuggestRecipe extends React.Component {
     }
   }
 
+  onStepInputChange(e) {
+    const new_steps = this.state.steps;
+
+    new_steps.splice(e.target.dataset.count, 1, e.target.value);
+    this.setState({
+      steps: new_steps,
+      steps_error: ''
+    })
+
+    this.onInputChange(e);
+  }
+
   onSuggestedIngClick(e) {
-    let invalid_ing = false;
+    let dupe_ing = false;
 
     this.state.ings.forEach((ing) => {
       if(ing.id === e.target.dataset.id) {
@@ -93,11 +120,11 @@ class SuggestRecipe extends React.Component {
           current_ing_error: 'Ингредиент уже есть в списке'
         })
 
-        invalid_ing = true;
+        dupe_ing = true;
       }
     })
 
-    if(invalid_ing) {
+    if(dupe_ing) {
       return;
     }
 
@@ -130,6 +157,16 @@ class SuggestRecipe extends React.Component {
     })
   }
 
+  onRemoveOptIngClick(e) {
+    const new_opt_ing_list = this.state.opt_ings;
+
+    new_opt_ing_list.splice(e.target.dataset.index, 1);
+
+    this.setState({
+      opt_ings: new_opt_ing_list
+    })
+  }
+
   onAddIngClick(e) {
     if(!this.state.current_ing_id.length || !this.state.current_ing_name.length) {
       this.setState({current_ing_error: 'Выберите ингредиент из всплывающего списка'});
@@ -154,6 +191,90 @@ class SuggestRecipe extends React.Component {
       current_ing_name: '',
       current_ing_amount: '',
       current_ing_error: ''
+    })
+  }
+
+  onAddOptIngClick(e) {
+    let dupe_ing = false;
+
+    if(!this.state.current_opt_ing_name.length) {
+      this.setState({current_opt_ing_error: 'Введите название ингредиента'});
+      return;
+    }
+
+    if(!this.state.current_opt_ing_amount.length) {
+      this.setState({current_opt_ing_error: 'Укажите количество ингредиента'});
+      return;
+    }
+
+    this.state.opt_ings.forEach((ing) => {
+      if(ing.name === this.state.current_opt_ing_name) {
+        dupe_ing = true;
+      }
+    })
+
+    if(dupe_ing) {
+      this.setState({current_opt_ing_error: 'Ингредиент уже есть в списке'});
+      return;
+    }
+
+    const new_opt_ings_list = this.state.opt_ings.concat({
+      name: this.state.current_opt_ing_name,
+      amount: this.state.current_opt_ing_amount
+    })
+
+    this.setState({
+      opt_ings: new_opt_ings_list,
+      current_opt_ing_name: '',
+      current_opt_ing_amount: '',
+      current_opt_ing_error: ''
+    })
+  }
+
+  onAddStepClick(e) {
+    const new_steps = this.state.steps;
+    new_steps.push('');
+    this.setState({
+      steps: new_steps,
+      steps_error: ''
+    })
+  }
+
+  onRemoveStepClick(e) {
+    const new_steps = this.state.steps;
+    if(new_steps.length < 3) {
+      this.setState({steps_error: 'Укажите не менее двух шагов'});
+      return;
+    }
+
+    new_steps.splice(e.target.dataset.count, 1);
+    new_steps.forEach((step, i) => {
+      this.setState({
+        ['step_' + i]: step
+      })
+
+      if(new_steps.length === (i+1)) {
+        this.setState({
+          ['step_' + (i+1)]: ''
+        })
+      }
+    })
+
+    this.setState({
+      steps: new_steps
+    })
+  }
+
+  onPhotoUploadChange(e) {
+    this.setState({
+      photo: e.target.files[0]
+    })
+  }
+
+  onRemovePhotoClick(e) {
+    this.setState({
+      photo: '',
+      upload_key: Date.now()
     })
   }
 
@@ -254,7 +375,6 @@ class SuggestRecipe extends React.Component {
                     name="current_ing_amount"
                     onChange={this.onInputChange}
                     placeholder="Кол-во"
-                    disabled={!this.state.ing_chosen}
                   />
                   <div className="suggest-form__add-ing-btn link" onClick={this.onAddIngClick}>+ Добавить</div>
                   {
@@ -264,6 +384,86 @@ class SuggestRecipe extends React.Component {
                   }
                   </div>
                 </div>
+              </div>
+              <div className="suggest-form__data-container">
+                <div className="suggest-form__input-name suggest-form__input-name_taller">Можно добавить</div>
+                <div className="suggest-form__input-area">
+                  {
+                    this.state.opt_ings.length
+                    ? <div className="suggest-form__chosen_ings"> {this.state.opt_ings.map((ing, index) => {
+                      return (
+                        <div className="suggest-form__chosen-ing" key={ing.name}>
+                          <div className="suggest-form__chosen-ing-name">{index + 1}. {ing.name}</div>
+                          <div className="suggest-form__chosen-ing-amount">{ing.amount}</div>
+                          <div className="suggest-form__chosen-ing-remove"><span data-index={index} onClick={this.onRemoveOptIngClick}>✖</span></div>
+                        </div>
+                      )
+                    })} </div>
+                    : null
+                  }
+                  <div className="suggest-form__ings-inputs">
+                    <input
+                      type="text"
+                      className="suggest-form__text-input suggest-form__text-input_ing"
+                      value={this.state.current_opt_ing_name}
+                      name="current_opt_ing_name"
+                      onChange={this.onInputChange}
+                      placeholder="Можно добавить"
+                    />
+                    <input
+                      type="text"
+                      className="suggest-form__text-input suggest-form__text-input_ing_amount"
+                      value={this.state.current_opt_ing_amount}
+                      name="current_opt_ing_amount"
+                      onChange={this.onInputChange}
+                      placeholder="Кол-во"
+                    />
+                    <div className="suggest-form__add-ing-btn link" onClick={this.onAddOptIngClick}>+ Добавить</div>
+                    {
+                      this.state.current_opt_ing_error.length
+                      ? <div className="suggest-form__ings-error">{this.state.current_opt_ing_error}</div>
+                      : null
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="suggest-form__data-container">
+                <div className="suggest-form__input-name suggest-form__input-name_taller">Инструкции</div>
+                <div className="suggest-form__input-area">
+                  {this.state.steps.map((step, i) => {
+                    return (
+                      <div key={i} className="suggest-form__step">
+                        <span className="suggest-form__step-number">{i+1+'.'}</span>
+                        <textarea
+                          className="suggest-form__text-input suggest-form__text-input_step"
+                          name={'step_' + i} value={this.state['step_' + i]} onChange={this.onStepInputChange}
+                          data-count={i}
+                        />
+                        <div className="suggest-form__remove-step" data-count={i} onClick={this.onRemoveStepClick}>✖</div>
+                      </div>
+                    )
+                  })}
+                  <div className="link" onClick={this.onAddStepClick}>+ Добавить шаг</div>
+                  {
+                    this.state.steps_error
+                    ? <div className="suggest-form__steps-error">{this.state.steps_error}</div>
+                    : null
+                  }
+                </div>
+              </div>
+              <div className="suggest-form__data-container">
+                <div className="suggest-form__input-name">Фото</div>
+                <div className="suggest-form__input-area">
+                  <input className="suggest-form__file-input" type="file" key={this.state.upload_key} onChange={this.onPhotoUploadChange} />
+                  {
+                    this.state.photo !== ''
+                    ? <span className="suggest-form__file-remove" onClick={this.onRemovePhotoClick}>✖</span>
+                    : null
+                  }
+                </div>
+              </div>
+              <div className="suggest-form__submit-container">
+                <input className="suggest-form__submit-btn" type="submit" value="Отправить" />
               </div>
             </form>
           </div>
