@@ -2,16 +2,20 @@ import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import "./SuggestRecipe.css";
+import {get_csrf} from '../utils';
 
 class SuggestRecipe extends React.Component {
   constructor(props) {
     super(props);
 
+    const recipe = this.props.recipe || {}
+
     this.state = {
-      recipe_name: '',
-      time_min: '',
-      time_max: '',
-      difficulty: 1,
+      recipe_name: recipe.recipe_name || '',
+      time_min: recipe.time_min || '',
+      time_max: recipe.time_max || '',
+      difficulty: recipe.difficulty || 1,
+      serves: recipe.serves || '',
       current_ing_id: '',
       current_ing_name: '',
       current_ing_amount: '',
@@ -19,15 +23,16 @@ class SuggestRecipe extends React.Component {
       ing_chosen: false,
       ings_suggest: [],
       ings_suggest_error: '',
-      ings: [],
+      ings: recipe.ings || [],
       current_opt_ing_name: '',
       current_opt_ing_amount: '',
       current_opt_ing_error: '',
-      opt_ings: [],
-      steps: ['', ''],
+      opt_ings: recipe.opt_ings || [],
+      steps: recipe.steps || ['', ''],
       steps_error: '',
       photo: '',
-      upload_key: Date.now()
+      upload_key: Date.now(),
+      submit_error: ''
     }
 
     this.ing_input = React.createRef();
@@ -46,6 +51,17 @@ class SuggestRecipe extends React.Component {
     this.onPhotoUploadChange = this.onPhotoUploadChange.bind(this);
     this.onRemovePhotoClick = this.onRemovePhotoClick.bind(this);
     this.onSuggestFormSubmit = this.onSuggestFormSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    let i = 0;
+
+    while(this.state.steps[i]) {
+      this.setState({
+        ['step_' + i]: this.state.steps[i]
+      })
+      i++;
+    }
   }
 
   fetchSuggestedIngs(query) {
@@ -169,7 +185,11 @@ class SuggestRecipe extends React.Component {
 
   onAddIngClick(e) {
     if(!this.state.current_ing_id.length || !this.state.current_ing_name.length) {
-      this.setState({current_ing_error: 'Выберите ингредиент из всплывающего списка'});
+      this.setState({
+        current_ing_error: 'Выберите ингредиент из всплывающего списка',
+        ings_suggest: [],
+        ings_suggest_error: ''
+      });
       return;
     }
 
@@ -280,6 +300,38 @@ class SuggestRecipe extends React.Component {
 
   onSuggestFormSubmit(e) {
     e.preventDefault();
+
+    const data = new FormData();
+
+    ['recipe_name', 'time_min', 'time_max', 'serves', 'difficulty', 'steps', 'photo']
+      .forEach(prop => {
+        data.append([prop], this.state[prop]);
+      });
+
+    ['ings', 'opt_ings']
+      .forEach(prop => {
+        data.append([prop], JSON.stringify(this.state[prop]));
+      })
+
+    get_csrf().then(csrf => {
+      fetch('/api/recipe/suggest', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf
+        },
+        body: data
+      })
+        .then(response => {
+          if(response.status === 400) {
+            response.json()
+              .then(result => {
+                this.setState({
+                  submit_error: result.error
+                })
+              })
+          }
+        })
+    })
   }
 
   render() {
@@ -294,21 +346,21 @@ class SuggestRecipe extends React.Component {
           <div className="suggest-form">
             <form onSubmit={this.onSuggestFormSubmit}>
               <div className="suggest-form__data-container">
-                <div className="suggest-form__input-name">Название</div>
+                <div className="suggest-form__input-name">Название<span className="suggest-form__required-asterisk">*</span></div>
                 <div className="suggest-form__input-area">
                   <input type="text" className="suggest-form__text-input suggest-form__text-input_name" value={this.state.recipe_name} name="recipe_name" onChange={this.onInputChange} />
                 </div>
               </div>
               <div className="suggest-form__data-container">
-                <div className="suggest-form__input-name">Время приготовления (в минутах)</div>
+                <div className="suggest-form__input-name">Время приготовления (в минутах)<span className="suggest-form__required-asterisk">*</span></div>
                 <div className="suggest-form__input-area">
-                  <input type="number" className="suggest-form__text-input suggest-form__text-input_time" value={this.state.time_min} min="1" name="time_min" onChange={this.onInputChange} />
+                  <input type="number" className="suggest-form__text-input  suggest-form__text-input_number" value={this.state.time_min} min="1" name="time_min" onChange={this.onInputChange} />
                   <div className="suggest-form__dash">—</div>
-                  <input type="number" className="suggest-form__text-input suggest-form__text-input_time" value={this.state.time_max} min="1" name="time_max" onChange={this.onInputChange} />
+                  <input type="number" className="suggest-form__text-input  suggest-form__text-input_number" value={this.state.time_max} min="1" name="time_max" onChange={this.onInputChange} />
                 </div>
               </div>
               <div className="suggest-form__data-container">
-                <div className="suggest-form__input-name">Сложность</div>
+                <div className="suggest-form__input-name">Сложность<span className="suggest-form__required-asterisk">*</span></div>
                 <div className="suggest-form__input-area">
                   <select className="suggest-form__select suggest-form__select_difficulty" name="difficulty" value={this.state.difficulty} onChange={this.onInputChange}>
                     <option value="1">Элементарно</option>
@@ -321,7 +373,13 @@ class SuggestRecipe extends React.Component {
                 </div>
               </div>
               <div className="suggest-form__data-container">
-                <div className="suggest-form__input-name suggest-form__input-name_taller">Ингредиенты</div>
+                <div className="suggest-form__input-name">Число порций<span className="suggest-form__required-asterisk">*</span></div>
+                <div className="suggest-form__input-area">
+                  <input type="number" className="suggest-form__text-input  suggest-form__text-input_number" value={this.state.serves} min="1" name="serves" onChange={this.onInputChange} />
+                </div>
+              </div>
+              <div className="suggest-form__data-container">
+                <div className="suggest-form__input-name suggest-form__input-name_taller">Ингредиенты<span className="suggest-form__required-asterisk">*</span></div>
                 <div className="suggest-form__input-area">
                   {
                     this.state.ings.length
@@ -428,7 +486,7 @@ class SuggestRecipe extends React.Component {
                 </div>
               </div>
               <div className="suggest-form__data-container">
-                <div className="suggest-form__input-name suggest-form__input-name_taller">Инструкции</div>
+                <div className="suggest-form__input-name suggest-form__input-name_taller">Инструкции<span className="suggest-form__required-asterisk">*</span></div>
                 <div className="suggest-form__input-area">
                   {this.state.steps.map((step, i) => {
                     return (
@@ -462,6 +520,11 @@ class SuggestRecipe extends React.Component {
                   }
                 </div>
               </div>
+              {
+                this.state.submit_error.length
+                  ? <div className="suggest-form__submit-error">{this.state.submit_error}</div>
+                  : null
+              }
               <div className="suggest-form__submit-container">
                 <input className="suggest-form__submit-btn" type="submit" value="Отправить" />
               </div>

@@ -17,7 +17,7 @@ def get_suggested_images():
     if request.method == 'GET':
         try:
             uploads = []
-            for upload in mongo.db.upload_images.find({}):
+            for upload in mongo.db.upload_images.find({u'recipe_published': True}):
                 uploads.append(upload)
             return jsonify(uploads = uploads)
         except Exception as e:

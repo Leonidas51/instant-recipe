@@ -1,5 +1,6 @@
 import os
 import re
+import json
 from shutil import copyfile
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, current_app, session
@@ -245,6 +246,49 @@ def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def validate_recipe_photo(file, recipe_id = None):
+	if file.filename == '':
+		return 'Файл не был прикреплён'
+
+	if not allowed_file(file.filename):
+		return 'Формат фото не соответствует требованиям'
+
+	if recipe_id:
+		if not ObjectId.is_valid(recipe_id):
+			return 'Рецепт не найден'
+
+		if mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}) == None:
+			return 'Рецепт не найден'
+
+	return ''
+
+def save_recipe_photo(file, recipe_id, recipe_published):
+	save_directory = os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], str(recipe_id))
+
+	if not os.path.exists(save_directory):
+		os.makedirs(save_directory)
+		filename = '1.jpg'
+	else:
+		count = 1
+		while True:
+			if os.path.isfile(os.path.join(save_directory, str(count) + '.jpg')):
+				count += 1
+			else:
+				filename = str(count) + '.jpg'
+				break
+
+	upload = {}
+	upload['uploader_id'] = session.get('user').get()['_id']
+	upload['uploader_name'] = session.get('user').get()['name']
+	upload['recipe_id'] = recipe_id
+	upload['recipe_name'] = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}).get('name')
+	upload['recipe_published'] = recipe_published
+	upload['path'] = filename
+
+	mongo.db.upload_images.insert_one(upload)
+	path = os.path.join(save_directory, filename)
+	file.save(path)
+
 @recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST'])
 @login_required
 @confirm_required
@@ -255,44 +299,118 @@ def upload_recipe_photo(recipe_id):
 				return jsonify(error = 'Ошибка: файл не был прикреплён'), 400
 			file = request.files['photo']
 
-			if file.filename == '':
-				return jsonify(error = 'Ошибка: файл не был прикреплён'), 400
-			
-			if not ObjectId.is_valid(recipe_id):
-				return jsonify(error = 'Рецепт не найден'), 400
+			photo_error = validate_recipe_photo(file, recipe_id)
+			if len(photo_error):
+				return jsonify(error = photo_error), 400
 
-			if mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}) == None:
-				return jsonify(error = 'Рецепт не найден'), 400
-			
-			if not allowed_file(file.filename):
-				return jsonify(error = 'Формат не соответствует требованиям'), 400
-
-			save_directory = os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id)
-
-			if not os.path.exists(save_directory):
-				os.makedirs(save_directory)
-				filename = '1.jpg'
-			else:
-				count = 1
-				while True:
-					if os.path.isfile(os.path.join(save_directory, str(count) + '.jpg')):
-						count += 1
-					else:
-						filename = str(count) + '.jpg'
-						break
-
-			upload = {}
-			upload['uploader_id'] = session.get('user').get()['_id']
-			upload['uploader_name'] = session.get('user').get()['name']
-			upload['recipe_id'] = recipe_id
-			upload['recipe_name'] = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}).get('name')
-			upload['path'] = filename
-
-			mongo.db.upload_images.insert_one(upload)
-			path = os.path.join(save_directory, filename)
-			file.save(path)
+			save_recipe_photo(file, recipe_id, True)
 
 			return jsonify(data = 'success!'), 200
 		except Exception as e:
 			LOG.error('error while trying to upload_recipe_photo: ' + str(e))
+			return jsonify(error = 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'), 500
+
+def parse_time(time):
+	hours = 0
+	minutes = 0
+	result = ''
+
+	while(time >= 60):
+		hours += 1
+		time -= 60
+	
+	minutes = time
+	
+	if hours > 0:
+		result += str(hours) + ' ч.'
+	if minutes > 0:
+		result += ' ' + str(minutes) + ' мин.'
+	
+	return result.strip()
+
+def parse_interval(min, max):
+	if min == max:
+		return parse_time(min)
+
+	return parse_time(min) + ' — ' + parse_time(max)
+
+def parse_instructions(steps):
+	steps = steps.split(',')
+	for i, step in enumerate(steps):
+		steps[i] = str(i+1) + '. ' + step
+	
+	return ('\n').join(steps)
+
+@recipes_bp.route('/recipe/suggest', methods=['POST'])
+@login_required
+@confirm_required
+def suggest_recipe():
+	if request.method == 'POST':
+		try:
+			data = request.form.to_dict()
+			recipe = {}
+
+			if not data['recipe_name']:
+				return jsonify(error = 'Укажите название рецепта'), 400
+
+			if not data['time_min'] or not data['time_max']:
+				return jsonify(error = 'Укажите время приготовления'), 400
+
+			if int(data['time_min']) < 1 or int(data['time_max']) < 1:
+				return jsonify(error = 'Укажите валидное время'), 400
+
+			if not data['serves']:
+				return jsonify(error = 'Укажите число порций'), 400
+
+			if int(data['serves']) < 1:
+				return jsonify(error = 'Укажите валидное число порций'), 400
+
+			if not len(data['ings']):
+				return jsonify(error = 'Укажите ингредиенты'), 400
+
+			if not len(data['steps'][0]) or not len(data['steps'][1]):
+				return jsonify(error = 'Укажите не менее двух шагов'), 400
+
+			if 'photo' in request.files:
+				img_error = validate_recipe_photo(request.files['photo'])
+
+				if len(img_error):
+					return jsonify(error = img_error), 400
+
+			ings = json.loads(data['ings'])
+			opt_ings = json.loads(data['opt_ings'])
+
+			recipe['name'] = data['recipe_name'].strip()
+			recipe['cooking_time_min'] = int(data['time_min'])
+			recipe['cooking_time_max'] = int(data['time_max'])
+			recipe['cooking_time'] = parse_interval(int(data['time_min']), int(data['time_max']))
+			recipe['difficulty'] = int(data['difficulty'])
+			recipe['serves'] = int(data['serves'])
+			recipe['ingredient_ids'] = []
+			recipe['ingredient_names'] = {'mandatory': {}, 'optional': {}}
+
+			for ing in ings:
+				recipe['ingredient_ids'].append(ing['id'])
+				recipe['ingredient_names']['mandatory'][ing['name']] = ing['amount']
+
+			for ing in opt_ings:
+				recipe['ingredient_names']['optional'][ing['name']] = ing['amount']
+
+			recipe['instructions_source'] = parse_instructions(data['steps'])
+
+			recipe['tag_ids'] = []
+			recipe['tag_names'] = []
+			recipe['author'] = session['user'].get()['name']
+			recipe['author_id'] = session['user'].get_id()
+			recipe['published'] = False
+			recipe['featured'] = False
+
+			recipe_id = mongo.db.recipes.insert_one(recipe).inserted_id
+
+			if 'photo' in request.files:
+				save_recipe_photo(request.files['photo'], recipe_id, False)
+			
+			return jsonify(data = 'success!'), 200
+		except Exception as e:
+			LOG.error('error wli trying to suggest_recipe: ' + str(e))
 			return jsonify(error = 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'), 500

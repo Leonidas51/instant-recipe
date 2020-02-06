@@ -31,7 +31,12 @@
   width: 100%;
 }
 
-.suggest-form__text-input_time {
+.suggest-form__required-asterisk {
+  color: #E73A23;
+  margin-left: 5px;
+}
+
+.suggest-form__text-input_number {
   width: 50px;
 }
 
@@ -85,6 +90,7 @@
   box-sizing: border-box;
   min-width: 35%;
   z-index: 3;
+  border: 1px solid #222;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   line-height: 25px;
@@ -180,6 +186,10 @@
 
 .suggest-form__file-remove {
   cursor: pointer;
+}
+
+.suggest-form__submit-error {
+  color: #E73A23;
 }
 
 .suggest-form__submit-btn {
