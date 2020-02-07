@@ -1,6 +1,9 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import Loader from "../components/shared/Loader";
+import Modal from "../components/hoc/Modal";
+import SuccessModal from "../components/SuggestRecipe/SuccessModal";
 import "./SuggestRecipe.css";
 import {get_csrf} from '../utils';
 
@@ -9,6 +12,18 @@ class SuggestRecipe extends React.Component {
     super(props);
 
     const recipe = this.props.recipe || {}
+
+    //для тестирования
+    /*const recipe = {
+      recipe_name: 'Мой рецепт',
+      time_min: 15,
+      time_max: 45,
+      difficulty: 4,
+      serves: 2,
+      ings: [{amount: "1", id: "4f6d5ab92c607d97620000f4", name: "аджика"}, {amount: "100г", id: "4f6d5ab92c607d9762000120", name: "сыр"}],
+      opt_ings: [{amount: "по вкусу", name: "соль"}],
+      steps: ['готовить', 'посолить', 'кушать']
+    }*/
 
     this.state = {
       recipe_name: recipe.recipe_name || '',
@@ -32,7 +47,9 @@ class SuggestRecipe extends React.Component {
       steps_error: '',
       photo: '',
       upload_key: Date.now(),
-      submit_error: ''
+      submit_error: '',
+      submit_pending: false,
+      success_modal_open: false
     }
 
     this.ing_input = React.createRef();
@@ -298,8 +315,13 @@ class SuggestRecipe extends React.Component {
     })
   }
 
+  onSuccessModalClose(e) {
+    return;
+  }
+
   onSuggestFormSubmit(e) {
     e.preventDefault();
+    this.setState({submit_pending: true});
 
     const data = new FormData();
 
@@ -322,6 +344,7 @@ class SuggestRecipe extends React.Component {
         body: data
       })
         .then(response => {
+          this.setState({submit_pending: false});
           if(response.status === 400) {
             response.json()
               .then(result => {
@@ -329,17 +352,34 @@ class SuggestRecipe extends React.Component {
                   submit_error: result.error
                 })
               })
+          } else if(response.status === 200) {
+            this.setState({success_modal_open: true});
+          } else {
+            this.setState({
+              submit_error: 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'
+            })
           }
         })
     })
   }
 
   render() {
+    const SuccessModalBody = Modal(
+      SuccessModal,
+      this.onSuccessModalClose
+    );
+
     return (
       <React.Fragment>
         <Helmet>
           <title>Предложить рецепт - Рецепт Быстрого Приготовления</title>
         </Helmet>
+
+        {
+          this.state.success_modal_open
+          ? <SuccessModalBody />
+          : null
+        }
 
         <div className="content-area">
           <h1 className="page-title">Предложить рецепт</h1>
@@ -510,7 +550,7 @@ class SuggestRecipe extends React.Component {
                 </div>
               </div>
               <div className="suggest-form__data-container">
-                <div className="suggest-form__input-name">Фото</div>
+                <div className="suggest-form__input-name">Фото (.png .jpeg .jpg не более 5МБ)</div>
                 <div className="suggest-form__input-area">
                   <input className="suggest-form__file-input" type="file" key={this.state.upload_key} onChange={this.onPhotoUploadChange} />
                   {
@@ -525,9 +565,13 @@ class SuggestRecipe extends React.Component {
                   ? <div className="suggest-form__submit-error">{this.state.submit_error}</div>
                   : null
               }
-              <div className="suggest-form__submit-container">
-                <input className="suggest-form__submit-btn" type="submit" value="Отправить" />
-              </div>
+              {
+                this.state.submit_pending
+                ? <Loader />
+                : (<div className="suggest-form__submit-container">
+                    <input className="suggest-form__submit-btn" type="submit" value="Отправить" />
+                  </div>)
+              }
             </form>
           </div>
         </div>
