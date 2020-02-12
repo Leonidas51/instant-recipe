@@ -15,10 +15,10 @@ class RecipeEditor extends React.Component {
       this.fetchRecipe(this.props.recipe_id);
     }
 
-    const recipe = {};
+    //const recipe = {};
 
     //для тестирования
-    /*const recipe = {
+    const recipe = {
       recipe_name: 'Мой рецепт',
       time_min: 15,
       time_max: 45,
@@ -27,7 +27,7 @@ class RecipeEditor extends React.Component {
       ings: [{amount: "1", id: "4f6d5ab92c607d97620000f4", name: "аджика"}, {amount: "100г", id: "4f6d5ab92c607d9762000120", name: "сыр"}],
       opt_ings: [{amount: "по вкусу", name: "соль"}],
       steps: ['готовить', 'посолить', 'кушать']
-    }*/
+    }
 
     this.state = {
       recipe_name: recipe.recipe_name || '',

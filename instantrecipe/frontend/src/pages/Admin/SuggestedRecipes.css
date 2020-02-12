@@ -1,0 +1,22 @@
+.suggested-recipes__buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.suggested-recipes__button {
+  width: 160px;
+  height: 35px;
+  line-height: 35px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.suggested-recipes__delete {
+  background-color: #DC622D;
+}
+
+.suggested-recipes__publish {
+  background-color: #4EC44B;
+}

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {get_csrf} from "../utils/";
+import {get_csrf} from "../../utils/";
 import "./SuggestedImages.css";
 
 class SuggestedImages extends React.Component {

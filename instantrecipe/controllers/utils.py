@@ -77,4 +77,12 @@ def create_images_table():
 		return jsonify(result = 'success'), 200
 	except Exception as e:
 		LOG.error('error while trying to create_images_table: ' + str(e))
-		
+
+@utils_bp.route('/remove_unpublished/', methods=['GET'])
+@admin_required
+def remove_unpublished():
+	try:
+		mongo.db.recipes.remove({'published': False})
+		return jsonify(result = 'success'), 200
+	except Exception as e:
+		LOG.error('error while trying to remove_unpublished: ' + str(e))
