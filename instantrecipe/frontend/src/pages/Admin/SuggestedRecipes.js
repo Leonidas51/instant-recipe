@@ -140,6 +140,7 @@ class SuggestedRecipes extends React.Component {
     return (
       <div className="content-area">
         {
+          this.state.recipes.length ?
           this.state.recipes.map(recipe => {
             return(
             <React.Fragment key={recipe._id}>
@@ -249,6 +250,7 @@ class SuggestedRecipes extends React.Component {
             </React.Fragment>
             )
           })
+          : <div>Здесь пока пусто...</div>
         }
       </div>
     );

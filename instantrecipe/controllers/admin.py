@@ -17,7 +17,7 @@ def get_suggested_images():
     if request.method == 'GET':
         try:
             uploads = []
-            for upload in mongo.db.upload_images.find({u'recipe_published': True}):
+            for upload in mongo.db.upload_images.find({u'published': False, u'recipe_published': True}):
                 uploads.append(upload)
             return jsonify(uploads = uploads)
         except Exception as e:
@@ -64,6 +64,10 @@ def accept_image():
             
             os.rename(os.path.join(image_directory, image['path']), os.path.join(save_directory, filename))
             make_thumbnail(os.path.join(save_directory, filename))
+            mongo.db.upload_images.update_one(
+                {u'_id': ObjectId(request.json.get('image_id'))},
+                {u'$set': {'published': True}}
+            )
             return jsonify(data = 'success!'), 200
         except Exception as e:
             LOG.error('error while trying to accept_image: ' + str(e))
@@ -111,7 +115,7 @@ def publish_recipe():
                 make_thumbnail(save_path)
                 mongo.db.upload_images.update_one(
                     {u'recipe_id': ObjectId(recipe_id)},
-                    {'$set': {u'recipe_published' : True}}
+                    {u'$set': {u'published': True, u'recipe_published' : True}}
                 )
 
             return jsonify(data = 'success!'), 200

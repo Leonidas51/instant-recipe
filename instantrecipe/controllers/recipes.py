@@ -283,6 +283,7 @@ def save_recipe_photo(file, recipe_id, recipe_published):
 	upload['recipe_id'] = recipe_id
 	upload['recipe_name'] = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)}).get('name')
 	upload['recipe_published'] = recipe_published
+	upload['published'] = False
 	upload['path'] = filename
 
 	mongo.db.upload_images.insert_one(upload)
