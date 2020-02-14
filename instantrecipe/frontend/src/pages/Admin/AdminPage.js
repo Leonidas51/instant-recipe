@@ -10,7 +10,8 @@ class AdminPage extends React.Component {
     return (
       <div className="content-area">
         <Link className="link" to="/admin/suggested_images">Предложенные фотографии</Link><br />
-        <Link className="link" to="/admin/suggested_recipes">Предложенные рецепты</Link>
+        <Link className="link" to="/admin/suggested_recipes">Предложенные рецепты</Link><br />
+        <Link className="link" to="/admin/recipe_editor">Редактор рецептов</Link>
       </div>
     );
   }

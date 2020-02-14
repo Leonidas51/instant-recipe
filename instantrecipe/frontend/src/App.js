@@ -24,6 +24,7 @@ import Footer from "./components/shared/Footer";
 import Auth from "./components/shared/Auth";
 import SuggestedImages from "./pages/Admin/SuggestedImages";
 import SuggestedRecipes from "./pages/Admin/SuggestedRecipes";
+import RecipeEditorPage from "./pages/Admin/RecipeEditorPage";
 
 class App extends React.Component {
   constructor(props) {
@@ -173,6 +174,7 @@ class App extends React.Component {
               <Route exact path="/admin" render={() => (this.state.is_admin ? <AdminPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route path="/admin/suggested_images" render={() => (this.state.is_admin ? <SuggestedImages cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route path="/admin/suggested_recipes" render={() => (this.state.is_admin ? <SuggestedRecipes cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+              <Route path="/admin/recipe_editor/:recipe_id?" render={() => (this.state.is_admin ? <RecipeEditorPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
 

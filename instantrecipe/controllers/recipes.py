@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, current_app, session
 from werkzeug.utils import secure_filename
 from instantrecipe import mongo
-from instantrecipe.auth import User, login_required, confirm_required
+from instantrecipe.auth import User, login_required, confirm_required, admin_required
 import logger
 
 
@@ -30,6 +30,20 @@ def update_recipe(recipe_id):
 
 @recipes_bp.route('/recipe/<recipe_id>/', methods=['GET'])
 def read_recipe(recipe_id):
+	if request.method == 'GET':
+		try:
+			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id), u'published': True})
+			if data == None:
+				return jsonify(data = 'Nothing was found!'), 204
+			return jsonify(data), 200
+		except Exception as e:
+			LOG.error('error while trying to read_recipe: ' + str(e))
+			return jsonify(data = 'Nothing was found!'), 204
+
+@recipes_bp.route('/recipe_all/<recipe_id>/', methods=['GET'])
+@admin_required
+def read_recipe_add(recipe_id):
+	#то же что и read_recipe но включая {'published': False}
 	if request.method == 'GET':
 		try:
 			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)})
@@ -354,10 +368,10 @@ def suggest_recipe():
 			if not data['recipe_name']:
 				return jsonify(error = 'Укажите название рецепта'), 400
 
-			if not data['time_min'] or not data['time_max']:
+			if not data['cooking_time_min'] or not data['cooking_time_max']:
 				return jsonify(error = 'Укажите время приготовления'), 400
 
-			if int(data['time_min']) < 1 or int(data['time_max']) < 1:
+			if int(data['cooking_time_min']) < 1 or int(data['cooking_time_max']) < 1:
 				return jsonify(error = 'Укажите валидное время'), 400
 
 			if not data['serves']:
@@ -382,9 +396,9 @@ def suggest_recipe():
 			opt_ings = json.loads(data['opt_ings'])
 
 			recipe['name'] = data['recipe_name'].strip()
-			recipe['cooking_time_min'] = int(data['time_min'])
-			recipe['cooking_time_max'] = int(data['time_max'])
-			recipe['cooking_time'] = parse_interval(int(data['time_min']), int(data['time_max']))
+			recipe['cooking_time_min'] = int(data['cooking_time_min'])
+			recipe['cooking_time_max'] = int(data['cooking_time_max'])
+			recipe['cooking_time'] = parse_interval(int(data['cooking_time_min']), int(data['cooking_time_max']))
 			recipe['difficulty'] = int(data['difficulty'])
 			recipe['serves'] = int(data['serves'])
 			recipe['ingredient_ids'] = []

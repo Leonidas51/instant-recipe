@@ -10,18 +10,14 @@ import {get_csrf} from '../../utils';
 class RecipeEditor extends React.Component {
   constructor(props) {
     super(props);
-    
-    if(this.props.recipe_id) {
-      this.fetchRecipe(this.props.recipe_id);
-    }
 
     const recipe = {};
 
     //для тестирования
     /*const recipe = {
       recipe_name: 'Мой рецепт',
-      time_min: 15,
-      time_max: 45,
+      cooking_time_min: 15,
+      cooking_time_max: 45,
       difficulty: 4,
       serves: 2,
       ings: [{amount: "1", id: "4f6d5ab92c607d97620000f4", name: "аджика"}, {amount: "100г", id: "4f6d5ab92c607d9762000120", name: "сыр"}],
@@ -31,8 +27,8 @@ class RecipeEditor extends React.Component {
 
     this.state = {
       recipe_name: recipe.recipe_name || '',
-      time_min: recipe.time_min || '',
-      time_max: recipe.time_max || '',
+      cooking_time_min: recipe.cooking_time_min || '',
+      cooking_time_max: recipe.cooking_time_max || '',
       difficulty: recipe.difficulty || 1,
       serves: recipe.serves || '',
       current_ing_id: '',
@@ -83,10 +79,6 @@ class RecipeEditor extends React.Component {
       })
       i++;
     }
-  }
-
-  fetchRecipe(recipe_id) {
-
   }
 
   fetchSuggestedIngs(query) {
@@ -333,7 +325,7 @@ class RecipeEditor extends React.Component {
 
     const data = new FormData();
 
-    ['recipe_name', 'time_min', 'time_max', 'serves', 'difficulty', 'steps', 'photo']
+    ['recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'steps', 'photo']
       .forEach(prop => {
         data.append([prop], this.state[prop]);
       });
@@ -402,9 +394,9 @@ class RecipeEditor extends React.Component {
               <div className="recipe-editor__data-container">
                 <div className="recipe-editor__input-name">Время приготовления (в минутах)<span className="recipe-editor__required-asterisk">*</span></div>
                 <div className="recipe-editor__input-area">
-                  <input type="number" className="recipe-editor__text-input  recipe-editor__text-input_number" value={this.state.time_min} min="1" name="time_min" onChange={this.onInputChange} />
+                  <input type="number" className="recipe-editor__text-input  recipe-editor__text-input_number" value={this.state.cooking_time_min} min="1" name="cooking_time_min" onChange={this.onInputChange} />
                   <div className="recipe-editor__dash">—</div>
-                  <input type="number" className="recipe-editor__text-input  recipe-editor__text-input_number" value={this.state.time_max} min="1" name="time_max" onChange={this.onInputChange} />
+                  <input type="number" className="recipe-editor__text-input  recipe-editor__text-input_number" value={this.state.cooking_time_max} min="1" name="cooking_time_max" onChange={this.onInputChange} />
                 </div>
               </div>
               <div className="recipe-editor__data-container">
