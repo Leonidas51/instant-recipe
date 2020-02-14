@@ -46,8 +46,10 @@ def remove_brackets():
 			{'$set': {'instructions_source': instructions_source}})
 
 	return jsonify(data = 'removed brackets'), 200
+"""
 
-@recipes_bp.route('/remove_salt/', methods=['GET'])
+@utils_bp.route('/remove_salt/', methods=['GET'])
+@admin_required
 def remove_salt():
 	salt_id = ObjectId('4f6d5ab92c607d97620000f6')
 	salt = 'соль'
@@ -60,14 +62,13 @@ def remove_salt():
 				{'$set': {'ingredient_ids': new_ingredient_ids}})
 		if salt in recipe['ingredient_names']['mandatory']:
 			new_ingredient_names = recipe['ingredient_names']['mandatory']
-			new_ingredient_names.pop(salt_id, None)
+			new_ingredient_names.pop(salt, None)
 			result = mongo.db.recipes.update_one(
 				{'_id': recipe['_id']},
 				{'$set': {'ingredient_names.mandatory': new_ingredient_names}})
 	result = mongo.db.ingredients.delete_one({'_id': salt_id})
 
 	return jsonify(data = 'removed salt'), 200
-"""
 
 @utils_bp.route('/create_images_table/', methods=['GET'])
 @admin_required
@@ -86,3 +87,46 @@ def remove_unpublished():
 		return jsonify(result = 'success'), 200
 	except Exception as e:
 		LOG.error('error while trying to remove_unpublished: ' + str(e))
+
+@utils_bp.route('/standartize_recipes_ings/', methods=['GET'])
+@admin_required
+def standartize_recipes_ings():
+	try:
+		recipes_with_skipped_ings = []
+		for recipe in mongo.db.recipes.find({}):
+			new_ings_mandatory = []
+			new_ings_optional = []
+			ings_mandatory = recipe['ingredient_names']['mandatory']
+			ings_optional = recipe['ingredient_names']['optional']
+
+			for ing in ings_mandatory.keys():
+				new_ing = {}
+				amount = ings_mandatory[ing]
+				ing_id = mongo.db.ingredients.find_one({u'name': ing})
+				if ing_id is None:
+					mongo.db.recipes.update_one(
+						{u'_id': recipe['_id']},
+						{u'$set': {u'published': False}}
+					)
+					continue
+				new_ing['id'] = ObjectId(ing_id[u'_id'])
+				new_ing['name'] = ing
+				new_ing['amount'] = amount
+				new_ings_mandatory.append(new_ing)
+
+			for ing in ings_optional.keys():
+				new_ing = {}
+				amount = ings_optional[ing]
+				new_ing['name'] = ing
+				new_ing['amount'] = amount
+				new_ings_optional.append(new_ing)
+
+			mongo.db.recipes.update_one(
+				{u'_id': recipe['_id']},
+				{u'$set': {u'ings_mandatory': new_ings_mandatory, u'ings_optional': new_ings_optional}}
+			)
+		return jsonify(result = 'success'), 200
+	except Exception as e:
+		LOG.error('error while trying to standartize_recipes_ings: ' + str(e))
+		LOG.info(recipe['_id'])
+		return jsonify(result = 'error'), 400

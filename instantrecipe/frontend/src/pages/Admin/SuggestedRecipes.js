@@ -31,7 +31,7 @@ class SuggestedRecipes extends React.Component {
   }
 
   fetchRecipes() {
-    fetch('/api/admin/get_unpublished_recipes')
+    fetch('/api/admin/get_suggested_recipes')
       .then(response => {
         if(response.status === 200) {
           response.json()

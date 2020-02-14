@@ -83,17 +83,17 @@ def make_thumbnail(path):
     except Exception as e:
         LOG.error('error while trying to make_thumbnail: ' + str(e))
 
-@admin_bp.route('/admin/get_unpublished_recipes', methods=['GET'])
+@admin_bp.route('/admin/get_suggested_recipes', methods=['GET'])
 @admin_required
-def get_unpublished_recipes():
+def get_suggested_recipes():
     if request.method == 'GET':
         try:
             recipes = []
-            for recipe in mongo.db.recipes.find({u'published': False}):
+            for recipe in mongo.db.recipes.find({u'pending': True}):
                 recipes.append(recipe)
             return jsonify(recipes = recipes)
         except Exception as e:
-            LOG.error('error while trying to get_unpublished_recipes: ' + str(e))
+            LOG.error('error while trying to get_suggested_recipes: ' + str(e))
             return jsonify(error = 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'), 500
 
 @admin_bp.route('/admin/publish_recipe', methods=['POST'])
@@ -104,7 +104,7 @@ def publish_recipe():
             recipe_id = request.json.get('recipe_id')
             mongo.db.recipes.update_one(
                 {u'_id': ObjectId(recipe_id)},
-                {'$set': {u'published' : True}}
+                {'$set': {u'published' : True, u'pending': False}}
             )
 
             if os.path.isfile(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id, '1.jpg')):

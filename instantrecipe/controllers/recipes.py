@@ -402,6 +402,7 @@ def suggest_recipe():
 			recipe['difficulty'] = int(data['difficulty'])
 			recipe['serves'] = int(data['serves'])
 			recipe['ingredient_ids'] = []
+			#legacy ings format
 			recipe['ingredient_names'] = {'mandatory': {}, 'optional': {}}
 
 			for ing in ings:
@@ -411,6 +412,10 @@ def suggest_recipe():
 			for ing in opt_ings:
 				recipe['ingredient_names']['optional'][ing['name']] = ing['amount']
 
+			#new ings format
+			recipe['ings_mandatory'] = ings
+			recipe['ings_optional'] = opt_ings
+
 			recipe['instructions_source'] = parse_instructions(data['steps'])
 
 			recipe['tag_ids'] = []
@@ -419,6 +424,7 @@ def suggest_recipe():
 			recipe['author_id'] = session['user'].get_id()
 			recipe['published'] = False
 			recipe['featured'] = False
+			recipe['pending'] = True
 
 			recipe_id = mongo.db.recipes.insert_one(recipe).inserted_id
 
