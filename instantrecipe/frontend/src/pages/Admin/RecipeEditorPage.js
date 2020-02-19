@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import {get_csrf} from '../../utils';
+import RecipeEditor from "../../components/shared/RecipeEditor";
 import "./RecipeEditorPage.css";
 
 class RecipeEditorPage extends React.Component {
@@ -14,6 +15,7 @@ class RecipeEditorPage extends React.Component {
       error: ''
     }
 
+    this.onSearchFocus = this.onSearchFocus.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
   }
@@ -25,6 +27,10 @@ class RecipeEditorPage extends React.Component {
   }
 
   search() {
+    this.setState({
+      recipe_loaded: false
+    })
+
     fetch(`/api/recipe_all/${this.state.search_query}/`)
     .then((response) => {
       if(response.status === 200) {
@@ -32,15 +38,19 @@ class RecipeEditorPage extends React.Component {
           .then(result => {
               const recipe = {};
               recipe.recipe_name = result.name;
-              ['cooking_time_min', 'cooking_time_max', 'serves', 'difficulty']
+              ['_id', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty']
                 .forEach(prop => {
                   recipe[prop] = result[prop];
                 });
-              //recipe.ings = this.parseIngredients(result.ingredient_names.mandatory);
+              recipe.ings = result.ings_mandatory;
+              recipe.opt_ings = result.ings_optional;
+
+              recipe.steps = this.parseInstructions(result.instructions_source)
 
               this.setState({
                 recipe_loaded: true,
-                recipe: recipe
+                recipe: recipe,
+                error: ''
               });
             }
           )
@@ -52,16 +62,21 @@ class RecipeEditorPage extends React.Component {
     })
   }
 
-  parseIngredients(ings) {
-    console.log(JSON.stringify(ings));
-  }
-
   parseInstructions(text) {
+    let result = text.split('\n');
+    result = result.map(step => {
+        return step.split('.').slice(1).join('.').trim();
+    });
 
+    return result;
   }
 
   onSearchChange(e) {
     this.setState({search_query: e.target.value});
+  }
+
+  onSearchFocus(e) {
+    this.setState({search_query: ''});
   }
 
   onSearchSubmit(e) {
@@ -74,9 +89,19 @@ class RecipeEditorPage extends React.Component {
       <div className="content-area">
         <div className="recipe-editor-page__search">
           <form onSubmit={this.onSearchSubmit}>
-            <input className="recipe-editor-page__search-input" type="text" value={this.state.search_query} onChange={this.onSearchChange} placeholder="ID рецепта" />
+            <input className="recipe-editor-page__search-input" type="text" value={this.state.search_query} onChange={this.onSearchChange} onFocus={this.onSearchFocus} placeholder="ID рецепта" />
             <input className="recipe-editor-page__search-go-btn" type="submit" value="GO" />
           </form>
+          {
+            this.state.recipe && this.state.recipe_loaded
+            ? <RecipeEditor recipe={this.state.recipe} isAdmin={true} />
+            : null
+          }
+          {
+            this.state.error
+            ? <div className="error">{this.state.error}</div>
+            : null
+          }
         </div>
       </div>
     )

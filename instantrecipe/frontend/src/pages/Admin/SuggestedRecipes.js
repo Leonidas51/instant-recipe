@@ -24,6 +24,7 @@ class SuggestedRecipes extends React.Component {
 
     this.onPublishClick = this.onPublishClick.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onImageDeleteClick = this.onImageDeleteClick.bind(this);
   }
 
   componentWillMount() {
@@ -124,6 +125,33 @@ class SuggestedRecipes extends React.Component {
       })
   }
 
+  deleteImage(recipe_id) {
+    get_csrf()
+      .then(csrf => {
+        fetch('/api/admin/delete_image', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrf,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            recipe_id: recipe_id
+          })
+        })
+          .then(response => {
+            if(response.status === 200) {
+              alert('Успешно!');
+            } else if(response.status === 400) {
+              alert('Изображение не найдено');
+            } else {
+              alert('Ошибка сервера');
+            }
+
+            this.fetchRecipes();
+          })
+      })
+  }
+
   onPublishClick(e) {
     if(confirm('Точно опубликовать?')) {
       this.publishRecipe(e.target.dataset.recipe_id);
@@ -133,6 +161,12 @@ class SuggestedRecipes extends React.Component {
   onDeleteClick(e) {
     if(confirm('Точно удалить?')) {
       this.deleteRecipe(e.target.dataset.recipe_id);
+    }
+  }
+
+  onImageDeleteClick(e) {
+    if(confirm('Удалить фото?')) {
+      this.deleteImage(e.target.dataset.recipe_id);
     }
   }
 
@@ -151,6 +185,9 @@ class SuggestedRecipes extends React.Component {
                   ? <img className="recipe-pic" src={`/images/recipes/upload/${recipe._id}/1.jpg`} />
                   : null
                 }
+                <div className="recipe-pic-delete-button" data-recipe_id={recipe._id} onClick={this.onImageDeleteClick}>
+                  Удалить фото
+                </div>
                 </div>
                 <div className="recipe-information">
                   <div className="recipe-information__title">{ recipe.name }</div>
@@ -243,7 +280,7 @@ class SuggestedRecipes extends React.Component {
               </div>
               <div className="suggested-recipes__buttons">
                 <div onClick={this.onDeleteClick} data-recipe_id={recipe._id} className="suggested-recipes__button suggested-recipes__delete">Удалить</div>
-                <div className="suggested-recipes__open-editor link">Открыть в редакторе</div>
+                <Link className="suggested-recipes__open-editor link" to={`/admin/recipe_editor/${recipe._id}`}>Открыть в редакторе</Link>
                 <div onClick={this.onPublishClick} data-recipe_id={recipe._id} className="suggested-recipes__button suggested-recipes__publish">Опубликовать</div>
               </div>
               <hr />

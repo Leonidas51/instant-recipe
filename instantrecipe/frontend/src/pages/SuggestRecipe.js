@@ -8,7 +8,10 @@ class SuggestRecipe extends React.Component {
 
   render() {
     return(
-      <RecipeEditor recipe_id={null} />
+      <div className="content-area">
+        <h1 className="page-title">Предложить рецепт</h1>
+        <RecipeEditor />
+      </div>
     )
   }
 }

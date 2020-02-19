@@ -47,7 +47,7 @@ def read_recipe_add(recipe_id):
 	if request.method == 'GET':
 		try:
 			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id)})
-			if data == None:
+			if not len(data):
 				return jsonify(data = 'Nothing was found!'), 204
 			return jsonify(data), 200
 		except Exception as e:
@@ -380,12 +380,6 @@ def suggest_recipe():
 			if int(data['serves']) < 1:
 				return jsonify(error = 'Укажите валидное число порций'), 400
 
-			if not len(data['ings']):
-				return jsonify(error = 'Укажите ингредиенты'), 400
-
-			if not len(data['steps'][0]) or not len(data['steps'][1]):
-				return jsonify(error = 'Укажите не менее двух шагов'), 400
-
 			if 'photo' in request.files:
 				img_error = validate_recipe_photo(request.files['photo'])
 
@@ -394,6 +388,9 @@ def suggest_recipe():
 
 			ings = json.loads(data['ings'])
 			opt_ings = json.loads(data['opt_ings'])
+			
+			if not len(ings):
+				return jsonify(error = 'Укажите ингредиенты'), 400
 
 			recipe['name'] = data['recipe_name'].strip()
 			recipe['cooking_time_min'] = int(data['cooking_time_min'])
@@ -416,7 +413,7 @@ def suggest_recipe():
 			recipe['ings_mandatory'] = ings
 			recipe['ings_optional'] = opt_ings
 
-			recipe['instructions_source'] = parse_instructions(data['steps'])
+			recipe['instructions_source'] = data['steps']
 
 			recipe['tag_ids'] = []
 			recipe['tag_names'] = []

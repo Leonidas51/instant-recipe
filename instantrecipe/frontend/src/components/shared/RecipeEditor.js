@@ -11,7 +11,7 @@ class RecipeEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    const recipe = {};
+    const recipe = this.props.recipe || {};
 
     //для тестирования
     /*const recipe = {
@@ -26,6 +26,7 @@ class RecipeEditor extends React.Component {
     }*/
 
     this.state = {
+      recipe_id: recipe._id || null,
       recipe_name: recipe.recipe_name || '',
       cooking_time_min: recipe.cooking_time_min || '',
       cooking_time_max: recipe.cooking_time_max || '',
@@ -68,6 +69,10 @@ class RecipeEditor extends React.Component {
     this.onPhotoUploadChange = this.onPhotoUploadChange.bind(this);
     this.onRemovePhotoClick = this.onRemovePhotoClick.bind(this);
     this.onSuggestFormSubmit = this.onSuggestFormSubmit.bind(this);
+    this.onSaveBtnClick = this.onSaveBtnClick.bind(this);
+    this.onDeleteBtnClick = this.onDeleteBtnClick.bind(this);
+    this.saveRecipe = this.saveRecipe.bind(this);
+    this.deleteRecipe = this.deleteRecipe.bind(this);
   }
   
   componentDidMount() {
@@ -319,13 +324,23 @@ class RecipeEditor extends React.Component {
     return;
   }
 
+  parseInstructions(steps) {
+    let result = '';
+    
+    steps.forEach((step, i) => {
+      result += `${i+1}. ${step} \n`
+    })
+
+    return result.trim();
+  }
+
   onSuggestFormSubmit(e) {
     e.preventDefault();
     this.setState({submit_pending: true});
 
     const data = new FormData();
 
-    ['recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'steps', 'photo']
+    ['recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'photo']
       .forEach(prop => {
         data.append([prop], this.state[prop]);
       });
@@ -334,6 +349,8 @@ class RecipeEditor extends React.Component {
       .forEach(prop => {
         data.append([prop], JSON.stringify(this.state[prop]));
       })
+
+    data.append('steps', this.parseInstructions(this.state.steps));
 
     get_csrf().then(csrf => {
       fetch('/api/recipe/suggest', {
@@ -363,6 +380,72 @@ class RecipeEditor extends React.Component {
     })
   }
 
+  onSaveBtnClick(e) {
+    this.saveRecipe();
+  }
+
+  onDeleteBtnClick(e) {
+    this.deleteRecipe(this.state.recipe_id);
+  }
+  
+  saveRecipe() {
+    const data = new FormData();
+
+    ['recipe_id', 'recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'photo']
+      .forEach(prop => {
+        data.append([prop], this.state[prop]);
+      });
+
+    ['ings', 'opt_ings']
+      .forEach(prop => {
+        data.append([prop], JSON.stringify(this.state[prop]));
+      })
+
+    data.append('steps', this.parseInstructions(this.state.steps));
+    
+    get_csrf().then(csrf => {
+      fetch('/api/admin/edit_recipe', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf
+        },
+        body: data
+      })
+        .then(response => {
+          if(response.status === 200) {
+            alert('Успешно!');
+          } else {
+            alert('Ошибка сервера');
+          }
+      })
+    })
+  }
+
+  deleteRecipe(recipe_id) {
+    console.log(recipe_id);
+    if(confirm('Точно удалить?')) {
+      get_csrf().then(csrf => {
+        fetch('/api/admin/delete_recipe', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrf,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            recipe_id: recipe_id
+          })
+        })
+          .then(response => {
+            if(response.status === 200) {
+              alert('Успешно!');
+            } else {
+              alert('Ошибка сервера');
+            }
+          })
+      })
+    }
+  }
+
   render() {
     const SuccessModalBody = Modal(
       SuccessModal,
@@ -381,8 +464,6 @@ class RecipeEditor extends React.Component {
           : null
         }
 
-        <div className="content-area">
-          <h1 className="page-title">Предложить рецепт</h1>
           <div className="recipe-editor">
             <form onSubmit={this.onSuggestFormSubmit}>
               <div className="recipe-editor__data-container">
@@ -549,17 +630,21 @@ class RecipeEditor extends React.Component {
                   }
                 </div>
               </div>
-              <div className="recipe-editor__data-container">
-                <div className="recipe-editor__input-name">Фото (.png .jpeg .jpg не более 5МБ)</div>
-                <div className="recipe-editor__input-area">
-                  <input className="recipe-editor__file-input" type="file" key={this.state.upload_key} onChange={this.onPhotoUploadChange} />
-                  {
-                    this.state.photo !== ''
-                    ? <span className="recipe-editor__file-remove" onClick={this.onRemovePhotoClick}>✖</span>
-                    : null
-                  }
-                </div>
-              </div>
+              {
+                this.props.isAdmin
+                ? null
+                : (<div className="recipe-editor__data-container">
+                    <div className="recipe-editor__input-name">Фото (.png .jpeg .jpg не более 5МБ)</div>
+                    <div className="recipe-editor__input-area">
+                      <input className="recipe-editor__file-input" type="file" key={this.state.upload_key} onChange={this.onPhotoUploadChange} />
+                      {
+                        this.state.photo !== ''
+                        ? <span className="recipe-editor__file-remove" onClick={this.onRemovePhotoClick}>✖</span>
+                        : null
+                      }
+                    </div>
+                  </div>)
+              }
               {
                 this.state.submit_error.length
                   ? <div className="recipe-editor__submit-error">{this.state.submit_error}</div>
@@ -569,12 +654,20 @@ class RecipeEditor extends React.Component {
                 this.state.submit_pending
                 ? <Loader />
                 : (<div className="recipe-editor__submit-container">
-                    <input className="recipe-editor__submit-btn" type="submit" value="Отправить" />
+                    {
+                      this.props.isAdmin
+                      ? (
+                          <React.Fragment>
+                            <div className="recipe-editor__submit-btn" onClick={this.onSaveBtnClick}>Сохранить</div>
+                            <div className="recipe-editor__delete-btn" onClick={this.onDeleteBtnClick}>Удалить</div>
+                          </React.Fragment>
+                        )
+                      : <input className="recipe-editor__submit-btn" type="submit" value="Отправить" />
+                    }
                   </div>)
               }
             </form>
           </div>
-        </div>
       </React.Fragment>
     );
   }
