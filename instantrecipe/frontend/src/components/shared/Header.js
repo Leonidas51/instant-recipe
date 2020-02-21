@@ -56,7 +56,6 @@ class Header extends React.Component {
   render() {
     return (
       <div className={`header ${this.state.header_class}`}>
-        <div className="header__logo"></div>
         <div className={`header__links ${this.state.header_open ? 'header__links_open' : ''}`}>
           <Link className="header__link" to="/">Главная</Link>
           <Link className="header__link" to="/about">О нас</Link>
@@ -65,16 +64,20 @@ class Header extends React.Component {
           <div className="header__aside">
             {
               this.props.isLoggedIn && this.props.isAdmin
-              ? <Link className="header__link" to="/admin">Админ</Link>
+              ? <Link className="header__link" to="/admin">Админка</Link>
               : null
             }
             {
               this.props.isLoggedIn
                 ? <React.Fragment>
+                    <Link className="header__link" to="/suggest_recipe">Предложить рецепт</Link>
                     <Link className="header__link" to="/profile">{this.props.username}</Link>
-                    <div className="header__link" onClick={this.props.logout}>Выйти</div>
+                    <Link to="/" className="header__link" onClick={this.props.logout}>Выйти</Link>
                   </React.Fragment>
-                : <div className="header__link" onClick={this.props.openAuth}>Войти</div>
+                : <React.Fragment>
+                    <Link to="/" className="header__link" onClick={this.props.openAuth}>Предложить рецепт</Link>
+                    <Link to="/" className="header__link" onClick={this.props.openAuth}>Войти</Link>
+                  </React.Fragment>
             }
           </div>
         </div>

@@ -26,6 +26,6 @@
 
 @media screen and (max-width: 768px) {
   .modal__body {
-    width: auto;
+    width: 80%;
   }
 }

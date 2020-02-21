@@ -23,7 +23,7 @@
 .header__links {
   display: flex;
   flex-grow: 1;
-  margin-right: 40px;
+  margin: auto 20px;
 }
 
 .header__aside {
@@ -33,9 +33,10 @@
 }
 
 .header__link {
-  width: 140px;
+  display: block;
+  margin: auto 20px;
   outline-offset: 3px;
-  font-size: 24px;
+  font-size: 19px;
   color: #FCBC5D;
   text-align: center;
   text-decoration: none;
@@ -96,7 +97,7 @@
 
   .header__link {
     width: 100%;
-    margin-bottom: 5px;
+    margin: 0 0 5px 0;
   }
 
   .header__menu-icon-container {

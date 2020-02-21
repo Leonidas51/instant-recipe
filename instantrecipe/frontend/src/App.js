@@ -92,7 +92,8 @@ class App extends React.Component {
     })
   }
 
-  open_auth_modal() {
+  open_auth_modal(e) {
+    e.preventDefault();
     this.setState({auth_modal_open: true});
   }
 
@@ -116,7 +117,8 @@ class App extends React.Component {
     })
   }
 
-  logout() {
+  logout(e) {
+    e.preventDefault();
     get_csrf().then((csrf) => {
       fetch('/api/user/logout/', {
         method: 'POST',
@@ -163,7 +165,7 @@ class App extends React.Component {
               <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
               <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
               <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
-              <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} openAuth={this.open_auth_modal}/>)} />
+              <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} is_admin={this.state.is_admin} openAuth={this.open_auth_modal}/>)} />
               <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
               <Route path="/user/confirm/:token" render={() => (<UserConfirm cookies={this.props.cookies}/>)} />
               <Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
@@ -178,7 +180,7 @@ class App extends React.Component {
               <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
             </Switch>
 
-            <Footer />
+            <Footer isLoggedIn={this.state.is_logged_in} openAuth={this.open_auth_modal} />
             {this.state.auth_modal_open ? <AuthModal login={this.login} register={this.register} cookies={this.props.cookies} /> : null}
           </div>
         </Router>

@@ -39,9 +39,9 @@ class RecipeDetails extends React.Component {
     this.fetchRecipe();
   }
 
-  openUploadPhotoModal() {
+  openUploadPhotoModal(e) {
     if(!this.props.is_logged_in) {
-      this.props.openAuth();
+      this.props.openAuth(e);
       return;
     }
 
@@ -157,6 +157,13 @@ class RecipeDetails extends React.Component {
           </div>
           <div className="recipe-information">
             <div className="recipe-information__title">{ this.state.recipe.name }</div>
+              {
+                this.props.is_admin
+                ? (<div className="recipe-characteristics__item">
+                    <Link className="link" to={encodeURI(`/admin/recipe_editor/${recipe._id}`)}>Открыть в редакторе</Link>
+                  </div>)
+                : null
+              }
             <div className="recipe-information__tags">
               {
                 this.state.recipe_loaded ?

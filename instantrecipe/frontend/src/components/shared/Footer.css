@@ -14,7 +14,10 @@
 }
 
 .footer__section {
-  width: 50%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .footer__title {
@@ -23,17 +26,21 @@
   text-align: center;
 }
 
-.footer__link {
-  display: block;
-  color: #F9F6F6;
+.footer__link-container {
   text-align: center;
 }
 
-@media screen and (max-width: 600px) {
+.footer__link {
+  color: #F9F6F6;
+}
+
+@media screen and (max-width: 768px) {
   .footer {
     width: 95%;
   }
+}
 
+@media screen and (max-width: 600px) {
   .footer__body {
     flex-direction: column;
     align-items: center;

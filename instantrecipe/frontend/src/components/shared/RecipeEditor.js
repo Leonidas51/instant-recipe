@@ -11,6 +11,8 @@ class RecipeEditor extends React.Component {
   constructor(props) {
     super(props);
 
+    //сделать до релиза для админки: теги и чекбокс "featured"
+
     const recipe = this.props.recipe || {};
 
     //для тестирования
@@ -328,6 +330,7 @@ class RecipeEditor extends React.Component {
     let result = '';
     
     steps.forEach((step, i) => {
+      if(!step.length) return;
       result += `${i+1}. ${step} \n`
     })
 
@@ -369,6 +372,8 @@ class RecipeEditor extends React.Component {
                   submit_error: result.error
                 })
               })
+          } else if(response.status === 403) {
+            this.setState({submit_error: 'Для выполнения этого действия нужно авторизоваться и подтвердить аккаунт'});
           } else if(response.status === 200) {
             this.setState({success_modal_open: true});
           } else {
@@ -422,7 +427,6 @@ class RecipeEditor extends React.Component {
   }
 
   deleteRecipe(recipe_id) {
-    console.log(recipe_id);
     if(confirm('Точно удалить?')) {
       get_csrf().then(csrf => {
         fetch('/api/admin/delete_recipe', {

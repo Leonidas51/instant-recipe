@@ -110,11 +110,10 @@ class Auth extends React.Component {
 
   _register(e) {
     const {reg_email, reg_username, reg_pass} = this.state;
-    console.log(1);
+
     if(!this.validateFields()) {
       return;
     }
-    console.log(2);
 
     this.switchMode('loading')();
 

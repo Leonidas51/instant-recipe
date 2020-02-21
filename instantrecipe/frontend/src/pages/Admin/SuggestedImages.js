@@ -45,7 +45,6 @@ class SuggestedImages extends React.Component {
       })
         .then((response) => {
           if(response.status === 200) {
-            console.log('OK');
             this.fetchImages();
           } else {
             alert('Ошибка!');
@@ -68,7 +67,6 @@ class SuggestedImages extends React.Component {
       })
         .then((response) => {
           if(response.status === 200) {
-            console.log('OK');
             this.fetchImages();
           } else {
             alert('Ошибка!');
