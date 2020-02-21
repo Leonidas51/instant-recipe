@@ -234,7 +234,8 @@ def edit_recipe():
 			recipe['ings_optional'] = opt_ings
 
 			recipe['instructions_source'] = data['steps']
-
+			recipe['featured'] = (data['featured'] == 'true')
+			
 			mongo.db.recipes.update_one(
 				{u'_id': ObjectId(data['recipe_id'])},
 				{u'$set': recipe}

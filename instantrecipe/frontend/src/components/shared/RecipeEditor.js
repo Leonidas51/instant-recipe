@@ -50,6 +50,7 @@ class RecipeEditor extends React.Component {
       steps_error: '',
       photo: '',
       upload_key: Date.now(),
+      featured: recipe.featured || false,
       submit_error: '',
       submit_pending: false,
       success_modal_open: false
@@ -58,6 +59,7 @@ class RecipeEditor extends React.Component {
     this.ing_input = React.createRef();
 
     this.onInputChange = this.onInputChange.bind(this);
+    this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.onIngInputChange = this.onIngInputChange.bind(this);
     this.onStepInputChange = this.onStepInputChange.bind(this);
     this.onSuggestedIngClick = this.onSuggestedIngClick.bind(this);
@@ -121,6 +123,12 @@ class RecipeEditor extends React.Component {
   onInputChange(e) {
     this.setState({
       [e.target.name]: e.target.value
+    })
+  }
+
+  onCheckboxChange(e) {
+    this.setState({
+      [e.target.name]: e.target.checked
     })
   }
 
@@ -396,7 +404,7 @@ class RecipeEditor extends React.Component {
   saveRecipe() {
     const data = new FormData();
 
-    ['recipe_id', 'recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'photo']
+    ['recipe_id', 'recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'photo', 'featured']
       .forEach(prop => {
         data.append([prop], this.state[prop]);
       });
@@ -648,6 +656,16 @@ class RecipeEditor extends React.Component {
                       }
                     </div>
                   </div>)
+              }
+              {
+                this.props.isAdmin
+                ? (<div className="recipe-editor__data-container">
+                    <div className="recipe-editor__input-name">Featured?</div>
+                    <div className="recipe-editor__input-area">
+                      <input type="checkbox" checked={this.state.featured} name="featured" onChange={this.onCheckboxChange} />
+                    </div>
+                  </div>)
+                : null
               }
               {
                 this.state.submit_error.length
