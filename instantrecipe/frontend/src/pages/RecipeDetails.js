@@ -160,7 +160,7 @@ class RecipeDetails extends React.Component {
               {
                 this.props.is_admin
                 ? (<div className="recipe-characteristics__item">
-                    <Link className="link" to={encodeURI(`/admin/recipe_editor/${recipe._id}`)}>Открыть в редакторе</Link>
+                    <Link className="link" to={encodeURI(`/admin/recipe_editor/${recipe._id}`)} target="blank">Открыть в редакторе</Link>
                   </div>)
                 : null
               }

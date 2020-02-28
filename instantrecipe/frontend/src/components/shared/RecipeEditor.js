@@ -48,6 +48,8 @@ class RecipeEditor extends React.Component {
       opt_ings: recipe.opt_ings || [],
       steps: recipe.steps || ['', ''],
       steps_error: '',
+      all_tags: [],
+      tags: recipe.tags || [],
       photo: '',
       upload_key: Date.now(),
       featured: recipe.featured || false,
@@ -56,8 +58,13 @@ class RecipeEditor extends React.Component {
       success_modal_open: false
     }
 
+    if(this.props.isAdmin) {
+      this.fetchTagsList();
+    }
+
     this.ing_input = React.createRef();
 
+    this.createStepRef = this.createStepRef.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.onIngInputChange = this.onIngInputChange.bind(this);
@@ -70,6 +77,7 @@ class RecipeEditor extends React.Component {
     this.onAddOptIngClick = this.onAddOptIngClick.bind(this);
     this.onAddStepClick = this.onAddStepClick.bind(this);
     this.onRemoveStepClick = this.onRemoveStepClick.bind(this);
+    this.onTagClick = this.onTagClick.bind(this);
     this.onPhotoUploadChange = this.onPhotoUploadChange.bind(this);
     this.onRemovePhotoClick = this.onRemovePhotoClick.bind(this);
     this.onSuggestFormSubmit = this.onSuggestFormSubmit.bind(this);
@@ -83,11 +91,35 @@ class RecipeEditor extends React.Component {
     let i = 0;
 
     while(this.state.steps[i]) {
+      let ref = this['step_ref_' + i];
+      /* create required amount of inputs */
       this.setState({
         ['step_' + i]: this.state.steps[i]
+      }, () => {
+        /* aaand correctly set their heights */
+        ref.style.height = '1px';
+        console.log(ref.scrollHeight);
+        ref.style.height = (ref.scrollHeight + 2) + 'px';
       })
+
       i++;
     }
+  }
+
+  fetchTagsList() {
+    fetch(`/api/tags_all`)
+      .then(response => {
+        if (response.status === 200) {
+          response.json()
+            .then(result => {
+              result = result.sort((a,b) => {
+                return a.name > b.name
+              })
+
+              this.setState({all_tags: result});
+            })
+        }
+      })
   }
 
   fetchSuggestedIngs(query) {
@@ -120,6 +152,12 @@ class RecipeEditor extends React.Component {
       })
   }
 
+  createStepRef(step) {
+    if(step) {
+      this['step_ref_' + step.dataset.count] = step;
+    }
+  }
+
   onInputChange(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -147,12 +185,16 @@ class RecipeEditor extends React.Component {
 
   onStepInputChange(e) {
     const new_steps = this.state.steps;
+    let ref = this['step_ref_' + e.target.dataset.count];
 
     new_steps.splice(e.target.dataset.count, 1, e.target.value);
     this.setState({
       steps: new_steps,
       steps_error: ''
     })
+
+    ref.style.height = '1px';
+    ref.style.height = (ref.scrollHeight + 2) + 'px';
 
     this.onInputChange(e);
   }
@@ -317,6 +359,27 @@ class RecipeEditor extends React.Component {
     })
   }
 
+  onTagClick(e) {
+    const clicked_tag_id = e.target.dataset.id,
+          clicked_tag_name = e.target.dataset.name;
+    let tag_removed = false;
+
+    this.state.tags.forEach(tag => {
+      if(clicked_tag_id === tag.id) {
+        this.setState({
+          tags: this.state.tags.filter(tag => {return tag.id !== clicked_tag_id})
+        })
+        tag_removed = true;
+      }
+    })
+
+    if(!tag_removed) {
+      const new_tags = this.state.tags;
+      new_tags.push({name: clicked_tag_name, id: clicked_tag_id});
+      this.setState({tags: new_tags});
+    }
+  }
+
   onPhotoUploadChange(e) {
     this.setState({
       photo: e.target.files[0]
@@ -409,7 +472,7 @@ class RecipeEditor extends React.Component {
         data.append([prop], this.state[prop]);
       });
 
-    ['ings', 'opt_ings']
+    ['ings', 'opt_ings', 'tags']
       .forEach(prop => {
         data.append([prop], JSON.stringify(this.state[prop]));
       })
@@ -623,12 +686,12 @@ class RecipeEditor extends React.Component {
                 <div className="recipe-editor__input-area">
                   {this.state.steps.map((step, i) => {
                     return (
-                      <div key={i} className="recipe-editor__step">
+                      <div key={i} data-index={i} className="recipe-editor__step">
                         <span className="recipe-editor__step-number">{i+1+'.'}</span>
                         <textarea
                           className="recipe-editor__text-input recipe-editor__text-input_step"
                           name={'step_' + i} value={this.state['step_' + i]} onChange={this.onStepInputChange}
-                          data-count={i}
+                          data-count={i} ref={this.createStepRef}
                         />
                         <div className="recipe-editor__remove-step" data-count={i} onClick={this.onRemoveStepClick}>✖</div>
                       </div>
@@ -642,6 +705,29 @@ class RecipeEditor extends React.Component {
                   }
                 </div>
               </div>
+              {
+                this.props.isAdmin
+                ? (<div className="recipe-editor__data-container">
+                    <div className="recipe-editor__input-name recipe-editor__input-name_taller">Теги</div>
+                    <div className="recipe-editor__input-area">
+                      <div className="recipe-editor__active-tags">
+
+                      </div>
+                      <div className="recipe-editor__all-tags">
+                        {this.state.all_tags.map(tag => {
+                          let class_name = 'recipe-editor__tag';
+                          this.state.tags.forEach(selected_tag => {
+                            if(selected_tag.id === tag._id) {
+                              class_name += ' recipe-editor__tag_active';
+                            }
+                          })
+                          return <div key={tag._id} data-name={tag.name} data-id={tag._id} className={class_name} onClick={this.onTagClick}>{tag.name}</div>
+                        })}
+                      </div>
+                    </div>
+                  </div>)
+                : null
+              }
               {
                 this.props.isAdmin
                 ? null

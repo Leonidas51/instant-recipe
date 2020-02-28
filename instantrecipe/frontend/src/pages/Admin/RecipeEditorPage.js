@@ -38,7 +38,7 @@ class RecipeEditorPage extends React.Component {
           .then(result => {
               const recipe = {};
               recipe.recipe_name = result.name;
-              ['_id', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'featured']
+              ['_id', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'tags', 'featured']
                 .forEach(prop => {
                   recipe[prop] = result[prop];
                 });

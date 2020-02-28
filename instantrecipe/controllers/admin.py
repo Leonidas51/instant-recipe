@@ -208,6 +208,7 @@ def edit_recipe():
 
 			ings = json.loads(data['ings'])
 			opt_ings = json.loads(data['opt_ings'])
+			tags = json.loads(data['tags'])
 
 			if not len(ings):
 				return jsonify(error = 'Укажите ингредиенты'), 400
@@ -218,9 +219,10 @@ def edit_recipe():
 			recipe['cooking_time'] = parse_interval(int(data['cooking_time_min']), int(data['cooking_time_max']))
 			recipe['difficulty'] = int(data['difficulty'])
 			recipe['serves'] = int(data['serves'])
-			recipe['ingredient_ids'] = []
-			#legacy ings format
+
+			#legacy ings
 			recipe['ingredient_names'] = {'mandatory': {}, 'optional': {}}
+			recipe['ingredient_ids'] = []
 
 			for ing in ings:
 				recipe['ingredient_ids'].append(ing['id'])
@@ -229,9 +231,19 @@ def edit_recipe():
 			for ing in opt_ings:
 				recipe['ingredient_names']['optional'][ing['name']] = ing['amount']
 
-			#new ings format
+			#new ings
 			recipe['ings_mandatory'] = ings
 			recipe['ings_optional'] = opt_ings
+
+			#legacy tags
+			recipe['tag_ids'] = []
+			recipe['tag_names'] = []
+			for tag in tags:
+				recipe['tag_ids'].append(tag['id'])
+				recipe['tag_names'].append(tag['name'])
+
+			#new tags
+			recipe['tags'] = tags
 
 			recipe['instructions_source'] = data['steps']
 			recipe['featured'] = (data['featured'] == 'true')

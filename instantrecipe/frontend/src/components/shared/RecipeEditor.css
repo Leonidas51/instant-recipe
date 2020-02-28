@@ -54,7 +54,8 @@
 
 .recipe-editor__text-input_step {
   width: 100%;
-  height: 60px;
+  height: 36px;
+  padding: 2px 12px 2px 2px;
   font-family: inherit;
 }
 
@@ -119,7 +120,6 @@
 .recipe-editor__add-ing-btn {
   width: 16%;
   align-self: center;
-  text-align: end;
 }
 
 .recipe-editor__ings-error {
@@ -178,6 +178,25 @@
 .recipe-editor__steps-error {
   color: #E73A23;
   margin-top: 5px;
+}
+
+.recipe-editor__all-tags {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.recipe-editor__tag {
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.recipe-editor__tag_active {
+  background-color: #4EC44B;
 }
 
 .recipe-editor__file-input {

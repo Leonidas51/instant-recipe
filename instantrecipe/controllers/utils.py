@@ -9,18 +9,18 @@ from instantrecipe.auth import User, admin_required
 
 ROOT_PATH = os.environ.get('ROOT_PATH')
 LOG = logger.get_root_logger(
-    __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
+		__name__, filename=os.path.join(ROOT_PATH, 'output.log'))
 utils_bp = Blueprint('utils', __name__)
 
 """
 @utils_bp.route('/utils/csrf/', methods=['GET'])
 def request_CSRF_token():
-    if request.method == 'GET':
-        try:
-            return jsonify({'csrftoken': generate_csrf()}), 200
-        except Exception as e:
-            LOG.error('error while trying to request_CSRF_token: ' + str(e))
-            return jsonify(data = str(e)), 200
+		if request.method == 'GET':
+				try:
+						return jsonify({'csrftoken': generate_csrf()}), 200
+				except Exception as e:
+						LOG.error('error while trying to request_CSRF_token: ' + str(e))
+						return jsonify(data = str(e)), 200
 
 def filter_brackets(instructions):
 	match_square_and_round_brackets = re.compile('\[[»ЁёА-я0-9 »]+\]\([A-z0-9 \/]+\)')
@@ -128,5 +128,27 @@ def standartize_recipes_ings():
 		return jsonify(result = 'success'), 200
 	except Exception as e:
 		LOG.error('error while trying to standartize_recipes_ings: ' + str(e))
+		LOG.info(recipe['_id'])
+		return jsonify(result = 'error'), 400
+
+@utils_bp.route('/standartize_recipes_tags/', methods=['GET'])
+@admin_required
+def standartize_recipes_tags():
+	try:
+		for recipe in mongo.db.recipes.find({}):
+			new_tags = []
+			for tag_id in recipe['tag_ids']:
+				tag_full = mongo.db.tags.find_one({u'_id': tag_id})
+				new_tag = {}
+				new_tag['id'] = ObjectId(tag_full['_id'])
+				new_tag['name'] = tag_full['name']
+				new_tags.append(new_tag)
+			mongo.db.recipes.update_one(
+				{u'_id': recipe['_id']},
+				{u'$set': {u'tags': new_tags}}
+			)
+		return jsonify(result = 'success'), 200
+	except Exception as e:
+		LOG.error('error while trying to standartize_recipes_tags: ' + str(e))
 		LOG.info(recipe['_id'])
 		return jsonify(result = 'error'), 400
