@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import NotFound from "./NotFound";
 import ScrollToTop from "../components/utils/ScrollToTop";
 import "./RecipeDetails.css";
 import Modal from "../components/hoc/Modal";
@@ -117,7 +118,9 @@ class RecipeDetails extends React.Component {
     let difficulty_style = {};
 
     if(error) {
-      
+      return(
+        <NotFound />
+      )
     } else if(recipe_loaded) {
       difficulty_style = {
         backgroundColor: difficulty[this.state.recipe.difficulty - 1].color

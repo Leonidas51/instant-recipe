@@ -32,6 +32,8 @@ def update_recipe(recipe_id):
 def read_recipe(recipe_id):
 	if request.method == 'GET':
 		try:
+			if not ObjectId.is_valid(recipe_id):
+				return jsonify(data = 'Nothing was found!'), 204
 			data = mongo.db.recipes.find_one({u'_id': ObjectId(recipe_id), u'published': True})
 			if data == None:
 				return jsonify(data = 'Nothing was found!'), 204

@@ -25,6 +25,7 @@ import Auth from "./components/shared/Auth";
 import SuggestedImages from "./pages/Admin/SuggestedImages";
 import SuggestedRecipes from "./pages/Admin/SuggestedRecipes";
 import RecipeEditorPage from "./pages/Admin/RecipeEditorPage";
+import GenericError from "./components/errors/GenericError";
 
 class App extends React.Component {
   constructor(props) {
@@ -161,24 +162,26 @@ class App extends React.Component {
               openAuth={this.open_auth_modal}
             />
 
-            <Switch>
-              <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
-              <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
-              <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
-              <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} is_admin={this.state.is_admin} openAuth={this.open_auth_modal}/>)} />
-              <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
-              <Route path="/user/confirm/:token" render={() => (<UserConfirm cookies={this.props.cookies}/>)} />
-              <Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
-              <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
-              <Route path="/profile" render={() => (<Profile cookies={this.props.cookies} />)} />
-              <Route path="/suggest_recipe" render={() => (<SuggestRecipe cookies={this.props.cookies} />)} />
-              <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
-              <Route exact path="/admin" render={() => (this.state.is_admin ? <AdminPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
-              <Route path="/admin/suggested_images" render={() => (this.state.is_admin ? <SuggestedImages cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
-              <Route path="/admin/suggested_recipes" render={() => (this.state.is_admin ? <SuggestedRecipes cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
-              <Route path="/admin/recipe_editor/:recipe_id?" render={() => (this.state.is_admin ? <RecipeEditorPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
-              <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
-            </Switch>
+            <GenericError>
+              <Switch>
+                    <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
+                    <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
+                    <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
+                    <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} is_admin={this.state.is_admin} openAuth={this.open_auth_modal}/>)} />
+                    <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
+                    <Route path="/user/confirm/:token" render={() => (<UserConfirm cookies={this.props.cookies}/>)} />
+                    <Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
+                    <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
+                    <Route path="/profile" render={() => (<Profile cookies={this.props.cookies} />)} />
+                    <Route path="/suggest_recipe" render={() => (<SuggestRecipe cookies={this.props.cookies} />)} />
+                    <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
+                    <Route exact path="/admin" render={() => (this.state.is_admin ? <AdminPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+                    <Route path="/admin/suggested_images" render={() => (this.state.is_admin ? <SuggestedImages cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+                    <Route path="/admin/suggested_recipes" render={() => (this.state.is_admin ? <SuggestedRecipes cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+                    <Route path="/admin/recipe_editor/:recipe_id?" render={() => (this.state.is_admin ? <RecipeEditorPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
+                    <Route render={() => (<NotFound cookies={this.props.cookies}/>)} />
+                </Switch>
+              </GenericError>
 
             <Footer isLoggedIn={this.state.is_logged_in} openAuth={this.open_auth_modal} />
             {this.state.auth_modal_open ? <AuthModal login={this.login} register={this.register} cookies={this.props.cookies} /> : null}
