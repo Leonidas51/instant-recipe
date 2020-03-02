@@ -13,11 +13,10 @@ class SearchArea extends React.Component {
   constructor(props) {
     super(props);
 
-    const search_type =  this.props.match.params.type || this.props.cookies.get('search_type') || 'by_ings',
+    const search_type =  this.props.match.params.type || 'by_ings',
           sort = this.props.match.params.sort || this.props.cookies.get(`${search_type}_sort`) || 'min-expense';
 
     this.props.cookies.set(`${search_type}_sort`, sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
-    this.props.cookies.set('search_type', search_type, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
 
     this.state = {
       error: null,
@@ -534,8 +533,6 @@ class SearchArea extends React.Component {
 
 			this.props.cookies.set(`${e.target.value}_sort`, new_sort, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
 		}
-
-		this.props.cookies.set('search_type', e.target.value, {path: '/', expires: new Date(new Date().getTime()+1000*60*60*24*365)});
 
     this.setState({
       search_type: e.target.value,
