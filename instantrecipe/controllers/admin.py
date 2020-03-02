@@ -247,6 +247,7 @@ def edit_recipe():
 
 			recipe['instructions_source'] = data['steps']
 			recipe['featured'] = (data['featured'] == 'true')
+			recipe['published'] = (data['published'] == 'true')
 			
 			mongo.db.recipes.update_one(
 				{u'_id': ObjectId(data['recipe_id'])},

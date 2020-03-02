@@ -53,6 +53,7 @@ class RecipeEditor extends React.Component {
       photo: '',
       upload_key: Date.now(),
       featured: recipe.featured || false,
+      published: recipe.published || false,
       submit_error: '',
       submit_pending: false,
       success_modal_open: false
@@ -98,7 +99,6 @@ class RecipeEditor extends React.Component {
       }, () => {
         /* aaand correctly set their heights */
         ref.style.height = '1px';
-        console.log(ref.scrollHeight);
         ref.style.height = (ref.scrollHeight + 2) + 'px';
       })
 
@@ -467,7 +467,7 @@ class RecipeEditor extends React.Component {
   saveRecipe() {
     const data = new FormData();
 
-    ['recipe_id', 'recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'photo', 'featured']
+    ['recipe_id', 'recipe_name', 'cooking_time_min', 'cooking_time_max', 'serves', 'difficulty', 'photo', 'featured', 'published']
       .forEach(prop => {
         data.append([prop], this.state[prop]);
       });
@@ -745,12 +745,20 @@ class RecipeEditor extends React.Component {
               }
               {
                 this.props.isAdmin
-                ? (<div className="recipe-editor__data-container">
+                ? (<React.Fragment>
+                  <div className="recipe-editor__data-container">
                     <div className="recipe-editor__input-name">Featured?</div>
                     <div className="recipe-editor__input-area">
                       <input type="checkbox" checked={this.state.featured} name="featured" onChange={this.onCheckboxChange} />
                     </div>
-                  </div>)
+                  </div>
+                  <div className="recipe-editor__data-container">
+                    <div className="recipe-editor__input-name">Published?</div>
+                    <div className="recipe-editor__input-area">
+                      <input type="checkbox" checked={this.state.published} name="published" onChange={this.onCheckboxChange} />
+                    </div>
+                  </div>
+                  </React.Fragment>)
                 : null
               }
               {
