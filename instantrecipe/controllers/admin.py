@@ -1,6 +1,7 @@
 import os
 import logger
 import json
+import shutil
 from PIL import Image
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, current_app
@@ -132,10 +133,13 @@ def delete_recipe():
 			recipe_id = request.json.get('recipe_id')
 			mongo.db.recipes.remove({u'_id': ObjectId(recipe_id)})
 
-			if os.path.isfile(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id, '1.jpg')):
-				os.remove(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id, '1.jpg'))
+			if os.path.isdir(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id)):
+				shutil.rmtree(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id))
 				mongo.db.upload_images.remove({u'recipe_id': ObjectId(recipe_id)})
 
+			if os.path.isdir(os.path.join(current_app.config['PHOTOS_DIST_FOLDER'], recipe_id)):
+				shutil.rmtree(os.path.join(current_app.config['PHOTOS_DIST_FOLDER'], recipe_id))
+				mongo.db.upload_images.remove({u'recipe_id': ObjectId(recipe_id)})
 			return jsonify(data = 'success!'), 200
 		except Exception as e:
 			LOG.error('error while trying to delete_recipe: ' + str(e))
@@ -148,11 +152,13 @@ def delete_image():
 		try:
 			recipe_id = request.json.get('recipe_id')
 
-			if os.path.isfile(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id, '1.jpg')):
-				os.remove(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id, '1.jpg'))
-				mongo.db.upload_images.remove({u'recipe_id': ObjectId(recipe_id)})
-			else:
-				return jsonify(error = 'Изображение не найдено'), 400
+			if os.path.isdir(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id)):
+				shutil.rmtree(os.path.join(current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id))
+				mongo.db.upload_images.remove({u'recipe_id': recipe_id})
+
+			if os.path.isdir(os.path.join(current_app.config['PHOTOS_DIST_FOLDER'], recipe_id)):
+				shutil.rmtree(os.path.join(current_app.config['PHOTOS_DIST_FOLDER'], recipe_id))
+				mongo.db.upload_images.remove({u'recipe_id': recipe_id})
 			
 			return jsonify(data = 'success!'), 200
 		except Exception as e:

@@ -11,8 +11,6 @@ class RecipeEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    //сделать до релиза для админки: теги и чекбокс "featured"
-
     const recipe = this.props.recipe || {};
 
     //для тестирования
@@ -82,8 +80,9 @@ class RecipeEditor extends React.Component {
     this.onPhotoUploadChange = this.onPhotoUploadChange.bind(this);
     this.onRemovePhotoClick = this.onRemovePhotoClick.bind(this);
     this.onSuggestFormSubmit = this.onSuggestFormSubmit.bind(this);
-    this.onSaveBtnClick = this.onSaveBtnClick.bind(this);
-    this.onDeleteBtnClick = this.onDeleteBtnClick.bind(this);
+    this.onSaveClick = this.onSaveClick.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onImageDeleteClick = this.onImageDeleteClick.bind(this);
     this.saveRecipe = this.saveRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
   }
@@ -456,12 +455,20 @@ class RecipeEditor extends React.Component {
     })
   }
 
-  onSaveBtnClick(e) {
+  onSaveClick(e) {
     this.saveRecipe();
   }
 
-  onDeleteBtnClick(e) {
-    this.deleteRecipe(this.state.recipe_id);
+  onDeleteClick(e) {
+    if(confirm('Точно удалить?')) {
+      this.deleteRecipe(this.state.recipe_id);
+    }
+  }
+
+  onImageDeleteClick(e) {
+    if(confirm('Точно удалить фото?')) {
+      this.deleteImage(this.state.recipe_id);
+    }
   }
   
   saveRecipe() {
@@ -498,27 +505,51 @@ class RecipeEditor extends React.Component {
   }
 
   deleteRecipe(recipe_id) {
-    if(confirm('Точно удалить?')) {
-      get_csrf().then(csrf => {
-        fetch('/api/admin/delete_recipe', {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': csrf,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            recipe_id: recipe_id
-          })
+    get_csrf().then(csrf => {
+      fetch('/api/admin/delete_recipe', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          recipe_id: recipe_id
         })
-          .then(response => {
-            if(response.status === 200) {
-              alert('Успешно!');
-            } else {
-              alert('Ошибка сервера');
-            }
-          })
       })
-    }
+        .then(response => {
+          if(response.status === 200) {
+            alert('Успешно!');
+          } else {
+            alert('Ошибка сервера');
+          }
+        })
+    })
+  }
+
+  deleteImage(recipe_id) {
+    get_csrf().then(csrf => {
+      fetch('/api/admin/delete_image', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          recipe_id: recipe_id
+        })
+      })
+        .then(response => {
+          if(response.status === 200) {
+            alert('Успешно!');
+          } else if(response.status === 400) {
+            alert('Изображение не найдено');
+          } else {
+            alert('Ошибка сервера');
+          }
+
+          this.props.fetchRecipes();
+        })
+    })
   }
 
   render() {
@@ -774,8 +805,9 @@ class RecipeEditor extends React.Component {
                       this.props.isAdmin
                       ? (
                           <React.Fragment>
-                            <div className="recipe-editor__submit-btn" onClick={this.onSaveBtnClick}>Сохранить</div>
-                            <div className="recipe-editor__delete-btn" onClick={this.onDeleteBtnClick}>Удалить</div>
+                            <div className="recipe-editor__submit-btn" onClick={this.onSaveClick}>Сохранить</div>
+                            <div className="recipe-editor__delete-btn" onClick={this.onDeleteClick}>Удалить</div>
+                            <div className="recipe-editor__delete-btn" onClick={this.onImageDeleteClick}>Удалить фото</div>
                           </React.Fragment>
                         )
                       : <input className="recipe-editor__submit-btn" type="submit" value="Отправить" />
