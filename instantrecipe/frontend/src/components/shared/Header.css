@@ -41,6 +41,7 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .header__menu-icon-container {
