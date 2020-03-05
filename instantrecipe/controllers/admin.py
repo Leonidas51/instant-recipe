@@ -13,6 +13,19 @@ LOG = logger.get_root_logger(
 	__name__, filename=os.path.join(ROOT_PATH, 'output.log'))
 admin_bp = Blueprint('admin', __name__)
 
+@admin_bp.route('/admin/get_admin_page_data', methods=['GET'])
+@admin_required
+def get_admin_page_data():
+	if request.method == 'GET':
+		try:
+			data = {}
+			data['pending_images'] = mongo.db.upload_images.count({u'published': False, u'recipe_published': True})
+			data['pending_recipes'] = mongo.db.recipes.count({u'pending': True})
+			return jsonify(data = data)
+		except Exception as e:
+			LOG.error('error while trying to get_admin_page_data: ' + str(e))
+			return jsonify(error = 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'), 500
+
 @admin_bp.route('/admin/suggested_images', methods=['GET'])
 @admin_required
 def get_suggested_images():
