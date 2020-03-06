@@ -27,6 +27,9 @@ class User:
         self.user['confirmed_on'] = confirmed_on
         self.user['password_hash'] = self.hash_password(password)
         self.user['registered_on'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.user['upload_recipes'] = []
+        self.user['upload_images'] = []
+        self.user['favorites'] = []
         self.user['admin'] = admin
         self.id = None
 
