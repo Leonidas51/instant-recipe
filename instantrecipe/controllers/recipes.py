@@ -481,3 +481,18 @@ def suggest_recipe():
         except Exception as e:
             LOG.error('error wli trying to suggest_recipe: ' + str(e))
             return jsonify(error=SERVER_ERROR_TEXT), 500
+
+@recipes_bp.route('/recipe/add_to_favorites/<string:recipe_id>', methods=['GET'])
+@login_required
+def add_to_favorites(recipe_id):
+	if request.method == 'GET':
+		try:
+			data = {}
+			data['favorites'] = session['user'].get()['favorites']
+			data['favorites'].append(recipe_id)
+			session['user'].update(data)
+			
+			return jsonify(data = 'success!'), 200
+		except Exception as e:
+			LOG.error('error while trying to add_to_favorites: ' + str(e))
+			return jsonify(error = 'Произошла ошибка сервера. Пожалуйста, попробуйте позже.'), 500
