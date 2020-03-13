@@ -6,7 +6,7 @@ class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True
-    WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365 # one year (count in seconds)
+    WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365  # one year (count in seconds)
     SECRET_KEY = os.getenv('SECRET_KEY')
     CONFIRM_SALT = os.getenv('CONFIRM_SALT')
     RESTORE_SALT = os.getenv('RESTORE_SALT')
@@ -15,12 +15,13 @@ class Config(object):
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     PHOTOS_UPLOAD_FOLDER = 'instantrecipe/images/recipes/upload'
     PHOTOS_DIST_FOLDER = 'instantrecipe/images/recipes/dist'
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024 # 5 Mb max
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 Mb max
 
     # mail settings
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
+
 
 class DevelopmentConfig(Config):
     """Configurations for Development."""
@@ -39,7 +40,8 @@ class TestingConfig(Config):
     FLASK_ENV = 'development'
     FLASK_DEBUG = True
 
-    #Полин че это
+    # Полин че это
+    # Это вещь
 
 
 class ProductionConfig(Config):
@@ -49,7 +51,8 @@ class ProductionConfig(Config):
     FLASK_ENV = 'production'
     FLASK_DEBUG = False
 
-    #туточки почта на прод
+    # туточки почта на прод
+    # Де
 
 
 app_config = {

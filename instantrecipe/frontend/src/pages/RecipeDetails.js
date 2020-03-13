@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-d
 import { Helmet } from "react-helmet";
 import NotFound from "./NotFound";
 import ScrollToTop from "../components/utils/ScrollToTop";
+import {get_csrf} from "../utils/";
 import "./RecipeDetails.css";
 import Modal from "../components/hoc/Modal";
 import UploadPhotoModal from "../components/RecipeDetails/UploadPhotoModal";
@@ -34,6 +35,7 @@ class RecipeDetails extends React.Component {
 
     this.openUploadPhotoModal = this.openUploadPhotoModal.bind(this);
     this.closeUploadPhotoModal = this.closeUploadPhotoModal.bind(this);
+    this.onFavoriteClick = this.onFavoriteClick.bind(this);
   }
 
   componentDidMount() {
@@ -51,6 +53,26 @@ class RecipeDetails extends React.Component {
 
   closeUploadPhotoModal() {
     this.setState({modal_upload_photo_open: false});
+  }
+
+  onFavoriteClick(e) {
+    if(!this.props.is_logged_in) {
+      this.props.openAuth(e);
+      return;
+    }
+
+    this.addToFavorites();
+  }
+
+  addToFavorites() {
+    fetch(`/api/recipe/add_to_favorites/${this.state.recipe._id}`)
+      .then(response => {
+        if(response.status === 200) {
+          alert('Success');
+        } else {
+          alert('Oops');
+        }
+      })
   }
 
   parseServes(serves) {
@@ -212,6 +234,9 @@ class RecipeDetails extends React.Component {
                     : null
                   }
                 </div>
+              </div>
+              <div className="recipe-characteristics__item">
+                <div className="button-confirm" onClick={this.onFavoriteClick}>Добавить в избранное</div>
               </div>
               {/*<div className="recipe-characteristics__item">
                 <div className="recipe-characteristics__text">
