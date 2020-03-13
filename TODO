@@ -1,0 +1,4 @@
+1.[ ] startup script (in python cause need cross platfrom solution)
+2.[ ] refactor backend to dependency injection and typings
+3.[ ] research possible approches to db sharing and migrations (monk?)
+4.[ ] deploy automation (travis?)

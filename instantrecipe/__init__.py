@@ -18,20 +18,23 @@ LOG = logger.get_root_logger(os.environ.get(
 
 
 class JSONEncoder(json.JSONEncoder):
-	''' extend json-encoder class'''
+    ''' extend json-encoder class'''
 
-	def default(self, o):
-		if isinstance(o, ObjectId):
-			return str(o)
-		if isinstance(o, datetime.datetime):
-			return str(o)
-		return json.JSONEncoder.default(self, o)
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        if isinstance(o, datetime.datetime):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
 
 mongo = PyMongo()
 mail = Mail()
 
+
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True, static_folder='frontend/dist', template_folder='frontend/dist')
+    app = Flask(__name__, instance_relative_config=True,
+                static_folder='frontend/dist', template_folder='frontend/dist')
 
     if test_config is None:
         app.config.from_object(app_config[os.getenv('APP_SETTINGS')])
@@ -48,7 +51,8 @@ def create_app(test_config=None):
     app.add_url_rule('/', endpoint='index')
     app.register_error_handler(404, errors.page_not_found)
 
-    from .controllers import ingredients, recipes, tags, tips, users, admin, utils
+    from .controllers import ingredients, recipes, tags, \
+        tips, users, admin, utils
     api_prefix = '/api'
     app.register_blueprint(ingredients.ingredients_bp, url_prefix=api_prefix)
     app.register_blueprint(recipes.recipes_bp, url_prefix=api_prefix)

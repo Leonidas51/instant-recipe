@@ -25,11 +25,18 @@ def tip():
                                         'numeric_id', 'category',
                                         'text_source', 'name_translit',
                                         'category_translit'))
-        #if data.get('name', None) is not None and data.get('email', None) is not None:
+        #if data.get('name', None) is not None and
+        #       data.get('email', None) is not None:
             mongo.db.tips.insert_one(data)
-            return jsonify({'ok': True, 'message': 'Tip was created successfully!'}), 200
+            return jsonify({
+                'ok': True,
+                'message': 'Tip was created successfully!'
+            }), 200
         else:
-            return jsonify({'ok': False, 'message': 'Bad request parameters!'}), 400
+            return jsonify({
+                'ok': False,
+                'message': 'Bad request parameters!'
+            }), 400
 
     if request.method == 'DELETE':
         if data.get('email', None) is not None:
@@ -40,7 +47,10 @@ def tip():
                 response = {'ok': True, 'message': 'no record found'}
             return jsonify(response), 200
         else:
-            return jsonify({'ok': False, 'message': 'Bad request parameters!'}), 400
+            return jsonify({
+                'ok': False,
+                'message': 'Bad request parameters!'
+            }), 400
 
     if request.method == 'PATCH':
         if data.get('query', {}) != {}:
@@ -48,5 +58,8 @@ def tip():
                 data['query'], {'$set': data.get('payload', {})})
             return jsonify({'ok': True, 'message': 'record updated'}), 200
         else:
-            return jsonify({'ok': False, 'message': 'Bad request parameters!'}), 400
+            return jsonify({
+                'ok': False,
+                'message': 'Bad request parameters!'
+            }), 400
     """

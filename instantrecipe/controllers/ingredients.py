@@ -21,28 +21,36 @@ def read_ingredient(name):
             match = re.match('^[ёа-я0-9 ]+$', name)
             if match is None:
                 return jsonify([]), 204
-            data = mongo.db.ingredients.find({'name':{'$regex':u'(^' + name + '| ' + name + ')'}}).limit(10)
-            if data == None:
+            data = mongo.db.ingredients.find({
+                'name': {'$regex': u'(^' + name + '| ' + name + ')'}
+            }).limit(10)
+            if data is None:
                 return jsonify([]), 204
-            data = sorted(list(data), key=lambda x: 'a' + x['name'] if x['name'].startswith(name) else 'b' + x['name'])
+            data = sorted(list(data),
+                          key=lambda x: 'a' + x['name']
+                          if x['name'].startswith(name)
+                          else 'b' + x['name'])
             return jsonify(data), 200
         except Exception as e:
             LOG.error('error while trying to read_ingredient: ' + str(e))
             return jsonify([]), 204
 
+
 @ingredients_bp.route('/random_ingredient/', methods=['GET'])
 def read_random_ingredient():
     if request.method == 'GET':
         try:
-            data = mongo.db.ingredients.aggregate([{ '$sample': {'size': 1} }])
+            data = mongo.db.ingredients.aggregate([{'$sample': {'size': 1}}])
             data = list(data)
-            if data == None or len(data) == 0:
-                return jsonify(data = 'Nothing was found!'), 204
+            if data is None or len(data) == 0:
+                return jsonify(data='Nothing was found!'), 204
             data = data[0]
             return jsonify(data), 200
         except Exception as e:
-            LOG.error('error while trying to read_random_ingredient: ' + str(e))
-            return jsonify(data = 'Nothing was found!'), 204
+            LOG.error(
+                'error while trying to read_random_ingredient: ' + str(e))
+            return jsonify(data='Nothing was found!'), 204
+
 
 def restore_ings_order(data, ingredients_list):
     data_ids = []
@@ -56,18 +64,23 @@ def restore_ings_order(data, ingredients_list):
             data[index] = buf
     return data
 
-@ingredients_bp.route('/ingredient_by_id/<string:ingredients_list>/', methods=['GET'])
+@ingredients_bp.route('/ingredient_by_id/<string:ingredients_list>/',
+                      methods=['GET'])
 def read_ingredient_by_id_list(ingredients_list):
     if request.method == 'GET':
         try:
             ingredients_list = ingredients_list.split('&')
-            ingredients_list = [ObjectId(ingredient) for ingredient in ingredients_list]
-            data = mongo.db.ingredients.find({'_id': {'$in': ingredients_list}})
+            ingredients_list = [
+                ObjectId(ingredient) for ingredient in ingredients_list]
+            data = mongo.db.ingredients.find({
+                '_id': {'$in': ingredients_list}
+            })
             data = list(data)
             data = restore_ings_order(data, ingredients_list)
-            if data == None or len(data) == 0:
-                return jsonify(data = 'Nothing was found!'), 204
+            if data is None or len(data) == 0:
+                return jsonify(data='Nothing was found!'), 204
             return jsonify(data), 200
         except Exception as e:
-            LOG.error('error while trying to read_ingredient_by_id_list: ' + str(e))
-            return jsonify(data = 'Nothing was found!'), 204
+            LOG.error(
+                'error while trying to read_ingredient_by_id_list: ' + str(e))
+            return jsonify(data='Nothing was found!'), 204
