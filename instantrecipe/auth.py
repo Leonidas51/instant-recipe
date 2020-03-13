@@ -1,8 +1,9 @@
 import os
 import datetime
 import functools
-from itsdangerous import (TimedJSONWebSignatureSerializer
-    as Serializer, BadSignature, SignatureExpired, URLSafeTimedSerializer)
+from itsdangerous import (TimedJSONWebSignatureSerializer as
+                          Serializer, BadSignature, SignatureExpired,
+                          URLSafeTimedSerializer)
 from passlib.hash import pbkdf2_sha256
 from flask import jsonify, session, current_app, redirect
 from instantrecipe import mongo
@@ -13,11 +14,12 @@ ROOT_PATH = os.environ.get('ROOT_PATH')
 LOG = logger.get_root_logger(
     __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
 
+
 class User:
     def hash_password(self, password):
         return pbkdf2_sha256.hash(password)
 
-    def __init__(self, name='default', email='default', password='default', \
+    def __init__(self, name='default', email='default', password='default',
                  confirmed=False, confirmed_on=None, admin=False):
         self.user = {}
         self.user['name'] = name
@@ -26,7 +28,8 @@ class User:
         self.user['confirmed'] = confirmed
         self.user['confirmed_on'] = confirmed_on
         self.user['password_hash'] = self.hash_password(password)
-        self.user['registered_on'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.user['registered_on'] = \
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.user['admin'] = admin
         self.id = None
 
@@ -62,8 +65,8 @@ class User:
 
     def update(self, data):
         mongo.db.users.update_one({'_id': self.id},
-                              {'$set': data},
-                              upsert=False)
+                                  {'$set': data},
+                                  upsert=False)
 
     def generate_auth_token(self, expiration=600):
         s = Serializer(os.getenv('SECRET_KEY'), expires_in=expiration)
@@ -105,10 +108,12 @@ def confirm_required(func):
                             'message': 'Вы не авторизованы'}), 403
         else:
             if not session.get('user', None).get()['confirmed']:
-                return jsonify({'result': 'error',
-                                'message': 'Необходимо подтвердить аккаунт'}), 403
+                return jsonify({
+                    'result': 'error',
+                    'message': 'Необходимо подтвердить аккаунт'}), 403
         return func(*args, **kwargs)
     return wrapper_confirm_required
+
 
 def login_required(func):
     @functools.wraps(func)
@@ -119,21 +124,26 @@ def login_required(func):
         return func(*args, **kwargs)
     return wrapper_login_required
 
+
 def admin_required(func):
     @functools.wraps(func)
     def wrapper_admin_required(*args, **kwargs):
         if session.get('user', None) is None:
             return jsonify({'result': 'error',
                             'message': 'Вы не авторизованы'}), 403
-        if session['user'].get()['admin'] == True:
+        if session['user'].get()['admin'] is True:
             return func(*args, **kwargs)
-        return jsonify({'result': 'error',
-                    'message:': 'Для данного действия требуются права администратора'}), 400
+        return jsonify({
+            'result': 'error',
+            'message:':
+                'Для данного действия требуются права администратора'}), 400
     return wrapper_admin_required
+
 
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     return serializer.dumps(email, salt=current_app.config['CONFIRM_SALT'])
+
 
 def confirm_confirmation_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -143,13 +153,15 @@ def confirm_confirmation_token(token, expiration=3600):
             salt=current_app.config['CONFIRM_SALT'],
             max_age=expiration
         )
-    except:
+    except Exception:
         return False
     return email
+
 
 def generate_restoration_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     return serializer.dumps(email, salt=current_app.config['RESTORE_SALT'])
+
 
 def confirm_restoration_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -159,6 +171,6 @@ def confirm_restoration_token(token, expiration=3600):
             salt=current_app.config['RESTORE_SALT'],
             max_age=expiration
         )
-    except:
+    except Exception:
         return False
     return email
