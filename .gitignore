@@ -5,7 +5,7 @@ dist/
 *.pyc
 __pycache__/
 output.log
-envvars
+startup/
 .vscode
 logs/
 rbpKeys/
