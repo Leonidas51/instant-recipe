@@ -287,8 +287,6 @@ def validate_data(data):
         return jsonify(error='Укажите число порций больше ноля'), 400
 
     ings = json.loads(data['ings'])
-    LOG.info('data[INGS]: {}'.format(data['ings']))
-    LOG.info('INGS: {}'.format(ings))
     if not len(ings):
         return jsonify(error='Укажите ингредиенты'), 400
 
@@ -324,7 +322,10 @@ def parse_tags(recipe, tags):
     recipe['tags'] = tags
 
 
-def parse_recipe(ings, opt_ings, tags):
+def parse_recipe(data):
+    ings = json.loads(data['ings'])
+    opt_ings = json.loads(data['opt_ings'])
+    tags = json.loads(data['tags'])
     recipe = {}
     recipe['name'] = data['recipe_name'].strip()
     recipe['cooking_time_min'] = int(data['cooking_time_min'])
@@ -352,12 +353,7 @@ def edit_recipe():
         try:
             data = request.form.to_dict()
             validate_data(data)
-
-            ings = json.loads(data['ings'])
-            opt_ings = json.loads(data['opt_ings'])
-            tags = json.loads(data['tags'])
-
-            recipe = parse_recipe
+            recipe = parse_recipe(data)
 
             mongo.db.recipes.update_one(
                 {u'_id': ObjectId(data['recipe_id'])},
