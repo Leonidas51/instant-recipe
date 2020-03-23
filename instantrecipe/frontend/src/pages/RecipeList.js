@@ -195,7 +195,7 @@ class RecipeList extends React.Component {
           this.state.shown_recipes.map((recipe, i) => {
             return (
               <div key={recipe._id}>
-                <Recipe rec={recipe} need_match={need_match} />
+                <Recipe rec={recipe} search_items={this.state.search_items} need_match={need_match} />
                 <hr />
               </div>
             )

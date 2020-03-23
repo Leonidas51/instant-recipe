@@ -59,7 +59,7 @@ function Recipe(props) {
         {
           props.need_match ?
           <div className="recipe__ings">
-            <IngredientsTooltip rec={ rec } need_match={props.need_match} />
+            <IngredientsTooltip rec={ rec } items={props.search_items} need_match={props.need_match} />
           </div>
           : null
         }
