@@ -5,6 +5,10 @@
   text-align: center;
 }
 
+.auth__title:only-child {
+  margin-bottom: 0;
+}
+
 .auth__field {
   display: flex;
   margin-bottom: 12px;

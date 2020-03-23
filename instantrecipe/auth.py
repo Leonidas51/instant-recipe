@@ -31,7 +31,8 @@ class User:
         self.user['registered_on'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.user['upload_recipes'] = []
         self.user['upload_images'] = []
-        self.user['favorites'] = []
+        self.user['favorite_recipes'] = []
+        self.user['liked_recipes'] = []
         self.user['admin'] = admin
         self.id = None
 

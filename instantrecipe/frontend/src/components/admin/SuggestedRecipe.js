@@ -160,9 +160,9 @@ class SuggestedRecipe extends React.Component {
           Удалить фото
         </div>
         </div>
-        <div className="recipe-information">
-          <div className="recipe-information__title">{ recipe.name }</div>
-          <div className="recipe-information__tags"></div>
+        <div className="recipe-main">
+          <div className="recipe-main__title">{ recipe.name }</div>
+          <div className="recipe-main__tags"></div>
           <div className="recipe-characteristics">
             <div className="recipe-characteristics__item">
               <div className="recipe-characteristics__text">

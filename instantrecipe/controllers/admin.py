@@ -112,6 +112,10 @@ def accept_image():
               {u'_id': ObjectId(request.json.get('image_id'))},
               {u'$set': {'published': True}}
             )
+            mongo.db.recipes.update_one(
+                {u'_id': ObjectId(image['recipe_id'])},
+                {u'$set': {'has_image': True}}
+            )
             return jsonify(data='success!'), 200
         except Exception as e:
             LOG.error('error while trying to accept_image: ' + str(e))
@@ -226,6 +230,11 @@ def delete_image():
             if os.path.isdir(dist_id_dir):
                 shutil.rmtree(dist_id_dir)
                 mongo.db.upload_images.remove({u'recipe_id': recipe_id})
+
+            mongo.db.recipes.update_one(
+                {u'_id': ObjectId(recipe_id)},
+                {u'$set': {'has_image': False}}
+            )
 
             return jsonify(data='success!'), 200
         except Exception as e:

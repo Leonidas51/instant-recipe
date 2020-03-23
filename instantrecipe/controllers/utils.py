@@ -163,3 +163,31 @@ def standartize_recipes_tags():
         LOG.error('error while trying to standartize_recipes_tags: ' + str(e))
         LOG.info(recipe['_id'])
         return jsonify(result='error'), 400
+
+@utils_bp.route('/nullify_rating/', methods=['GET'])
+@admin_required
+def nullify_rating():
+    try:
+        for recipe in mongo.db.recipes.find({}):
+            mongo.db.recipes.update_one(
+                {u'_id': recipe['_id']},
+                {u'$set': {u'rating': 0}}
+            )
+        return jsonify(result='success'), 200
+    except Exception as e:
+        LOG.error('error while trying to nullify_rating: ' + str(e))
+        return jsonify(result='error'), 400
+
+@utils_bp.route('/add_liked_by/', methods=['GET'])
+@admin_required
+def add_liked_by():
+    try:
+        for recipe in mongo.db.recipes.find({}):
+            mongo.db.recipes.update_one(
+                {u'_id': recipe['_id']},
+                {u'$set': {u'liked_by': []}}
+            )
+        return jsonify(result='success'), 200
+    except Exception as e:
+        LOG.error('error while trying to add_liked_by: ' + str(e))
+        return jsonify(result='error'), 400
