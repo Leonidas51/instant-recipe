@@ -29,7 +29,6 @@ def show_image(path):
     if os.path.isfile(os.path.join(PROJECT_NAME, DIST_PATH, path, MAIN_PIC)):
         return send_from_directory(DIST_PATH + path, MAIN_PIC)
     else:
-        LOG.error('hello there ' + DIST_PATH)
         return send_from_directory(DIST_PATH, DEFAULT_PIC)
 
 

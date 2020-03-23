@@ -23,19 +23,19 @@ class User:
     def __init__(self, name='default', email='default', password='default',
                  confirmed=False, confirmed_on=None, admin=False):
         self.user = {
-            name: name,
-            name_lower: name.lower(),
-            email: email.lower(),
-            confirmed: confirmed,
-            confirmed_on: confirmed_on,
-            password_hash: self.hash_password(password),
-            registered_on: datetime.datetime.now().strftime(
+            'name': name,
+            'name_lower': name.lower(),
+            'email': email.lower(),
+            'confirmed': confirmed,
+            'confirmed_on': confirmed_on,
+            'password_hash': self.hash_password(password),
+            'registered_on': datetime.datetime.now().strftime(
                 '%Y-%m-%d %H:%M:%S'),
-            upload_recipes: [],
-            upload_images: [],
-            favorite_recipes: [],
-            liked_recipes: [],
-            admin: admin,
+            'upload_recipes': [],
+            'upload_images': [],
+            'favorite_recipes': [],
+            'liked_recipes': [],
+            'admin': admin,
         }
         self.id = None
 
