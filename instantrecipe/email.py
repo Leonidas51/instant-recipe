@@ -25,9 +25,11 @@ def send_email(to, subject, html):
 def send_verification_email(email):
     try:
         email_token = generate_confirmation_token(email)
-        confirm_url = url_for('users.redirect_confirm_email', token=email_token, _external=True)
+        confirm_url = url_for('users.redirect_confirm_email',
+                              token=email_token, _external=True)
         html = '<h1>Для подтверждения перейдите по ссылке:</h1><br />' + \
-               '<a href="' + confirm_url + '">' + confirm_url + '</a>'
+               '<a href="{}">{}</a>'.format(
+                    confirm_url, confirm_url)
         subject = 'Подтверждение e-mail'
         send_email(email, subject, html)
     except Exception as e:
@@ -37,10 +39,13 @@ def send_verification_email(email):
 def send_restore_password_email(email):
     try:
         email_token = generate_restoration_token(email)
-        restore_url = url_for('users.redirect_restore_password', token=email_token, _external=True)
-        html = '<h1>Для восстановления пароля перейдите по ссылке:</h1><br />' + \
-               '<a href="' + restore_url + '">' + restore_url + '</a>'
+        restore_url = url_for('users.redirect_restore_password',
+                              token=email_token, _external=True)
+        html = '<h1>Для восстановления пароля перейдите по ссылке: \
+                </h1><br /><a href="{}">{}</a>'.format(
+                    restore_url, restore_url)
         subject = 'Восстановление пароля'
         send_email(email, subject, html)
     except Exception as e:
-        LOG.error('error while trying to send_restore_password_email: ' + str(e))
+        LOG.error(
+            'error while trying to send_restore_password_email: ' + str(e))

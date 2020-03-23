@@ -5,9 +5,12 @@ dist/
 *.pyc
 __pycache__/
 output.log
-envvars
+startup/
 .vscode
 logs/
 rbpKeys/
 rbp_dump/
-instantrecipe/images
+instantrecipe/images/recipes/dist/*/
+instantrecipe/images/recipes/upload/*/
+!instantrecipe/images/recipes/dist/default.png
+!instantrecipe/images/recipes/upload/.gitkeep

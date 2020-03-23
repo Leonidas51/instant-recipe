@@ -504,7 +504,9 @@ def suggest_recipe():
 			LOG.error('error wli trying to suggest_recipe: ' + str(e))
 			return jsonify(error=SERVER_ERROR_TEXT), 500
 
-@recipes_bp.route('/recipe/add_to_favorites/<string:recipe_id>', methods=['GET'])
+
+@recipes_bp.route('/recipe/add_to_favorites/<string:recipe_id>',
+                  methods=['GET'])
 @login_required
 def add_to_favorites(recipe_id):
 	if request.method != 'GET':

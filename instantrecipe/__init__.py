@@ -18,8 +18,6 @@ LOG = logger.get_root_logger(os.environ.get(
 
 
 class JSONEncoder(json.JSONEncoder):
-    ''' extend json-encoder class'''
-
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
@@ -32,25 +30,7 @@ mongo = PyMongo()
 mail = Mail()
 
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True,
-                static_folder='frontend/dist', template_folder='frontend/dist')
-
-    if test_config is None:
-        app.config.from_object(app_config[os.getenv('APP_SETTINGS')])
-        LOG.info('running environment: %s', os.environ.get('APP_SETTINGS'))
-    else:
-        app.config.from_object(app_config[test_config])
-        # LOG.info('running environment: %s', test_config)
-
-    mongo.init_app(app)
-    app.json_encoder = JSONEncoder
-
-    from .views import index, errors
-    app.register_blueprint(index.index_bp)
-    app.add_url_rule('/', endpoint='index')
-    app.register_error_handler(404, errors.page_not_found)
-
+def register_controllers(app):
     from .controllers import ingredients, recipes, tags, \
         tips, users, admin, utils
     api_prefix = '/api'
@@ -61,6 +41,27 @@ def create_app(test_config=None):
     app.register_blueprint(users.users_bp, url_prefix=api_prefix)
     app.register_blueprint(admin.admin_bp, url_prefix=api_prefix)
     app.register_blueprint(utils.utils_bp, url_prefix=api_prefix)
+
+
+def create_app(test_config=None):
+    app = Flask(__name__, instance_relative_config=True,
+                static_folder='frontend/dist', template_folder='frontend/dist')
+
+    if test_config is None:
+        app.config.from_object(app_config[os.getenv('APP_SETTINGS')])
+        LOG.info('running environment: %s', os.environ.get('APP_SETTINGS'))
+    else:
+        app.config.from_object(app_config[test_config])
+
+    mongo.init_app(app)
+    app.json_encoder = JSONEncoder
+
+    from .views import index, errors
+    app.register_blueprint(index.index_bp)
+    app.add_url_rule('/', endpoint='index')
+    app.register_error_handler(404, errors.page_not_found)
+
+    register_controllers(app)
 
     csrf = CSRFProtect(app)
     Session(app)

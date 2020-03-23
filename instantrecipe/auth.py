@@ -10,6 +10,7 @@ from instantrecipe import mongo
 import logger
 
 
+NOT_AUTHORIZED_TEXT = 'Вы не авторизованы'
 ROOT_PATH = os.environ.get('ROOT_PATH')
 LOG = logger.get_root_logger(
     __name__, filename=os.path.join(ROOT_PATH, 'output.log'))
@@ -21,32 +22,36 @@ class User:
 
     def __init__(self, name='default', email='default', password='default',
                  confirmed=False, confirmed_on=None, admin=False):
-        self.user = {}
-        self.user['name'] = name
-        self.user['name_lower'] = name.lower()
-        self.user['email'] = email.lower()
-        self.user['confirmed'] = confirmed
-        self.user['confirmed_on'] = confirmed_on
-        self.user['password_hash'] = self.hash_password(password)
-        self.user['registered_on'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.user['upload_recipes'] = []
-        self.user['upload_images'] = []
-        self.user['favorite_recipes'] = []
-        self.user['liked_recipes'] = []
-        self.user['admin'] = admin
+        self.user = {
+            name: name,
+            name_lower: name.lower(),
+            email: email.lower(),
+            confirmed: confirmed,
+            confirmed_on: confirmed_on,
+            password_hash: self.hash_password(password),
+            registered_on: datetime.datetime.now().strftime(
+                '%Y-%m-%d %H:%M:%S'),
+            upload_recipes: [],
+            upload_images: [],
+            favorite_recipes: [],
+            liked_recipes: [],
+            admin: admin,
+        }
         self.id = None
 
     def verify_password(self, password):
         hash = self.user.get('password_hash')
-        if hash:
-            return pbkdf2_sha256.verify(password, hash)
-        return False
+        if hash is None:
+            return False
+
+        return pbkdf2_sha256.verify(password, hash)
 
     def save_to_db(self):
-        if self.user['password_hash']:
-            self.id = mongo.db.users.insert_one(self.user).inserted_id
-            return True
-        return False
+        if self.user.get('password_hash') is None:
+            return False
+
+        self.id = mongo.db.users.insert_one(self.user).inserted_id
+        return True
 
     def get(self):
         return self.user
@@ -58,10 +63,10 @@ class User:
         self.user = user
 
     def set_from_db_by_email(self, email):
-        email = email.lower()
-        result = mongo.db.users.find_one({'email': email})
+        result = mongo.db.users.find_one({'email': email.lower()})
         if not result:
             return False
+
         self.user = result
         self.id = result.get('_id')
         return True
@@ -76,19 +81,19 @@ class User:
         return s.dumps({'id': str(self.id)})
 
     def verify_auth_token(self, token):
-        s = Serializer(os.getenv('SECRET_KEY'))
         try:
-            data = s.loads(token)
+            data = Serializer(os.getenv('SECRET_KEY')).loads(token)
         except SignatureExpired:
             return None    # valid token, but expired
         except BadSignature:
             return None    # invalid token
+
         result = mongo.db.users.find_one({'_id': ObjectId(data['id'])})
-        if result:
-            self.user = result
-            self.id = result.get('_id')
-            return True
-        return False
+        if result is None:
+            return False
+        self.user = result
+        self.id = result.get('_id')
+        return True
 
     @staticmethod
     def find_by_email(email):
@@ -108,7 +113,7 @@ def confirm_required(func):
     def wrapper_confirm_required(*args, **kwargs):
         if session.get('user', None) is None:
             return jsonify({'result': 'error',
-                            'message': 'Вы не авторизованы'}), 403
+                            'message': NOT_AUTHORIZED_TEXT}), 403
         else:
             if not session.get('user', None).get()['confirmed']:
                 return jsonify({
@@ -123,7 +128,7 @@ def login_required(func):
     def wrapper_login_required(*args, **kwargs):
         if session.get('user', None) is None:
             return jsonify({'result': 'error',
-                            'message': 'Вы не авторизованы'}), 403
+                            'message': NOT_AUTHORIZED_TEXT}), 403
         return func(*args, **kwargs)
     return wrapper_login_required
 
@@ -133,47 +138,45 @@ def admin_required(func):
     def wrapper_admin_required(*args, **kwargs):
         if session.get('user', None) is None:
             return jsonify({'result': 'error',
-                            'message': 'Вы не авторизованы'}), 403
-        if session['user'].get()['admin'] is True:
-            return func(*args, **kwargs)
-        return jsonify({
-            'result': 'error',
-            'message:':
-                'Для данного действия требуются права администратора'}), 400
+                            'message': NOT_AUTHORIZED_TEXT}), 403
+        if session['user'].get()['admin'] is False:
+            return jsonify({
+                'result': 'error',
+                'message:': 'Для данного действия требуются \
+                    права администратора'}), 400
+        return func(*args, **kwargs)
     return wrapper_admin_required
 
 
+def generate_token(salt):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=salt)
+
+
 def generate_confirmation_token(email):
-    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    return serializer.dumps(email, salt=current_app.config['CONFIRM_SALT'])
-
-
-def confirm_confirmation_token(token, expiration=3600):
-    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    try:
-        email = serializer.loads(
-            token,
-            salt=current_app.config['CONFIRM_SALT'],
-            max_age=expiration
-        )
-    except Exception:
-        return False
-    return email
+    generate_token(current_app.config['CONFIRM_SALT'])
 
 
 def generate_restoration_token(email):
-    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    return serializer.dumps(email, salt=current_app.config['RESTORE_SALT'])
+    generate_token(current_app.config['RESTORE_SALT'])
 
 
-def confirm_restoration_token(token, expiration=3600):
+def confirm_token(salt):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
         email = serializer.loads(
             token,
-            salt=current_app.config['RESTORE_SALT'],
+            salt=salt,
             max_age=expiration
         )
     except Exception:
         return False
     return email
+
+
+def confirm_confirmation_token(token, expiration=3600):
+    return confirm_token(current_app.config['CONFIRM_SALT'])
+
+
+def confirm_restoration_token(token, expiration=3600):
+    return confirm_token(current_app.config['RESTORE_SALT'])
