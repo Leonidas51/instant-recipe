@@ -24,14 +24,18 @@ function Recipe(props) {
   }
 
   return (
-    <div className="recipe">
-      <div className="recipe__pic-container">
-        <Link
-          to={ encodeURI(`/recipe/details/${rec._id}`) }
-        >
-        <img className="recipe__pic" src={`/images/recipes/dist/${rec._id}/`} />
-        </Link>
-      </div>
+    <div className={rec.has_image ? "recipe" : "recipe recipe_no-pic"}>
+      {
+        rec.has_image
+        ? (<div className="recipe__pic-container">
+            <Link
+              to={ encodeURI(`/recipe/details/${rec._id}`) }
+            >
+            <img className="recipe__pic" src={`/images/recipes/dist/${rec._id}/`} />
+            </Link>
+          </div>)
+        : null
+      }
       <div className="recipe__information">
         <Link
           to={ encodeURI(`/recipe/details/${rec._id}`) }
@@ -43,41 +47,39 @@ function Recipe(props) {
         <div className="recipe__description">
           {
             rec.instructions_source.length > 125 ?
-              rec.instructions_source.slice(0, 125) + '...' :
-              rec.instructions_source
+              rec.instructions_source.slice(0, 125) + '... ' :
+              rec.instructions_source + ' '
           }
-          <div>
-            <Link
+          <Link
             to={ encodeURI(`/recipe/details/${rec._id}`) }
             className="recipe__show-more"
             >
               Открыть страницу рецепта
-            </Link>
-          </div>
+          </Link>
         </div>
 
         {
           props.need_match ?
-          <div className="recipe__ings">
-            <IngredientsTooltip rec={ rec } items={props.search_items} need_match={props.need_match} />
-          </div>
-          : null
+              (<div className="meter">
+                <div className="meter__title">Совпадение:</div>
+                <div className="meter__container">
+                  <div className="meter__fill" style={{width: fill + '%','backgroundColor': meter_color}}></div>
+                  <div className="meter__value">{fill + '%'}</div>
+                </div>
+              </div>)
+            : null
         }
 
         <div className="recipe__misc">
           
           {
             props.need_match ?
-              <div className="meter">
-                <div className="meter__title">Совпадение:</div>
-                <div className="meter__container">
-                  <div className="meter__fill" style={{width: fill + '%','backgroundColor': meter_color}}></div>
-                  <div className="meter__value">{fill + '%'}</div>
-                </div>
-              </div>
-              : <div className="recipe__ings">
+                (<div className="recipe__ings">
+                  <IngredientsTooltip rec={ rec } items={props.search_items} need_match={props.need_match} />
+                </div>)
+              : (<div className="recipe__ings">
                   <IngredientsTooltip rec={ rec } need_match={props.need_match} />
-                </div>
+                </div>)
           }
 
           <div className="recipe__time">

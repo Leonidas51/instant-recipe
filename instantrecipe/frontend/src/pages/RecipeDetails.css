@@ -190,9 +190,12 @@
 }
 
 .recipe-instructions__list {
-  display: inline;
   font-size: 18px;
   line-height: 24px;
+}
+
+.recipe-instructions__list:not(:first-child) {
+  min-height: 215px;
 }
 
 .recipe-instructions__step {

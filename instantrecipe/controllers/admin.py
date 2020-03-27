@@ -118,9 +118,14 @@ def accept_image():
         os.rename(os.path.join(image_directory, image['path']),
                   os.path.join(save_directory, filename))
         make_thumbnail(os.path.join(save_directory, filename))
+
         mongo.db.upload_images.update_one(
             {u'_id': ObjectId(request.json.get('image_id'))},
             {u'$set': {'published': True}}
+        )
+        mongo.db.recipes.update_one(
+            {u'_id': ObjectId(image['recipe_id'])},
+            {u'$set': {'has_image': True}}
         )
         return jsonify(data='success!'), 200
     except Exception as e:
@@ -201,7 +206,7 @@ def remove_image(recipe_id, path):
     if os.path.isdir(path):
         shutil.rmtree(path)
     mongo.db.upload_images.remove({
-        u'recipe_id': ObjectId(recipe_id)
+        u'recipe_id': recipe_id
     })
 
 
