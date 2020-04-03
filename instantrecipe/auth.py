@@ -148,20 +148,20 @@ def admin_required(func):
     return wrapper_admin_required
 
 
-def generate_token(salt):
+def generate_token(salt, email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     return serializer.dumps(email, salt=salt)
 
 
 def generate_confirmation_token(email):
-    generate_token(current_app.config['CONFIRM_SALT'])
+    return generate_token(current_app.config['CONFIRM_SALT'], email)
 
 
 def generate_restoration_token(email):
-    generate_token(current_app.config['RESTORE_SALT'])
+    return generate_token(current_app.config['RESTORE_SALT'], email)
 
 
-def confirm_token(salt):
+def confirm_token(salt, token, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
         email = serializer.loads(
@@ -175,8 +175,8 @@ def confirm_token(salt):
 
 
 def confirm_confirmation_token(token, expiration=3600):
-    return confirm_token(current_app.config['CONFIRM_SALT'])
+    return confirm_token(current_app.config['CONFIRM_SALT'], token)
 
 
 def confirm_restoration_token(token, expiration=3600):
-    return confirm_token(current_app.config['RESTORE_SALT'])
+    return confirm_token(current_app.config['RESTORE_SALT'], token)

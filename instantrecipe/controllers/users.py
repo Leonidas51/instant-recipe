@@ -193,6 +193,7 @@ def is_logged_in():
     if 'user' in session:
         return jsonify({'result': 'success',
                         'username': session['user'].get()['name'],
+                        'user_id': session['user'].get_id(),
                         'admin': session['user'].get()['admin']}), 200
     return jsonify({'result': 'error',
                     'message:': 'Данный пользователь не осуществлял \
@@ -247,7 +248,7 @@ def redirect_restore_password(token):
 def restore_password_with_token(token):
     try:
         email = confirm_restoration_token(token)
-
+        LOG.info(email)
         if email:
             session['email_reset'] = email
             return jsonify({'result': 'success'}), 200
@@ -290,5 +291,99 @@ def restore_password_new_password():
     except Exception as e:
         LOG.error(
             'error while trying to restore_password_new_password: ' + str(e))
+        return jsonify({'result': 'error',
+                        'message:': SERVER_ERROR}), 400
+
+
+@users_bp.route('/user/read_user_info/<string:user_id>/', methods=['GET'])
+def read_user_info(user_id):
+    if request.method != 'GET':
+        return
+    try:
+        if not ObjectId.is_valid(user_id):
+            return jsonify({'result': 'error',
+                            'message': 'Пользователь не найден'}), 204
+
+        user_db = mongo.db.users.find_one({u'_id': ObjectId(user_id)})
+        if not user_db:
+            return jsonify({'result': 'error',
+                            'message': 'Пользователь не найден'}), 204
+
+        user = {
+            'name': user_db['name'],
+            'favorite_recipes': user_db['favorite_recipes'],
+            'liked_recipes': user_db['liked_recipes'],
+            'upload_images': user_db['upload_images'],
+            'upload_recipes': user_db['upload_recipes'],
+            'confirmed': user_db['confirmed']
+        }
+
+        if 'user' in session:
+            if session['user'].get_id() == user_db['_id']:
+                user['email'] = user_db['email']
+                user['is_owner'] = True
+            else:
+                user['is_owner'] = False
+
+        return jsonify({'user': user})
+    except Exception as e:
+        LOG.error('error while trying to read_user_info: ' + str(e))
+        return jsonify({'result': 'error',
+                        'message': SERVER_ERROR}), 400
+
+
+@users_bp.route('/user/change_user_name/', methods=['POST'])
+@login_required
+def change_user_name():
+    if request.method != 'POST':
+        return
+    try:
+        new_name = request.json.get('new_name')
+
+        if not validate_username(new_name):
+            return jsonify({'result': 'error',
+                            'message': 'Имя содержит недопустимые \
+                            символы'}), 400
+
+        if User.find_by_name(new_name):
+            return jsonify({'result': 'error',
+                            'message': 'Пользователь с таким именем \
+                                уже зарегистрирован!'}), 400
+
+        now = datetime.datetime.now()
+        if session['user'].get()['last_name_change']:
+            last = datetime.datetime.strptime(
+                session['user'].get()['last_name_change'], '%Y-%m-%d'
+            ).date()
+            if (now.date() - last).days < 30:
+                return jsonify({'result': 'error',
+                                'message': 'С прошлой смены прошло \
+                                недостаточно времени'}), 400
+
+        session['user'].update(
+            {
+                'name': new_name,
+                'name_lower': new_name.lower(),
+                'last_name_change': now.strftime('%Y-%m-%d'),
+            }
+        )
+        session['user'].set_from_db_by_email(session['user'].get()['email'])
+        return jsonify({'result': 'success'}), 200
+    except Exception as e:
+        LOG.error('error while trying to change_user_name: ' + str(e))
+        return jsonify({'result': 'error',
+                        'message': SERVER_ERROR}), 400
+
+
+@users_bp.route('/user/change_password/', methods=['POST'])
+def change_password():
+    if request.method != 'POST':
+        return
+    try:
+        send_restore_password_email(session['user'].get()['email'])
+        return jsonify({'result': 'success'}), 200
+    except Exception as e:
+        LOG.error(
+            'error while trying to change_password: ' + str(e))
         return jsonify({'result': 'error',
                         'message:': SERVER_ERROR}), 400

@@ -55,6 +55,20 @@ body {
 
 }
 
+.button-generic {
+  display: inline-block;
+  background-color: #FCBC5D;
+  color: #1E2734;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 35px;
+  line-height: 35px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
 .button-confirm {
   display: inline-block;
   background-color: #4EC44B;
@@ -62,6 +76,7 @@ body {
   padding-right: 10px;
   height: 35px;
   line-height: 35px;
+  border: none;
   border-radius: 5px;
   font-weight: 700;
   text-align: center;

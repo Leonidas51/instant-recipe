@@ -71,7 +71,7 @@ class Header extends React.Component {
               this.props.isLoggedIn
                 ? <React.Fragment>
                     <Link className="header__link" to="/suggest_recipe">Предложить рецепт</Link>
-                    <Link className="header__link" to="/profile">{this.props.username}</Link>
+                    <Link className="header__link" to={`/profile/${this.props.userId}`}>{this.props.username}</Link>
                     <Link to="/" className="header__link" onClick={this.props.logout}>Выйти</Link>
                   </React.Fragment>
                 : <React.Fragment>

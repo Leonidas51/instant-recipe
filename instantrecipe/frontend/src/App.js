@@ -35,6 +35,7 @@ class App extends React.Component {
       is_logged_in: false,
       is_admin: false,
       username: '',
+      user_id: '',
       auth_modal_open: false,
     }
 
@@ -69,7 +70,8 @@ class App extends React.Component {
                 this.setState({
                   is_logged_in: true,
                   is_admin: result.admin,
-                  username: result.username
+                  username: result.username,
+                  user_id: result.user_id
                 })
               })
           }
@@ -158,6 +160,7 @@ class App extends React.Component {
               isLoggedIn={this.state.is_logged_in}
               isAdmin={this.state.is_admin}
               username={this.state.username}
+              userId={this.state.user_id}
               logout={this.logout}
               openAuth={this.open_auth_modal}
             />
@@ -170,9 +173,9 @@ class App extends React.Component {
                     <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} is_admin={this.state.is_admin} openAuth={this.open_auth_modal}/>)} />
                     <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />
                     <Route path="/user/confirm/:token" render={() => (<UserConfirm cookies={this.props.cookies}/>)} />
-                    <Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />
+                    {/*<Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />*/}
                     <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
-                    <Route path="/profile" render={() => (<Profile cookies={this.props.cookies} />)} />
+                    <Route path="/profile/:user_id" render={() => (<Profile cookies={this.props.cookies} />)} />
                     <Route path="/suggest_recipe" render={() => (<SuggestRecipe cookies={this.props.cookies} />)} />
                     <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
                     <Route exact path="/admin" render={() => (this.state.is_admin ? <AdminPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />

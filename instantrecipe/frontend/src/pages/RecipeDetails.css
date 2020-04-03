@@ -289,9 +289,11 @@
 
 .recipe-interaction__button:hover .recipe-interaction__tooltip-wrap {
   opacity: 1;
+  visibility: visible;
 }
 
 .recipe-interaction__tooltip-wrap {
+  visibility: hidden;
   opacity: 0;
   position: absolute;
   top: 40px;
@@ -299,7 +301,7 @@
   height: 40px;
   cursor: initial;
   white-space: nowrap;
-  transition: 0.1s;
+  transition: opacity 0.1s;
 }
 
 .recipe-interaction__tooltip {

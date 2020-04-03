@@ -30,7 +30,7 @@ def send_verification_email(email):
         html = '<h1>Для подтверждения перейдите по ссылке:</h1><br />' + \
                '<a href="{}">{}</a>'.format(
                     confirm_url, confirm_url)
-        subject = 'Подтверждение e-mail'
+        subject = 'InstantRecipe.ru - Подтверждение e-mail'
         send_email(email, subject, html)
     except Exception as e:
         LOG.error('error while trying to send_verification_email: ' + str(e))
@@ -41,10 +41,10 @@ def send_restore_password_email(email):
         email_token = generate_restoration_token(email)
         restore_url = url_for('users.redirect_restore_password',
                               token=email_token, _external=True)
-        html = '<h1>Для восстановления пароля перейдите по ссылке: \
+        html = '<h1>Для изменения пароля перейдите по ссылке: \
                 </h1><br /><a href="{}">{}</a>'.format(
                     restore_url, restore_url)
-        subject = 'Восстановление пароля'
+        subject = 'InstantRecipe.ru - Изменение пароля'
         send_email(email, subject, html)
     except Exception as e:
         LOG.error(

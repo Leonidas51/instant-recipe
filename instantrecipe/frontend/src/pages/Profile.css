@@ -1,0 +1,64 @@
+.user-main {
+  position: relative;
+  background-color: #1E2734;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.user-main__username {
+  text-align: center;
+  font-size: 36px;
+}
+
+.user-main__email {
+  margin: 10px auto;
+  text-align: center;
+}
+
+.user-main__unconfirmed {
+  margin-bottom: 10px;
+}
+
+.user-main__unconfirmed-warning {
+  color: #E73A23;
+}
+
+.user-main__open-settings-btn {
+  position: absolute;
+  font-size: 14px;
+  right: 10px;
+  bottom: 10px;
+  cursor: pointer;
+}
+
+.user-main__settings-btns > *:not(:first-child) {
+  margin-left: 20px;
+}
+
+.changename__text, .changepass__text {
+  margin-bottom: 10px;
+}
+
+.changename__error, .changepass__error {
+  margin-bottom: 10px;
+  color: #E73A23;
+}
+
+.changename__form {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media screen and (max-width:768px) {
+  .content-area_profile {
+    margin-top: 60px;
+  }
+
+  .user-main {
+    padding-bottom: 30px;
+  }
+
+  .user-main__open-settings-btn {
+    font-size: 12px;
+  }
+}
