@@ -100,7 +100,8 @@ def remove_unpublished():
 def standartize_recipes_ings():
     try:
         recipes_with_skipped_ings = []
-        for recipe in mongo.db.recipes.find({}):
+        recipes = list(mongo.db.recipes.find({}))
+        for recipe in recipes:
             new_ings_mandatory = []
             new_ings_optional = []
             ings_mandatory = recipe['ingredient_names']['mandatory']
@@ -135,7 +136,7 @@ def standartize_recipes_ings():
                   u'ings_optional': new_ings_optional
               }}
             )
-            return jsonify(result='success'), 200
+        return jsonify(result='success'), 200
     except Exception as e:
         LOG.error('error while trying to standartize_recipes_ings: ' + str(e))
         LOG.info(recipe['_id'])

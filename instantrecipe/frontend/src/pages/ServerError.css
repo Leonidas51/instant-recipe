@@ -1,5 +1,6 @@
 .content-area_not-found {
   width: 850px;
+  max-width: 95%;
   margin: 80px auto 20px auto;
   color: #F9F6F6;
 }

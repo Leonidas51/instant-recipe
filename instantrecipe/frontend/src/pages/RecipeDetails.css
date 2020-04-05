@@ -1,5 +1,5 @@
 .content-area_recipe-details {
-  margin-top: 65px;
+  margin-top: 80px;
 }
 
 .recipe-top-container {
@@ -200,7 +200,7 @@
 
 .recipe-instructions__step {
   margin-top: 2.5px;
-  margin-bottom: 2.5px;
+  margin-bottom: 15px;
 }
 
 .recipe-source {
