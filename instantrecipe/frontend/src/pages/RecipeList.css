@@ -61,7 +61,7 @@
 
 .recipe__description {
   margin-top: 10px;  
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   flex-grow: 1;
   font-size: 17px;
   line-height: 22px;
@@ -83,6 +83,7 @@
 
 .recipe__misc {
   display: flex;
+  margin-top: 5px;
 }
 
 .recipe__time {
