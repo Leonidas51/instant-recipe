@@ -53,6 +53,72 @@
   justify-content: space-between;
 }
 
+.user-lists__menu {
+  margin-top: 30px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #fff;
+}
+
+.user-lists__menu-btn {
+  width: 20%;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.user-lists__menu-btn_active {
+  background-color: rgba(30, 39, 52, 0.5);
+}
+
+.user-lists__list {
+  margin-bottom: 15px;
+}
+
+.user-lists__error {
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.user-lists__recipe-single {
+
+}
+
+.user-lists__recipe-single:not(:last-child) {
+  border-bottom: 1px solid rgba(196, 196, 196, 0.5);
+}
+
+.user-lists__recipe-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.user-lists__recipe-name {
+  flex-grow: 1;
+}
+
+.user-lists__recipe-link {
+  color: inherit;
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.user-lists__recipe-remove {
+  margin-left: 10px;
+}
+
 @media screen and (max-width:768px) {
   .content-area_profile {
     margin-top: 60px;
@@ -65,4 +131,22 @@
   .user-main__open-settings-btn {
     font-size: 12px;
   }
+
+  .user-lists__menu {
+    flex-wrap: wrap;
+    padding-bottom: 3px;
+  }
+
+  .user-lists__menu-btn {
+    width: 45%;
+    border-radius: 10px;
+  }
+
+  .user-lists__recipe-link {
+    font-size: 20px;
+  }
+}
+
+@media screen and (max-width:600px) {
+
 }

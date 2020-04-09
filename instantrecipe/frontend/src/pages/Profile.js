@@ -13,6 +13,11 @@ class Profile extends React.Component {
     this.state = {
       user: null,
       error: '',
+      list_active: 'pub', /* fav/like/pub/photo */
+      list_favorites: [],
+      list_liked: [],
+      list_upload: [],
+      list_photos: [],
       show_settings: false,
       namechange_modal_open: false,
       passchange_modal_open: false,
@@ -30,6 +35,9 @@ class Profile extends React.Component {
 
     this.onSettingsBtnClick = this.onSettingsBtnClick.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
+    this.onMenuBtnClick = this.onMenuBtnClick.bind(this);
+    this.onRemoveFavClick = this.onRemoveFavClick.bind(this);
+    this.onDeleteOwnRecipeClick = this.onDeleteOwnRecipeClick.bind(this);
     this.onNameChangeOpenClick = this.onNameChangeOpenClick.bind(this);
     this.onNameChangeModalClose = this.onNameChangeModalClose.bind(this);
     this.onNameChangeSubmit = this.onNameChangeSubmit.bind(this); 
@@ -40,7 +48,8 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchUser(this.props.match.params.user_id);
+    this.fetchUser();
+
     this.ChangeNameModal = Modal(
       ChangeNameModalBody,
       this.onNameChangeModalClose
@@ -54,12 +63,12 @@ class Profile extends React.Component {
 
   componentDidUpdate(prevProps) {
     if(this.props.is_logged_in !== prevProps.is_logged_in) {
-      this.fetchUser(this.props.match.params.user_id);
+      this.fetchUser();
     }
   }
 
-  fetchUser(id) {
-    fetch(`/api/user/read_user_info/${id}/`)
+  fetchUser() {
+    fetch(`/api/user/read_user_info/${this.props.match.params.user_id}/`)
       .then(response => {
         if(response.status === 200) {
           response.json()
@@ -78,6 +87,49 @@ class Profile extends React.Component {
     this.setState({
       [e.target.name]: e.target.value
     })
+  }
+
+  onMenuBtnClick(e) {
+    this.setState({
+      list_active: e.target.dataset.name
+    })
+  }
+
+  onRemoveFavClick(e) {
+    if(confirm('Вы уверены?')) {
+      fetch(`/api/recipe/remove_from_favorites/${e.target.dataset.recipe_id}`)
+        .then(response => {
+          if(response.status !== 200) {
+            alert('Произошла ошибка сервера. Пожалуйста, попробуйте позже.')
+          }
+
+          this.fetchUser();
+        })
+    }
+  }
+
+  onDeleteOwnRecipeClick(e) {
+    const recipe_id = e.target.dataset.recipe_id
+
+    if(confirm('Вы уверены?')) {
+      get_csrf().then(csrf => {
+        fetch('/api/recipe/delete_own_recipe', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': csrf,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({recipe_id: recipe_id})
+        })
+          .then(response => {
+            if(response.status !== 200) {
+              alert('Произошла ошибка сервера. Пожалуйста, попробуйте позже.')
+            }
+
+            this.fetchUser();
+          })
+      })
+    }
   }
 
   onSettingsBtnClick(e) {
@@ -227,9 +279,71 @@ class Profile extends React.Component {
       )
     }
 
-    const user = this.state.user;
+    const {user, list_active} = this.state;
+    let list, list_error;
+
     const ChangeNameModal = this.ChangeNameModal;
     const ChangePassModal = this.ChangePassModal;
+
+    switch(list_active) {
+      case 'fav':
+        list = user.favorite_recipes.map(recipe => {
+          return (
+            <div className="user-lists__recipe-single" key={recipe.id}>
+              <div className="user-lists__recipe-container">
+                <div className="user-lists__recipe-name">
+                  <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+                </div>
+                {/*user.is_owner
+                  ? <div className="user-lists__recipe-remove button-reject" data-recipe_id={recipe.id} onClick={this.onRemoveFavClick}>Удалить из избранного</div>
+                  : null
+                */}
+              </div>
+            </div>
+          )
+        })
+        break;
+      case 'like':
+        list = user.liked_recipes.map(recipe => {
+          return (
+            <div className="user-lists__recipe-single" key={recipe.id}>
+              <div className="user-lists__recipe-container">
+                <div className="user-lists__recipe-name">
+                  <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+                </div>
+                {/*user.is_owner
+                  ? <div className="user-lists__recipe-remove button-reject">Удалить из понравившегося</div>
+                  : null
+                */}
+              </div>
+            </div>
+          )
+        })
+        break;
+      case 'pub':
+        list = user.upload_recipes.map(recipe => {
+          return (
+            <div className="user-lists__recipe-single" key={recipe.id}>
+              <div className="user-lists__recipe-container">
+                <div className="user-lists__recipe-name">
+                  <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+                </div>
+                {user.is_owner
+                  ? <div className="user-lists__recipe-remove button-reject" data-recipe_id={recipe.id} onClick={this.onDeleteOwnRecipeClick}>Удалить рецепт</div>
+                  : null
+                }
+              </div>
+            </div>
+          )
+        })
+        break;      
+    }
+
+    if(this.state.list_error) {
+      list_error = this.state.list_error;
+    } else if(!list || !list.length) {
+      list_error = 'Здесь пока ничего нет!';
+    }
 
     return (
       <React.Fragment>
@@ -284,10 +398,55 @@ class Profile extends React.Component {
               : null
             }
           </div>
+          <div className="user-lists">
+            <div className="user-lists__menu">
+              <MenuButton name="fav" active={list_active} onClick={this.onMenuBtnClick} />
+              <MenuButton name="like" active={list_active} onClick={this.onMenuBtnClick} />
+              <MenuButton name="pub" active={list_active} onClick={this.onMenuBtnClick} />
+              <MenuButton name="photo" active={list_active} onClick={this.onMenuBtnClick} />
+            </div>
+            <div className="user-lists__list">
+              {
+                this.state.list_loading
+                ? <Loader />
+                : (
+                    <React.Fragment>
+                      {
+                        list_error
+                        ? (<div className="user-lists__error">
+                            {list_error}
+                          </div>)
+                        : list
+                      }
+                    </React.Fragment>
+                  )
+              }
+            </div>
+          </div>
         </div>
       </React.Fragment>
     )
   }
+}
+
+function MenuButton(props) {
+  const btn_names = {
+    fav: 'Избранное',
+    like: 'Понравившееся',
+    pub: 'Опубликованное',
+    photo: 'Фото'
+  }
+
+  return(
+    <div
+      className={props.name === props.active ? 'user-lists__menu-btn user-lists__menu-btn_active' : 'user-lists__menu-btn'}
+      data-name={props.name}
+      onClick={props.onClick}
+    >
+      {btn_names[props.name]}
+    </div>
+  )
+
 }
 
 function ChangeNameModalBody(props) {

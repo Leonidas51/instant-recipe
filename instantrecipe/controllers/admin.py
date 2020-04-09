@@ -206,7 +206,7 @@ def remove_image(recipe_id, path):
     if os.path.isdir(path):
         shutil.rmtree(path)
     mongo.db.upload_images.remove({
-        u'recipe_id': recipe_id
+        u'recipe_id': ObjectId(recipe_id)
     })
 
 
@@ -226,7 +226,7 @@ def delete_recipe():
         try:
             recipe_id = request.json.get('recipe_id')
             mongo.db.recipes.remove({u'_id': ObjectId(recipe_id)})
-            remove_image_from_dist_and_upload(recipe_id)
+            remove_image_from_dist_and_upload(str(recipe_id))
 
             return jsonify(data='success!'), 200
         except Exception as e:

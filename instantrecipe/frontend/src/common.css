@@ -84,6 +84,19 @@ body {
   cursor: pointer;
 }
 
+.button-reject {
+  display: inline-block;
+  background-color: #DC622D;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 35px;
+  line-height: 35px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 768px) {
   .content-area {
     width: 95%;

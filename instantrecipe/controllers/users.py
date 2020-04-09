@@ -311,10 +311,10 @@ def read_user_info(user_id):
 
         user = {
             'name': user_db['name'],
-            'favorite_recipes': user_db['favorite_recipes'],
-            'liked_recipes': user_db['liked_recipes'],
+            'favorite_recipes': read_user_favorites(user_db),
+            'liked_recipes': read_user_liked(user_db),
+            'upload_recipes': read_user_published(user_db),
             'upload_images': user_db['upload_images'],
-            'upload_recipes': user_db['upload_recipes'],
             'confirmed': user_db['confirmed']
         }
 
@@ -330,6 +330,65 @@ def read_user_info(user_id):
         LOG.error('error while trying to read_user_info: ' + str(e))
         return jsonify({'result': 'error',
                         'message': SERVER_ERROR}), 400
+
+
+def read_user_favorites(user):
+    try:
+        favorites = []
+        for recipe_id in user['favorite_recipes']:
+            recipe_db = mongo.db.recipes.find_one({'_id': ObjectId(recipe_id)})
+
+            if not recipe_db or not recipe_db['published']:
+                continue
+
+            favorites.append({
+                'id': recipe_id,
+                'name': recipe_db['name']
+            })
+        return favorites
+    except Exception as e:
+        LOG.error('error while trying to read_user_favorites: ' + str(e))
+        return []
+
+
+def read_user_liked(user):
+    try:
+        liked = []
+        for recipe_id in user['liked_recipes']:
+            recipe_db = mongo.db.recipes.find_one({'_id': ObjectId(recipe_id)})
+
+            if not recipe_db or not recipe_db['published']:
+                continue
+
+            liked.append({
+                'id': recipe_id,
+                'name': recipe_db['name']
+            })
+        return liked
+    except Exception as e:
+        LOG.error('error while trying to read_user_liked: ' + str(e))
+        return []
+
+
+def read_user_published(user):
+    try:
+        published = []
+        for recipe_id in user['upload_recipes']:
+            recipe_db = mongo.db.recipes.find_one({
+                '_id': ObjectId(recipe_id)
+            })
+
+            if not recipe_db or not recipe_db['published']:
+                continue
+
+            published.append({
+                'id': recipe_id,
+                'name': recipe_db['name']
+            })
+        return published
+    except Exception as e:
+        LOG.error('error while trying to read_user_published: ' + str(e))
+        return []
 
 
 @users_bp.route('/user/change_user_name/', methods=['POST'])

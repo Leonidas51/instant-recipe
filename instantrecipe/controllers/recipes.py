@@ -1,7 +1,7 @@
 import os
 import re
 import json
-from shutil import copyfile
+import shutil
 from bson.objectid import ObjectId
 from flask import request, jsonify, Blueprint, current_app, session
 from werkzeug.utils import secure_filename
@@ -495,12 +495,24 @@ def suggest_recipe():
             recipe['author_id'] = session['user'].get_id()
             recipe['published'] = False
             recipe['featured'] = False
+            recipe['liked_by'] = []
             recipe['pending'] = True
+
+            if 'photo' in request.files:
+                recipe['has_image'] = True
 
             recipe_id = mongo.db.recipes.insert_one(recipe).inserted_id
 
             if 'photo' in request.files:
                 save_recipe_photo(request.files['photo'], recipe_id, False)
+
+            user_update_data = {}
+            user = session['user']
+            user_id = user.get_id()
+            user_update_data['upload_recipes'] = user.get()['upload_recipes']
+            user_update_data['upload_recipes'].append(recipe_id)
+            user.update(user_update_data)
+            user.set_from_db_by_email(user.get()['email'])
 
             return jsonify(data='success!'), 200
         except Exception as e:
@@ -608,4 +620,53 @@ def remove_from_liked(recipe_id):
         return jsonify(data='success!'), 200
     except Exception as e:
         LOG.error('error while trying to remove_from_liked: ' + str(e))
+        return jsonify(error=SERVER_ERROR_TEXT), 500
+
+
+def remove_image(recipe_id, path):
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    mongo.db.upload_images.remove({
+        u'recipe_id': ObjectId(recipe_id)
+    })
+
+
+def remove_image_from_dist_and_upload(recipe_id):
+    LOG.info(recipe_id)
+    LOG.info(ObjectId(recipe_id))
+    upload_id_dir = os.path.join(
+        current_app.config['PHOTOS_UPLOAD_FOLDER'], recipe_id)
+    remove_image(recipe_id, upload_id_dir)
+    dist_id_dir = os.path.join(
+        current_app.config['PHOTOS_DIST_FOLDER'], recipe_id)
+    remove_image(recipe_id, dist_id_dir)
+
+
+@recipes_bp.route('/recipe/delete_own_recipe', methods=['POST'])
+@login_required
+def delete_own_recipe():
+    if request.method != 'POST':
+        return
+
+    try:
+        recipe_id = ObjectId(request.json.get('recipe_id'))
+        user = session['user']
+        if recipe_id in user.get()['upload_recipes']:
+            user_uploads = user.get()['upload_recipes']
+            LOG.info(len(user_uploads))
+            user_uploads.remove(recipe_id)
+            LOG.info(len(user_uploads))
+            user_update_data = {
+                'upload_recipes': user_uploads
+            }
+            mongo.db.recipes.remove({u'_id': recipe_id})
+            remove_image_from_dist_and_upload(str(recipe_id))
+            user.update(user_update_data)
+            user.set_from_db_by_email(user.get()['email'])
+
+            return jsonify({'data': 'success!'}), 200
+
+        return jsonify({'result': 'Доступ запрещен'}), 400
+    except Exception as e:
+        LOG.error('error while trying to delete_own_recipe: ' + str(e))
         return jsonify(error=SERVER_ERROR_TEXT), 500
