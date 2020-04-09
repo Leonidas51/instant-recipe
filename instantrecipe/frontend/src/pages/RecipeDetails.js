@@ -458,13 +458,13 @@ class RecipeDetails extends React.Component {
             </div>
         </div>
         </div>
-        <div className="comment-section">
+        {/*<div className="comment-section">
           <div className="section-title">
             Комментарии
             <div className="comment-section__content">
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
       {this.state.modal_upload_photo_open ? <UploadModal recipe_id={this.state.recipe._id} cookies={this.props.cookies} /> : null}
       </React.Fragment>
