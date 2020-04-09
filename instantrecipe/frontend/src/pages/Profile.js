@@ -52,6 +52,12 @@ class Profile extends React.Component {
     )
   }
 
+  componentDidUpdate(prevProps) {
+    if(this.props.is_logged_in !== prevProps.is_logged_in) {
+      this.fetchUser(this.props.match.params.user_id);
+    }
+  }
+
   fetchUser(id) {
     fetch(`/api/user/read_user_info/${id}/`)
       .then(response => {

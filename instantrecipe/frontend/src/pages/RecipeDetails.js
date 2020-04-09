@@ -51,6 +51,12 @@ class RecipeDetails extends React.Component {
     this.fetchRecipeUserData();
   }
 
+  componentDidUpdate(prevProps) {
+    if(this.props.is_logged_in !== prevProps.is_logged_in) {
+      this.fetchRecipeUserData();
+    }
+  }
+
   openUploadPhotoModal(e) {
     if(!this.props.is_logged_in) {
       this.props.openAuth(e);

@@ -110,6 +110,7 @@ class App extends React.Component {
       username: username
     });
 
+    this.update_logged_in();
     this.update_admin();
   }
 
@@ -118,6 +119,8 @@ class App extends React.Component {
       is_logged_in: true,
       username: username
     })
+
+    this.update_logged_in();
   }
 
   logout(e) {
@@ -175,7 +178,7 @@ class App extends React.Component {
                     <Route path="/user/confirm/:token" render={() => (<UserConfirm cookies={this.props.cookies}/>)} />
                     {/*<Route path="/user/unconfirmed" render={() => (<Unconfirmed cookies={this.props.cookies}/>)} />*/}
                     <Route path="/user/restore/:token" render={() => (<PasswordRestoration cookies={this.props.cookies}/>)} />
-                    <Route path="/profile/:user_id" render={() => (<Profile cookies={this.props.cookies} />)} />
+                    <Route path="/profile/:user_id" render={() => (<Profile cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} />)} />
                     <Route path="/suggest_recipe" render={() => (<SuggestRecipe cookies={this.props.cookies} />)} />
                     <Route path="/indev" render={() => (<Indev cookies={this.props.cookies} />)} />
                     <Route exact path="/admin" render={() => (this.state.is_admin ? <AdminPage cookies={this.props.cookies} /> : <NotFound cookies={this.props.cookies} />)} />
