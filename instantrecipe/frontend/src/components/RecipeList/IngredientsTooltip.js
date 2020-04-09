@@ -7,7 +7,7 @@ function IngredientsTooltip(props) {
       full,
       ings_list;
 
-  if(props.need_match) {
+  if(props.need_match && props.items) {
     matched = props.rec.ings_mandatory.filter(ing => {
       let match = false;
 
