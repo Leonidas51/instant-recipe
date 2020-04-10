@@ -307,7 +307,7 @@ def parse_ingredients(recipe, ings, opt_ings):
     recipe['ingredient_ids'] = []
 
     for ing in ings:
-        recipe['ingredient_ids'].append(ing['id'])
+        recipe['ingredient_ids'].append(ObjectId(ing['id']))
         recipe['ingredient_names']['mandatory'][ing['name']] = \
             ing['amount']
 
@@ -325,7 +325,7 @@ def parse_tags(recipe, tags):
     recipe['tag_ids'] = []
     recipe['tag_names'] = []
     for tag in tags:
-        recipe['tag_ids'].append(tag['id'])
+        recipe['tag_ids'].append(ObjectId(tag['id']))
         recipe['tag_names'].append(tag['name'])
 
     # new tags

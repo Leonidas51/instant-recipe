@@ -475,7 +475,7 @@ def suggest_recipe():
             recipe['ingredient_names'] = {'mandatory': {}, 'optional': {}}
 
             for ing in ings:
-                recipe['ingredient_ids'].append(ing['id'])
+                recipe['ingredient_ids'].append(ObjectId(ing['id']))
                 recipe['ingredient_names']['mandatory'][ing['name']] = \
                     ing['amount']
 

@@ -192,3 +192,27 @@ def add_liked_by():
     except Exception as e:
         LOG.error('error while trying to add_liked_by: ' + str(e))
         return jsonify(result='error'), 400
+
+
+@utils_bp.route('/fix_ids/', methods=['GET'])
+@admin_required
+def fix_ids():
+    try:
+        for recipe in mongo.db.recipes.find({}):
+            new_ing_ids = []
+            new_tag_ids = []
+            for ing_id in recipe['ingredient_ids']:
+                new_ing_ids.append(ObjectId(ing_id))
+            for tag_id in recipe['tag_ids']:
+                new_tag_ids.append(ObjectId(tag_id))
+            mongo.db.recipes.update_one(
+                {u'_id': recipe['_id']},
+                {u'$set': {
+                    u'ingredient_ids': new_ing_ids,
+                    u'tag_ids': new_tag_ids
+                    }}
+            )
+        return jsonify({'result': 'success!'}), 200
+    except Exception as e:
+        LOG.error('error while trying to fix_ing_ids: ' + str(e))
+        return jsonify(result='error'), 400
