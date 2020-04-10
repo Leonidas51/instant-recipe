@@ -314,7 +314,7 @@ def read_user_info(user_id):
             'favorite_recipes': read_user_favorites(user_db),
             'liked_recipes': read_user_liked(user_db),
             'upload_recipes': read_user_published(user_db),
-            'upload_images': user_db['upload_images'],
+            'upload_images': read_user_images(user_db),
             'confirmed': user_db['confirmed']
         }
 
@@ -389,6 +389,26 @@ def read_user_published(user):
     except Exception as e:
         LOG.error('error while trying to read_user_published: ' + str(e))
         return []
+
+
+def read_user_images(user):
+    try:
+        images = []
+        user_upload_images = mongo.db.upload_images.find({
+            'uploader_id': ObjectId(user['_id']),
+            'published': True,
+            'recipe_published': True
+            })
+        for image in user_upload_images:
+            images.append({
+                'id': image['_id'],
+                'recipe_id': image['recipe_id'],
+                'recipe_name': image['recipe_name']
+            })
+        return images
+    except Exception as e:
+        LOG.error('error while trying to read_user_images: ' + str(e))
+        return []  
 
 
 @users_bp.route('/user/change_user_name/', methods=['POST'])

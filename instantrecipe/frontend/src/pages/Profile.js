@@ -13,7 +13,7 @@ class Profile extends React.Component {
     this.state = {
       user: null,
       error: '',
-      list_active: 'pub', /* fav/like/pub/photo */
+      list_active: 'fav', /* fav/like/pub/photo */
       list_favorites: [],
       list_liked: [],
       list_upload: [],
@@ -287,61 +287,85 @@ class Profile extends React.Component {
 
     switch(list_active) {
       case 'fav':
-        list = user.favorite_recipes.map(recipe => {
-          return (
-            <div className="user-lists__recipe-single" key={recipe.id}>
-              <div className="user-lists__recipe-container">
-                <div className="user-lists__recipe-name">
-                  <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+        list = user.favorite_recipes.length
+          ? user.favorite_recipes.map(recipe => {
+            return (
+              <div className="user-lists__recipe-single" key={recipe.id}>
+                <div className="user-lists__recipe-container">
+                  <div className="user-lists__recipe-name">
+                    <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+                  </div>
+                  {/*user.is_owner
+                    ? <div className="user-lists__recipe-remove button-reject" data-recipe_id={recipe.id} onClick={this.onRemoveFavClick}>Удалить из избранного</div>
+                    : null
+                  */}
                 </div>
-                {/*user.is_owner
-                  ? <div className="user-lists__recipe-remove button-reject" data-recipe_id={recipe.id} onClick={this.onRemoveFavClick}>Удалить из избранного</div>
-                  : null
-                */}
               </div>
-            </div>
-          )
-        })
+            )
+          })
+        : null
         break;
       case 'like':
-        list = user.liked_recipes.map(recipe => {
-          return (
-            <div className="user-lists__recipe-single" key={recipe.id}>
-              <div className="user-lists__recipe-container">
-                <div className="user-lists__recipe-name">
-                  <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+        list = user.liked_recipes.length
+          ? user.liked_recipes.map(recipe => {
+            return (
+              <div className="user-lists__recipe-single" key={recipe.id}>
+                <div className="user-lists__recipe-container">
+                  <div className="user-lists__recipe-name">
+                    <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+                  </div>
+                  {/*user.is_owner
+                    ? <div className="user-lists__recipe-remove button-reject">Удалить из понравившегося</div>
+                    : null
+                  */}
                 </div>
-                {/*user.is_owner
-                  ? <div className="user-lists__recipe-remove button-reject">Удалить из понравившегося</div>
-                  : null
-                */}
               </div>
-            </div>
-          )
-        })
+            )
+          })
+          : null
         break;
       case 'pub':
-        list = user.upload_recipes.map(recipe => {
-          return (
-            <div className="user-lists__recipe-single" key={recipe.id}>
-              <div className="user-lists__recipe-container">
-                <div className="user-lists__recipe-name">
-                  <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+        list = user.upload_recipes.length
+          ? user.upload_recipes.map(recipe => {
+              return (
+                <div className="user-lists__recipe-single" key={recipe.id}>
+                  <div className="user-lists__recipe-container">
+                    <div className="user-lists__recipe-name">
+                      <Link className="user-lists__recipe-link" to={`/recipe/details/${recipe.id}/`} target="_blank">{recipe.name}</Link>
+                    </div>
+                    {/*user.is_owner
+                      ? <div className="user-lists__recipe-remove button-reject" data-recipe_id={recipe.id} onClick={this.onDeleteOwnRecipeClick}>Удалить рецепт</div>
+                      : null
+                    */}
+                  </div>
                 </div>
-                {user.is_owner
-                  ? <div className="user-lists__recipe-remove button-reject" data-recipe_id={recipe.id} onClick={this.onDeleteOwnRecipeClick}>Удалить рецепт</div>
-                  : null
-                }
-              </div>
+              )
+          })
+          : null
+        break;
+      case 'photo':
+        list = user.upload_images.length
+        ? (
+            <div className="user-lists__gallery">
+              {user.upload_images.map(image => {
+                return (
+                  <div key={image.recipe_id} className="user-lists__gallery-block">
+                    <div className="user-lists__gallery-image-container">
+                      <img className="user-lists__gallery-image" src={`/images/recipes/dist/${image.recipe_id}/`} />
+                    </div>
+                    <Link className="user-lists__gallery-recipe-name" to={ encodeURI(`/recipe/details/${image.recipe_id}`) }>{image.recipe_name}</Link>
+                  </div>
+                )
+              })}
             </div>
           )
-        })
-        break;      
+        : null
+        break;
     }
 
     if(this.state.list_error) {
       list_error = this.state.list_error;
-    } else if(!list || !list.length) {
+    } else if(!list) {
       list_error = 'Здесь пока ничего нет!';
     }
 

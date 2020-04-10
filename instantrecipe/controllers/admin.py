@@ -206,7 +206,7 @@ def remove_image(recipe_id, path):
     if os.path.isdir(path):
         shutil.rmtree(path)
     mongo.db.upload_images.remove({
-        u'recipe_id': ObjectId(recipe_id)
+        u'recipe_id': recipe_id
     })
 
 
@@ -369,6 +369,18 @@ def edit_recipe():
                 {u'_id': ObjectId(data['recipe_id'])},
                 {u'$set': recipe}
             )
+
+            upload_image = mongo.db.upload_images.find_one({
+                u'recipe_id': data['recipe_id']
+                })
+            if upload_image:
+                mongo.db.upload_images.update_one(
+                    {u'recipe_id': data['recipe_id']},
+                    {u'$set': {
+                        'recipe_published': (data['published'] == 'true')
+                        }}
+                )
+
             return jsonify(data='success!'), 200
         except Exception as e:
             LOG.error('error while trying to edit_recipe: ' + str(e))

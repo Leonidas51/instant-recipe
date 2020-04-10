@@ -354,9 +354,10 @@ def save_recipe_photo(file, recipe_id, recipe_published):
                 filename = str(count) + '.jpg'
                 break
 
+    user = session['user']
     upload = {}
-    upload['uploader_id'] = session.get('user').get()['_id']
-    upload['uploader_name'] = session.get('user').get()['name']
+    upload['uploader_id'] = user.get()['_id']
+    upload['uploader_name'] = user.get()['name']
     upload['recipe_id'] = recipe_id
     upload['recipe_name'] = mongo.db.recipes.find_one({
         u'_id': ObjectId(recipe_id)
@@ -365,9 +366,16 @@ def save_recipe_photo(file, recipe_id, recipe_published):
     upload['published'] = False
     upload['path'] = filename
 
-    mongo.db.upload_images.insert_one(upload)
+    image_id = mongo.db.upload_images.insert_one(upload).inserted_id
     path = os.path.join(save_directory, filename)
     file.save(path)
+
+    user_update_data = {}
+    user_id = user.get_id()
+    user_update_data['upload_images'] = user.get()['upload_images']
+    user_update_data['upload_images'].append(image_id)
+    user.update(user_update_data)
+    user.set_from_db_by_email(user.get()['email'])
 
 
 @recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST'])
