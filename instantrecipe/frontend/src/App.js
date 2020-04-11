@@ -15,7 +15,6 @@ import RecipeDetails from "./pages/RecipeDetails";
 import RecipeList from "./pages/RecipeList";
 import Profile from "./pages/Profile";
 import SuggestRecipe from "./pages/SuggestRecipe";
-import Indev from "./pages/Indev";
 import AdminPage from "./pages/Admin/AdminPage";
 import Modal from "./components/hoc/Modal";
 import TagByName from "./components/utils/TagByName";

@@ -1,6 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = {
   entry: "./src/index.js",
@@ -15,7 +18,14 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: [          {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+
+          },
+        },
+        'css-loader',
+        ]
       },
       {
         test: /\.(png|jpg|gif)$/i,
@@ -40,12 +50,19 @@ module.exports = {
     publicPath: "/dist/",
     filename: "app.js"
   },
+  optimization: {
+    minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin({})],
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html',
       inject: 'body',
       hash: true
-    })
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
   ],
   devServer: {
     contentBase: false,
