@@ -53,6 +53,10 @@ class ProductionConfig(Config):
 
     # туточки почта на прод
     # Де
+    # опа
+
+    MAIL_USERNAME = os.getenv('PROD_MAIL_USER')
+    MAIL_PASSWORD = os.getenv('PROD_MAIL_PASSWORD')
 
 
 app_config = {
