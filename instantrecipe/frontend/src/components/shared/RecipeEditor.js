@@ -426,7 +426,7 @@ class RecipeEditor extends React.Component {
     data.append('steps', this.parseInstructions(this.state.steps));
 
     get_csrf().then(csrf => {
-      fetch('/api/recipe/suggest', {
+      fetch('/api/recipe/suggest/', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf
@@ -487,7 +487,7 @@ class RecipeEditor extends React.Component {
     data.append('steps', this.parseInstructions(this.state.steps));
     
     get_csrf().then(csrf => {
-      fetch('/api/admin/edit_recipe', {
+      fetch('/api/admin/edit_recipe/', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf
@@ -506,7 +506,7 @@ class RecipeEditor extends React.Component {
 
   deleteRecipe(recipe_id) {
     get_csrf().then(csrf => {
-      fetch('/api/admin/delete_recipe', {
+      fetch('/api/admin/delete_recipe/', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf,
@@ -528,7 +528,7 @@ class RecipeEditor extends React.Component {
 
   deleteImage(recipe_id) {
     get_csrf().then(csrf => {
-      fetch('/api/admin/delete_image', {
+      fetch('/api/admin/delete_image/', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf,

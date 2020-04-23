@@ -378,7 +378,7 @@ def save_recipe_photo(file, recipe_id, recipe_published):
     user.set_from_db_by_email(user.get()['email'])
 
 
-@recipes_bp.route('/recipe/upload_photo/<string:recipe_id>', methods=['POST'])
+@recipes_bp.route('/recipe/upload_photo/<string:recipe_id>/', methods=['POST'])
 @login_required
 @confirm_required
 def upload_recipe_photo(recipe_id):
@@ -434,7 +434,7 @@ def parse_instructions(steps):
     return ('\n').join(steps)
 
 
-@recipes_bp.route('/recipe/suggest', methods=['POST'])
+@recipes_bp.route('/recipe/suggest/', methods=['POST'])
 @login_required
 @confirm_required
 def suggest_recipe():
@@ -571,7 +571,7 @@ def remove_from_favorites(recipe_id):
         return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@recipes_bp.route('/recipe/add_to_liked/<string:recipe_id>', methods=['GET'])
+@recipes_bp.route('/recipe/add_to_liked/<string:recipe_id>/', methods=['GET'])
 @login_required
 def add_to_liked(recipe_id):
     if request.method != 'GET':
@@ -650,7 +650,7 @@ def remove_image_from_dist_and_upload(recipe_id):
     remove_image(recipe_id, dist_id_dir)
 
 
-@recipes_bp.route('/recipe/delete_own_recipe', methods=['POST'])
+@recipes_bp.route('/recipe/delete_own_recipe/', methods=['POST'])
 @login_required
 def delete_own_recipe():
     if request.method != 'POST':

@@ -9,7 +9,7 @@ LOG = logger.get_root_logger(
 tips_bp = Blueprint('tips', __name__)
 
 
-@tips_bp.route('/tip', methods=['GET', 'POST', 'DELETE', 'PATCH'])
+@tips_bp.route('/tip/', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 def tip():
     if request.method == 'GET':
         query = dict(request.args)

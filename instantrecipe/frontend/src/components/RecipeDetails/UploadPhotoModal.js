@@ -34,7 +34,7 @@ class UploadPhotoModal extends React.Component {
     this.setState({loading: true})
 
     get_csrf().then((csrf) => {
-      fetch(`/api/recipe/upload_photo/${this.props.recipe_id}`, {
+      fetch(`/api/recipe/upload_photo/${this.props.recipe_id}/`, {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf

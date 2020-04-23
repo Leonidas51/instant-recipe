@@ -48,7 +48,7 @@ class SuggestedRecipe extends React.Component {
   publishRecipe(recipe_id) {
     get_csrf()
       .then(csrf => {
-        fetch('/api/admin/publish_recipe', {
+        fetch('/api/admin/publish_recipe/', {
           method: 'POST',
           headers: {
             'X-CSRFToken': csrf,
@@ -73,7 +73,7 @@ class SuggestedRecipe extends React.Component {
   deleteRecipe(recipe_id) {
     get_csrf()
       .then(csrf => {
-        fetch('/api/admin/delete_recipe', {
+        fetch('/api/admin/delete_recipe/', {
           method: 'POST',
           headers: {
             'X-CSRFToken': csrf,
@@ -98,7 +98,7 @@ class SuggestedRecipe extends React.Component {
   deleteImage(recipe_id) {
     get_csrf()
       .then(csrf => {
-        fetch('/api/admin/delete_image', {
+        fetch('/api/admin/delete_image/', {
           method: 'POST',
           headers: {
             'X-CSRFToken': csrf,

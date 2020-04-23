@@ -16,7 +16,7 @@ LOG = logger.get_root_logger(
 admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route('/admin/get_admin_page_data', methods=['GET'])
+@admin_bp.route('/admin/get_admin_page_data/', methods=['GET'])
 @admin_required
 def get_admin_page_data():
     if request.method != 'GET':
@@ -39,7 +39,7 @@ def get_admin_page_data():
         return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@admin_bp.route('/admin/suggested_images', methods=['GET'])
+@admin_bp.route('/admin/suggested_images/', methods=['GET'])
 @admin_required
 def get_suggested_images():
     if request.method != 'GET':
@@ -58,7 +58,7 @@ def get_suggested_images():
         return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@admin_bp.route('/admin/reject_image', methods=['POST'])
+@admin_bp.route('/admin/reject_image/', methods=['POST'])
 @admin_required
 def reject_image():
     if request.method != 'POST':
@@ -99,7 +99,7 @@ def get_filename(save_directory):
     return filename
 
 
-@admin_bp.route('/admin/accept_image', methods=['POST'])
+@admin_bp.route('/admin/accept_image/', methods=['POST'])
 @admin_required
 def accept_image():
     if request.method != 'POST':
@@ -144,7 +144,7 @@ def make_thumbnail(path):
         LOG.error('error while trying to make_thumbnail: ' + str(e))
 
 
-@admin_bp.route('/admin/get_suggested_recipes', methods=['GET'])
+@admin_bp.route('/admin/get_suggested_recipes/', methods=['GET'])
 @admin_required
 def get_suggested_recipes():
     if request.method != 'GET':
@@ -176,7 +176,7 @@ def save_recipe_image(image_path, recipe_id):
     )
 
 
-@admin_bp.route('/admin/publish_recipe', methods=['POST'])
+@admin_bp.route('/admin/publish_recipe/', methods=['POST'])
 @admin_required
 def publish_recipe():
     if request.method != 'POST':
@@ -219,7 +219,7 @@ def remove_image_from_dist_and_upload(recipe_id):
     remove_image(recipe_id, dist_id_dir)
 
 
-@admin_bp.route('/admin/delete_recipe', methods=['POST'])
+@admin_bp.route('/admin/delete_recipe/', methods=['POST'])
 @admin_required
 def delete_recipe():
     if request.method == 'POST':
@@ -234,7 +234,7 @@ def delete_recipe():
             return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@admin_bp.route('/admin/delete_image', methods=['POST'])
+@admin_bp.route('/admin/delete_image/', methods=['POST'])
 @admin_required
 def delete_image():
     if request.method == 'POST':
@@ -356,7 +356,7 @@ def parse_recipe(data):
     return recipe
 
 
-@admin_bp.route('/admin/edit_recipe', methods=['POST'])
+@admin_bp.route('/admin/edit_recipe/', methods=['POST'])
 @admin_required
 def edit_recipe():
     if request.method == 'POST':

@@ -33,7 +33,7 @@ class SuggestedImages extends React.Component {
 
   rejectImage(image_id) {
     get_csrf().then((csrf) => {
-      fetch('/api/admin/reject_image', {
+      fetch('/api/admin/reject_image/', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf,
@@ -55,7 +55,7 @@ class SuggestedImages extends React.Component {
 
   acceptImage(image_id) {
     get_csrf().then((csrf) => {
-      fetch('/api/admin/accept_image', {
+      fetch('/api/admin/accept_image/', {
         method: 'POST',
         headers: {
           'X-CSRFToken': csrf,

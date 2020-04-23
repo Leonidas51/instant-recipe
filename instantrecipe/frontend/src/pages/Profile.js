@@ -113,7 +113,7 @@ class Profile extends React.Component {
 
     if(confirm('Вы уверены?')) {
       get_csrf().then(csrf => {
-        fetch('/api/recipe/delete_own_recipe', {
+        fetch('/api/recipe/delete_own_recipe/', {
           method: 'POST',
           headers: {
             'X-CSRFToken': csrf,

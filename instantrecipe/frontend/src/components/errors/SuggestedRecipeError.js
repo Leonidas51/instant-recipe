@@ -26,7 +26,7 @@ class SuggestedRecipeError extends React.Component {
   deleteRecipe(recipe_id) {
     get_csrf()
       .then(csrf => {
-        fetch('/api/admin/delete_recipe', {
+        fetch('/api/admin/delete_recipe/', {
           method: 'POST',
           headers: {
             'X-CSRFToken': csrf,

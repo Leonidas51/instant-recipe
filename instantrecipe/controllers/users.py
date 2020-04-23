@@ -430,7 +430,7 @@ def change_user_name():
                                 уже зарегистрирован!'}), 400
 
         now = datetime.datetime.now()
-        if session['user'].get()['last_name_change']:
+        if hasattr(session['user'].get(), 'last_name_change'):
             last = datetime.datetime.strptime(
                 session['user'].get()['last_name_change'], '%Y-%m-%d'
             ).date()
