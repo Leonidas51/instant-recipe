@@ -528,7 +528,7 @@ def suggest_recipe():
             return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@recipes_bp.route('/recipe/add_to_favorites/<string:recipe_id>',
+@recipes_bp.route('/recipe/add_to_favorites/<string:recipe_id>/',
                   methods=['GET'])
 @login_required
 def add_to_favorites(recipe_id):
@@ -549,7 +549,7 @@ def add_to_favorites(recipe_id):
         return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@recipes_bp.route('/recipe/remove_from_favorites/<string:recipe_id>',
+@recipes_bp.route('/recipe/remove_from_favorites/<string:recipe_id>/',
                   methods=['GET'])
 @login_required
 def remove_from_favorites(recipe_id):
@@ -600,7 +600,7 @@ def add_to_liked(recipe_id):
         return jsonify(error=SERVER_ERROR_TEXT), 500
 
 
-@recipes_bp.route('/recipe/remove_from_liked/<string:recipe_id>',
+@recipes_bp.route('/recipe/remove_from_liked/<string:recipe_id>/',
                   methods=['GET'])
 @login_required
 def remove_from_liked(recipe_id):
