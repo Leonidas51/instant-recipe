@@ -13,8 +13,6 @@ class Footer extends React.PureComponent {
         <hr className="footer__divider" />
         <div className="footer__body">
           <div className="footer__section">
-            <div className="footer__link-container"><Link className="footer__link" to="/about">О нас</Link></div>
-            <div className="footer__link-container"><Link className="footer__link" to="/contacts">Контакты</Link></div>
             <div className="footer__link-container">
               {
                 this.props.isLoggedIn
@@ -22,6 +20,7 @@ class Footer extends React.PureComponent {
                 : <Link to="/" className="footer__link" onClick={this.props.openAuth}>Предложить рецепт</Link>
               }
             </div>
+            <div className="footer__link-container"><Link className="footer__link" to="/contacts">Контакты</Link></div>
           </div>
         </div>
       </div>
