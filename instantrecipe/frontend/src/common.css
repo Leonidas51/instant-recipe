@@ -27,6 +27,10 @@ body {
   margin: 50px auto 0px auto;
 }
 
+.content-area_contacts {
+  line-height: 25px;
+}
+
 .link {
   text-decoration: underline;
   color: #FCBC5D;
@@ -100,6 +104,10 @@ body {
 @media screen and (max-width: 768px) {
   .content-area {
     width: 95%;
+  }
+
+  .content-area_contacts {
+    margin-top: 60px;
   }
 }
 

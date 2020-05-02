@@ -5,7 +5,7 @@ import {Helmet} from "react-helmet";
 import {get_csrf} from "./utils/"
 import "./reset.css";
 import "./common.css";
-import About from "./pages/About";
+import Contacts from "./pages/Contacts";
 import Unconfirmed from "./pages/Unconfirmed";
 import PasswordRestoration from "./pages/PasswordRestoration";
 import UserConfirm from "./pages/UserConfirm";
@@ -170,7 +170,7 @@ class App extends React.Component {
             <GenericError>
               <Switch>
                     <Route exact path="/" render={() => (<Index cookies={this.props.cookies}/>)}/>
-                    <Route path="/about" render={() => (<About cookies={this.props.cookies}/>)} />
+                    <Route path="/contacts" render={() => (<Contacts cookies={this.props.cookies}/>)} />
                     <Route path="/recipes/:type/:search/:sort?" render={() => (<RecipeList cookies={this.props.cookies}/>)}/>
                     <Route path="/recipe/details/:details" render={() => (<RecipeDetails cookies={this.props.cookies} is_logged_in={this.state.is_logged_in} is_admin={this.state.is_admin} openAuth={this.open_auth_modal}/>)} />
                     <Route path="/tag_name/:name" render={() => (<TagByName cookies={this.props.cookies}/>)} />

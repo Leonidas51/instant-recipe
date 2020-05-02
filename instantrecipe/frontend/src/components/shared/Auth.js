@@ -349,7 +349,7 @@ class Auth extends React.Component {
         body = (
           <div className="auth__success">
             <h2 className="auth__title">Регистрация прошла успешно!</h2>
-            <div className="auth__text">В течение X минут на ваш адрес {this.state.reg_email} придёт письмо с подтверждением.</div>
+            <div className="auth__text">В течение нескольких минут на ваш адрес {this.state.reg_email} придёт письмо с подтверждением.</div>
           </div>
         )
         break;
