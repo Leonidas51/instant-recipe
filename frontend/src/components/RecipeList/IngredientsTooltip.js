@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import TwoArrows from "../../icons/two-arrows.svg"
 
 function IngredientsTooltip(props) {

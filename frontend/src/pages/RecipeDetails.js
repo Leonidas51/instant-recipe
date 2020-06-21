@@ -1,10 +1,9 @@
-import React, {Component} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import NotFound from "./NotFound";
 import ScrollToTop from "../components/utils/ScrollToTop";
 import Loader from "../components/shared/Loader";
-import {get_csrf} from "../utils/";
 import "./RecipeDetails.css";
 import Modal from "../components/hoc/Modal";
 import UploadPhotoModal from "../components/RecipeDetails/UploadPhotoModal";

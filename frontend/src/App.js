@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { CookiesProvider, withCookies } from 'react-cookie';
 import {Helmet} from "react-helmet";
@@ -6,7 +6,7 @@ import {get_csrf} from "./utils/"
 import "./reset.css";
 import "./common.css";
 import Contacts from "./pages/Contacts";
-import Unconfirmed from "./pages/Unconfirmed";
+// import Unconfirmed from "./pages/Unconfirmed";
 import PasswordRestoration from "./pages/PasswordRestoration";
 import UserConfirm from "./pages/UserConfirm";
 import Index from "./pages/Index";

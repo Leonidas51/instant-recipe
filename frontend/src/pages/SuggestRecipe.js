@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import RecipeEditor from "../components/shared/RecipeEditor";
 
 class SuggestRecipe extends React.Component {

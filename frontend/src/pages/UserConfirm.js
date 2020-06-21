@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Link, withRouter, Redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import Loader from "../components/shared/Loader";

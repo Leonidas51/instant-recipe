@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
 import SearchButton from "./SearchButton";
 import SuggestedIng from "./SuggestedIng";

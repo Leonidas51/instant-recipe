@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SuggestedRecipe from "../../components/admin/SuggestedRecipe";
 import SuggestedRecipeError from "../../components/errors/SuggestedRecipeError";

@@ -1,6 +1,5 @@
-import React, {Component} from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Link, withRouter } from "react-router-dom";
-import {get_csrf} from '../../utils';
 import RecipeEditor from "../../components/shared/RecipeEditor";
 import "./RecipeEditorPage.css";
 
