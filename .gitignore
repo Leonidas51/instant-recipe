@@ -1,16 +1,18 @@
 venv/
 node_modules/
-dist/
+frontend/dist
 output.log
 startup/
 .vscode
+.mypy_cache/
 rbpKeys/
 rbp_dump/
+
 images/recipes/dist/*/
-images/recipes/upload/*/
 !images/recipes/dist/default.png
+!images/recipes/dist/.gitkeep
+images/recipes/upload/*/
 !images/recipes/upload/.gitkeep
-.mypy_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -22,18 +24,11 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
-dist/
-downloads/
 eggs/
 .eggs/
 lib/
 lib64/
-parts/
-sdist/
-var/
-wheels/
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
