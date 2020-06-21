@@ -129,6 +129,9 @@ def accept_image():
             {u'_id': ObjectId(image['recipe_id'])},
             {u'$set': {'has_image': True}}
         )
+        if not (os.listdir(image_directory)):
+            os.rmdir(image_directory)
+
         return jsonify(data='success!'), 200
     except Exception as e:
         LOG.error('error while trying to accept_image: ' + str(e))
