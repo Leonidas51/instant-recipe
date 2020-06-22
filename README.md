@@ -1,3 +1,7 @@
+# Live on:
+
+InstantRecipe.ru
+
 # Startup from scratch:
 1. python -m venv ./venv
 2. venv\scripts\activate OR venv/bin/activate
